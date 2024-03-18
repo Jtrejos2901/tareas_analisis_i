@@ -11,7 +11,7 @@ library(GGally)
 concreto <- read_csv("concreto.csv")
 concreto <- round(concreto, 4) 
 
-#Análsis exploratorio de los datos 
+#Análisis exploratorio de los datos 
 
 str(concreto)
 head(concreto)
@@ -45,4 +45,22 @@ ggpairs(concreto,  upper = list(continuous = wrap("cor", size = 2.5)))
 #A partir del gráfico se puede observar que la variable que mejor se correlaciona con
 #resistencia_comprension es cemento.
 
+#--------------------------Ejercicio 2------------------------------------------
+
+analisis_col <- function(dataframe, col1, col2) {
+  
+  nombres_col <- colnames(dataframe[,c(col1,col2)])
+  columna1 <- dataframe[, c(col1)]
+  columna2 <- dataframe[, c(col2)]
+  
+  covarianza <- cov(columna1,columna2)
+  correlacion <- cor(columna1,columna2)
+  
+  resultado <- paste0("Nombres columnas:", nombres_col[1], " y ", nombres_col[2]
+                      ,"\nCovarianza:",covarianza,"\nCorrelación:", correlacion)
+  
+  return(cat(resultado))
+}
+
+analisis_col(concreto, 1, 2)
 
