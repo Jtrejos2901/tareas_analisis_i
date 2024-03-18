@@ -3,11 +3,13 @@
 #librerías
 library(readr)
 library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(GGally)
 
 #Se carga la base de datos con una configuración de 4 decimales
 concreto <- read_csv("concreto.csv")
-concreto <- rapply(object = concreto, f = round, classes = "numeric", 
-                   how = "replace", digits = 4) 
+concreto <- round(concreto, 4) 
 
 #Análsis exploratorio de los datos 
 
@@ -29,15 +31,18 @@ boxplot(stacked_concreto$values ~ stacked_concreto$ind,
 #considerablemente lejanos al resto de los datos, por lo que se procede a eliminarse
 #para que no se vea afectado el cálculo de estadísticos como la media y correlaciones.
 
-concreto$agregado_fino[concreto$agregado_fino == max(concreto$agregado_fino)]<-NA
+#concreto$agregado_fino[concreto$agregado_fino == max(concreto$agregado_fino)]<-NA
 
-head(sort(concreto$edad, decreasing = TRUE),100)
+#head(sort(concreto$edad, decreasing = TRUE),100)
 
-concreto$edad[concreto$edad ==  365 | concreto$edad ==  360 | concreto$edad ==  270 
-              | concreto$edad ==  180]<-NA
-
-summary(concreto)
+#concreto$edad[concreto$edad ==  365 | concreto$edad ==  360 | concreto$edad ==  270 | concreto$edad ==  180]<-NA
 
 #2.Usar summary
-#3.Hacer histograma para ver distribuciones
-#4.Sacar correlaciones entre las variables y hacer gráficos de correlación
+summary(concreto)
+
+#3.Hacer gráficos de correlación
+ggpairs(concreto,  upper = list(continuous = wrap("cor", size = 2.5)))
+#A partir del gráfico se puede observar que la variable que mejor se correlaciona con
+#resistencia_comprension es cemento.
+
+
