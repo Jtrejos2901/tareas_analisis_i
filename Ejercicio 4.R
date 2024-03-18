@@ -56,11 +56,11 @@ analisis_col <- function(dataframe, col1, col2) {
   covarianza <- cov(columna1,columna2)
   correlacion <- cor(columna1,columna2)
   
-  resultado <- paste0("Nombres columnas:", nombres_col[1], " y ", nombres_col[2]
-                      ,"\nCovarianza:",covarianza,"\nCorrelación:", correlacion)
+  resultado <- paste0("Nombres columnas: ", nombres_col[1], " y ", nombres_col[2]
+                      ,"\nCovarianza: ",covarianza,"\nCorrelación: ", correlacion)
   
   return(cat(resultado))
 }
 
-analisis_col(concreto, 1, 2)
+analisis_col(concreto, 7, 9)
 
