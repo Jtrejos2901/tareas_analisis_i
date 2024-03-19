@@ -26,10 +26,17 @@ head(stacked_concreto)
 boxplot(stacked_concreto$values ~ stacked_concreto$ind,
         col = rainbow(ncol(concreto)), xlab = "Variables", ylab ="y")
 
-#Se puede observar que la variable edad y agua son los que presenta más outiliers (3 y 4).
-#También, los valores atípicos de las variables de edad y agregado fino se encuentran
-#considerablemente lejanos al resto de los datos, por lo que se procede a eliminarse
-#para que no se vea afectado el cálculo de estadísticos como la media y correlaciones.
+#Se puede observar que la variable edad y agua son los que presentan más outiliers (3 y 4).
+#También, ciertos valores atípicos de la variable de edad  se encuentran
+#considerablemente lejanos al resto de los datos, sin embargo, no se proceden a eliminar 
+#pues, el outlier más alto es 365 días  lo cuál, considerando
+#la definición de esta variable y  las propiedades del concreto es un valor que
+#se debe tomar en cuenta. En el caso de las otras variables que poseen outliers,
+#estos se encuentra no muy lejos de los límites de la caja, y otros están muy
+#cercanos al límite superior o inferior como es el caso de agua;por ende, tampoco
+#se eliminan pues, no se consideran datos muy lejanos del resto o que no tienen
+#sentido y no representan un problema para el cálculo de ciertos estadísticos 
+#como la media o correlaciones.
 
 #concreto$agregado_fino[concreto$agregado_fino == max(concreto$agregado_fino)]<-NA
 
@@ -64,3 +71,21 @@ analisis_col <- function(dataframe, col1, col2) {
 
 analisis_col(concreto, 7, 9)
 
+#------------------------------Ejercicio 3--------------------------------------
+
+U_n <- function(n){
+  
+  if(n == 0) {
+    U <- 5
+  }
+  if(n == 1){
+    U <--5
+  }
+  if(n == 2) {
+    U <- 2
+  }
+  else {
+    U <- 4*U_n(n-1) -15*U_n(n-2) + U_n(n-3)
+  }
+  return(U) 
+}
