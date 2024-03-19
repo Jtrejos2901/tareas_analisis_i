@@ -1,11 +1,13 @@
 #------------------------- Ejercicio 4-----------------------------------------
-
 #librerías
 library(readr)
 library(dplyr)
 library(ggplot2)
 library(gridExtra)
 library(GGally)
+library(univariateML)
+library(rriskDistributions)
+library(fitdistrplus)
 
 #Se carga la base de datos con una configuración de 4 decimales
 concreto <- read_csv("concreto.csv")
@@ -47,7 +49,32 @@ boxplot(stacked_concreto$values ~ stacked_concreto$ind,
 #2.Usar summary
 summary(concreto)
 
-#3.Hacer gráficos de correlación
+#3.Vamos a analizar qué tipo de densidad paramétrica se aproxima mejor a la
+#variable resistencia_comprension mediante el criterio AIC
+
+#método 1
+model_select(concreto$resistencia_compresion, models = univariateML_models, criterion = "aic",
+             na.rm = FALSE)
+# Según el resultado, la densidad que mejor se ajusta es la Weibull
+
+#método 2
+
+fit.cont(concreto$resistencia_compresion)
+
+#Mediante el criterio AIC, la densidad Weibull también es la que mejor se ajusta
+#a los datos de resistencia_comprension
+
+#En el siguiente gráfico se puede observar cómo es el ajuste.
+fw <- fitdist(concreto$resistencia_compresion, "weibull")
+
+par(mfrow = c(2,2))
+
+denscomp(fw, legendtext = "Weibull")
+qqcomp(fw, legendtext = "Weibull")
+cdfcomp(fw, legendtext = "Weibull")
+ppcomp(fw, legendtext = "Weibull")
+
+#4.Hacer gráfico de correlación
 ggpairs(concreto,  upper = list(continuous = wrap("cor", size = 2.5)))
 #A partir del gráfico se puede observar que la variable que mejor se correlaciona con
 #resistencia_comprension es cemento.
