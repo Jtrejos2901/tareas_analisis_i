@@ -73,19 +73,19 @@ analisis_col(concreto, 7, 9)
 
 #------------------------------Ejercicio 3--------------------------------------
 
-U_n <- function(n){
-  
-  if(n == 0) {
+#Función recursiva
+
+U_n <- function(n) {
+  if (n == 0) {
     U <- 5
-  }
-  if(n == 1){
-    U <--5
-  }
-  if(n == 2) {
+  } else if (n == 1) {
+    U <- -5
+  } else if (n == 2) {
     U <- 2
-  }
-  else {
-    U <- 4*U_n(n-1) -15*U_n(n-2) + U_n(n-3)
+  } else {
+    U <- 4 * U_n(n - 1) - 15 * U_n(n - 2) + U_n(n - 3)
   }
   return(U) 
 }
+
+U_n(3)
