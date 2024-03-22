@@ -1,9 +1,6 @@
 #------------------------- Ejercicio 4-----------------------------------------
 #librerías
 library(readr)
-library(dplyr)
-library(ggplot2)
-library(gridExtra)
 library(GGally)
 library(univariateML)
 library(rriskDistributions)
