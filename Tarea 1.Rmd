@@ -15,3 +15,69 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
+
+# Ejercicio 2 
+
+**Desarrolle una función R que recibe un DataFrame y dos números de columna y que retorna el nombre de las variables correspondientes a las columnas, la covarianza y la correlación entre esas dos variables.**
+
+A continuación se muestra el código desarrollado para la creación de la función en R. 
+
+```{r}
+escanear <- function(dataframe, columna1, columna2){
+  nombre_variables <- vector(length = 2) 
+  nombre_variables[1] <- colnames(dataframe)[columna1]
+  nombre_variables[2] <- colnames(dataframe)[columna2]
+  covarianza <- cov(dataframe[, columna1], dataframe[, columna2])
+  correlacion <- cor(dataframe[, columna1], dataframe[, columna2])
+  return(list(nombre_variables = nombre_variables, covarianza = covarianza, 
+              correlación = correlacion))
+}
+```
+
+La función llamada escanear recibe un dataframe, el nombre de la primer columna que se desea y el de la segunda. Se crea un vector para almacenar los nombres de las variables. Luego se le asigna a cada uno de los espacios del vector el nombre de la variables, extraídos por medio de la función colnames( ). Seguidamente, se utilizan las funciones cov( ) para la covarianza y cor( ) para la correlación.
+
+Como se puede observar la función retorna una lista donde el primer elemento es un vector con los nombres de las variables correspondientes a las columnas ingresadas, el segundo elemento es la covarianza entre las dos variables y el último es la correlación de las mismas. 
+
+Una vez hecha la función se decide hacer la siguiente prueba para corroborar. 
+
+```{r}
+prueba <- read.csv("concreto.csv")
+
+escanear(prueba, 3, 5)
+```
+
+# Ejercicio 3
+
+**Programe la siguiente función recursiva:**
+<img src="recursiva.png">
+
+A continuación se muestra el código desarrollado para la creación de la función recursiva. 
+
+```{r}
+U_n <- function(n){
+  if(n == 0){
+    resultado <- 5 
+  } else if(n == 1){
+    resultado <- -5 
+  } else if(n == 2){
+    resultado <- 2 
+  } else{
+    resultado <- 4*U_n(n-1) - 15*U_n(n-2) + U_n(n-3)
+  }
+  return(resultado)
+}
+```
+
+La función recibe un n el cual especifica el valor que se desea calcular. Con el uso de los condiconales se crean los casos posibles de cada valor. Note que cuando n es mayor o igual a tres, debido a la recursividad, el resultado vuelve a ejecutar la funión pero con los valores anteriores. Por último, la función retorna el resultado correspondiente. 
+
+Para corroborar el buen funcionamiento se decide hacer una prueba con los 11 primeros valores de la recursión. 
+
+```{r}
+for (i in 0:10) {
+  
+  valor <- U_n(i)
+  cat("U_", i, "=", valor, "\n")
+  
+}
+```
+
