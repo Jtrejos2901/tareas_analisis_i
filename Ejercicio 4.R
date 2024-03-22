@@ -9,9 +9,8 @@ library(univariateML)
 library(rriskDistributions)
 library(fitdistrplus)
 
-#Se carga la base de datos con una configuración de 4 decimales
+#Se carga la base de datos con una configuración de 4 decimales 
 concreto <- read_csv("concreto.csv")
-concreto <- round(concreto, 4) 
 
 #Análisis exploratorio de los datos 
 
@@ -40,11 +39,6 @@ boxplot(stacked_concreto$values ~ stacked_concreto$ind,
 #sentido y no representan un problema para el cálculo de ciertos estadísticos 
 #como la media o correlaciones.
 
-#concreto$agregado_fino[concreto$agregado_fino == max(concreto$agregado_fino)]<-NA
-
-#head(sort(concreto$edad, decreasing = TRUE),100)
-
-#concreto$edad[concreto$edad ==  365 | concreto$edad ==  360 | concreto$edad ==  270 | concreto$edad ==  180]<-NA
 
 #2.Usar summary
 summary(concreto)
