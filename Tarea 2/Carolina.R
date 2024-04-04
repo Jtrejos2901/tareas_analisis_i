@@ -160,7 +160,7 @@ cos2.var_water<-(water_ACP$var$cos2[,1]+water_ACP$var$cos2[,2])*100
 cos2.var_water
 
 plano_inicial <-fviz_pca_ind(water_ACP, col.ind = "#87CEFA",label = "none" , select.ind = list(cos2 = 0.05),ggtheme = mi.tema)
-plano_inicial
+print(plano_inicial)
 
 fviz_pca_var(water_ACP,col.var="#CD4F39", select.var = list(cos2 = 0.05),ggtheme = mi.tema)
 
@@ -255,11 +255,9 @@ ind_plot <-plot_ly(mpg, x = x, y = y, z = z, color = inds_selected_water2$cluste
       zaxis = list(title = "Dim3")
     )
   )
-ind_plot
+print(ind_plot)
 
 #Gráfico de las variables con cos2 > 0.05
-
-# Obtener la matriz de correlación
 
 x_var <- vars_selected_water2$Dim.1
 y_var <-vars_selected_water2$Dim.2
@@ -267,12 +265,21 @@ z_var <- vars_selected_water2$Dim.3
 
 vars <- rownames(vars_selected_water2)
 
-var_plot <- plot_ly(x = ~c(0, x_var), y = ~c(0, y_var), z = ~c(0, z_var), 
-       type = "scatter3d", mode = "lines", line = list(width = 5)) %>%
-  add_trace(marker = list(size = 10)) %>%
-  layout(scene = list(xaxis = list(title = "Dim.1"), yaxis = list(title = "Dim.2"), zaxis = list(title = "Dim.3")))
-var_plot
+var_plot <- plot_ly()
 
+for (i in 1:length(x_var)) {
+  var_plot <- var_plot %>%
+    add_trace(x = c(0, x_var[i]), y = c(0, y_var[i]), z = c(0, z_var[i]),
+              type = "scatter3d", mode = "lines", line = list(width = 5),
+              name = vars[i])
+}
+
+var_plot <- var_plot %>%
+  layout(scene = list(xaxis = list(title = "Dim.1"), 
+                      yaxis = list(title = "Dim.2"), 
+                      zaxis = list(title = "Dim.3")))
+
+print(var_plot)
 # Explicación clusteres basado en la sobre posición de gráficos 
 
 subplot(ind_plot,var_plot)
