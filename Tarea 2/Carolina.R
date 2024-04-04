@@ -5,7 +5,8 @@ library(FactoMineR)
 library(factoextra)
 library(ggplot2)
 library(GGally)
-library(corr)
+library(corrplot)
+library(plotly)
 
 set.seed(123)
 mi.tema <- theme_grey() + theme(panel.border = element_rect(fill = NA,color = "white"), plot.title = element_text(hjust = 0.5))
@@ -105,7 +106,7 @@ fviz_pca_var(beans_ACP2,col.var="#FF8C69", select.var = list(cos2 = 0.1),ggtheme
 
 #Formación clústeres basado en la sobreposición de los gráficos 
 
-# Filtrar los individuos y  con cos2 mayor a 0.1
+# Filtrar los individuos  con cos2 mayor a 0.1
 inds_selected2 <- beans_ACP2$ind$coord[rowSums(beans_ACP2$ind$cos2[,1:2]) > 0.1, ]
 
 # Realizar el clustering k-means sobre los individuos seleccionados
@@ -193,4 +194,104 @@ fviz_pca_biplot(water_ACP,col.var = "#CD4F39",col.ind = "#87CEFA",
 #c) En el circulo de correlacion, usando los componentes 1 y 3, interprete la correlacion entre
 #las variables Conductivity, Trihalomethanes y Organic carbon, que estan mal representadas
 #en los componentes 1 y 2.
+
+cos2.var_water2<-(water_ACP$var$cos2[,1]+water_ACP$var$cos2[,3])*100
+cos2.var_water2
+
+fviz_pca_var(water_ACP, axes = c(1,3), col.var="#CD4F39", select.var = list(cos2 = 0.05),ggtheme = mi.tema)
+
+#d) convierta la variable Potability en Codigo Disyuntivo Completo y repita
+#el ACP
+
+#Se hace código disyuntivo
+
+Potability_No <- as.numeric(water_datos$Potability == "No")
+Potability_Si <- as.numeric(water_datos$Potability == "Si")
+
+print(Potability_No)
+print(Potability_Si)
+
+water_datos2<- water_datos[,-10]
+water_datos2 <- cbind(water_datos2, Potability_No)
+water_datos2 <- cbind(water_datos2, Potability_Si)
+str(water_datos2)
+
+#ACP
+water_ACP2 <- PCA(water_datos2, scale.unit=TRUE, ncp=5, graph = FALSE)
+water_ACP2
+water_ACP2$eig
+water_ACP2$ind
+water_ACP2$var
+
+#Ver individuos y variables mal representados 
+cos2.ind_3dim<-(water_ACP2$ind$cos2[,1]+water_ACP2$ind$cos2[,2]+ water_ACP2$ind$cos2[,3])*100
+cos2.ind_3dim
+
+cos2.var_3dim<-(water_ACP2$var$cos2[,1]+water_ACP2$var$cos2[,2] +water_ACP2$var$cos2[,3])*100
+cos2.var_3dim
+
+# Filtrar los individuos y variables con cos2 mayor a 0.05
+inds_selected_water2 <- water_ACP2$ind$coord[rowSums(water_ACP2$ind$cos2[,1:3]) > 0.05, ]
+vars_selected_water2 <- water_ACP2$var$coord[rowSums(water_ACP2$var$cos2[,1:3]) > 0.05, ]
+
+inds_selected_water2 <- as.data.frame(inds_selected_water2)
+
+#Gráfico de los individuos con cos2 > 0.05 con 2 clusters
+
+x <- inds_selected_water2$Dim.1
+y <-inds_selected_water2$Dim.2
+z <- inds_selected_water2$Dim.3
+
+# Realizar el clustering k-means sobre los individuos seleccionados
+clusters_water_3dim <- kmeans(inds_selected_water2[, 1:3], centers = 2)
+inds_selected_water2$cluster <- factor(clusters_water_3dim$cluster)
+
+plot_ly(mpg, x = x, y = y, z = z, color = inds_selected_water2$cluster)%>%
+  add_markers(size=1.5) %>%
+  layout(scene = list(
+      xaxis = list(title = "Dim1"),
+      yaxis = list(title = "Dim2"),
+      zaxis = list(title = "Dim3")
+    )
+  )
+
+#Gráfico de las variables con cos2 > 0.05
+
+# Obtener la matriz de correlación
+correlacion_matriz<- vars_selected_water2
+
+# Eliminar los nombres de filas y columnas
+rownames(correlacion_matriz) <- NULL
+colnames(correlacion_matriz) <- NULL
+
+# Crear un gráfico 3D con tres ejes
+plot_ly(x = c(0, vars_selected_water2[1, ]),
+        y = c(0, vars_selected_water2[2, ]),
+        z = c(0, vars_selected_water2[3, ]),
+        type = "scatter3d",
+        mode = "lines+markers",
+        marker = list(size = 5),
+        line = list(color = "blue")) %>%
+  add_trace(x = c(0, vars_selected_water2[4, ]),
+            y = c(0, vars_selected_water2[5, ]),
+            z = c(0, vars_selected_water2[6, ]),
+            line = list(color = "red")) %>%
+  add_trace(x = c(0, vars_selected_water2[7, ]),
+            y = c(0, vars_selected_water2[8, ]),
+            z = c(0, correlation_matrix[9, ]),
+            line = list(color = "green")) %>%
+  layout(scene = list(xaxis = list(title = "Dim.1"),
+                      yaxis = list(title = "Dim.2"),
+                      zaxis = list(title = "Dim.3")),
+         title = "Círculo de correlación en 3D")
+
+
+# Explicación clusteres basado en la sobre posición de gráficos 
+
+fviz_pca_biplot(beans_ACP2,col.var = "#FF8C69",col.ind = "#458B74",
+                select.var = list(cos2 = 0.1), select.ind = list(cos2 = 0.1),
+                geom.ind = "point",
+                ggtheme = mi.tema)
+
+
 
