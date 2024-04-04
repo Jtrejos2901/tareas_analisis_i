@@ -83,7 +83,7 @@ datos1_numerico <- cbind(datos1_numerico, SEKER, BARBUNYA, BOMBAY, CALI, HOROZ,
                          SIRA, DERMASON)
 ACP_disyuntivo <- PCA(datos1_numerico, scale.unit=TRUE, ncp=4, graph = FALSE)
 ACP_clusters_disyuntivo <- kmeans(ACP_disyuntivo$ind$coord[, 1:2], centers = 3)
-fviz_cluster(list(data = ACP$ind$coord[, 1:2], cluster = ACP_clusters$cluster), 
+fviz_cluster(list(data = ACP_disyuntivo$ind$coord[, 1:2], cluster = ACP_clusters_disyuntivo$cluster), 
              axes = c(1, 2), geom = "point")
 fviz_pca_biplot(ACP_disyuntivo, col.var = "#2E9FDF", col.ind = "pink",
                 select.ind = list(cos2 = 0.1),select.var = list(cos2 = 0.1),
@@ -140,7 +140,8 @@ fviz_pca_biplot(ACP_agua, col.var = "#2E9FDF", col.ind = "pink",
 #correlacion entre las variables Conductivity, Trihalomethanes y Organic carbon, 
 #que estan mal representadas en los componentes 1 y 2.
 
-fviz_pca_var(ACP_agua, axes = c(1,3), col.var = "#2E9FDF", ggtheme = mi.tema)
+fviz_pca_var(ACP_agua, axes = c(1,3), col.var = "#2E9FDF", select.var = list(cos2 = 0.05),
+             repel = TRUE)
 
 #d) Ahora desde R convierta la variable Potability en Codigo Disyuntivo Completo 
 #y repita el ACP ¿Se gana interpretabilidad al convertirla en Codigo Disyuntivo 

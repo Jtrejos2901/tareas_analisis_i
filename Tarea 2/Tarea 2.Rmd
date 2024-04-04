@@ -16,3 +16,408 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Se cargan las librerías necesarias.
+```{r, warning=FALSE, message=FALSE}
+library(FactoMineR)
+library(factoextra)
+library(ggplot2)
+library(GGally)
+library(corrplot)
+library(plotly)
+library(cluster)
+```
+
+# Ejercicio 1 
+
+## a) Efectúe un ACP con solo las variables numéricas.
+
+```{r, warning=FALSE}
+beans_datos <- read.csv("beansV2.csv")
+str(beans_datos)
+
+beans_ACP <- PCA(beans_datos[,-17], scale.unit=TRUE, ncp=4, graph = FALSE)
+beans_ACP
+
+```
+
+```{r,warning=FALSE}
+#Individos
+fviz_pca_ind(beans_ACP, col.ind = "#458B74", label = "none")
+#Variables
+fviz_pca_var(beans_ACP, col.var = "#FF8C69", repel= TRUE)
+```
+## b) Elimine en R los individuos y las variables mal representadas (coseno cuadrado menor al 10 %).
+
+Primeramente, se identifican los cosenos al cuadrado de cada individuo y variable:
+```{r, warning=FALSE}
+cos2.ind <-(beans_ACP$ind$cos2[,1]+beans_ACP$ind$cos2[,2])*100
+head(cos2.ind)
+
+cos2.var<-(beans_ACP$var$cos2[,1]+beans_ACP$var$cos2[,2])*100
+cos2.var
+```
+
+Luego, se eliminan del plano principal y del círculo de correlación los individuos y variables mal representados, respectivamente.
+```{r, warning=FALSE}
+#Individos
+fviz_pca_ind(beans_ACP, col.ind = "#458B74",label = "none" , select.ind = list(cos2 = 0.1))
+
+#Variables
+fviz_pca_var(beans_ACP,col.var="#FF8C69", select.var = list(cos2 = 0.1),repel = TRUE)
+
+```
+
+## c) En el plano principal encuentre 3 clústeres.
+
+Para encontrar los clústeres, primero se filtra la base para obtener los individuos
+con coseno al cuadrado mayor al 10%.
+
+```{r, warning=FALSE}
+# Filtrar los individuos con cos2 mayor a 0.1
+inds_selected <- beans_ACP$ind$coord[rowSums(beans_ACP$ind$cos2[,1:2]) > 0.1, ]
+```
+
+Con esto, se procede a obtener los clústeres con la función kmeans
+
+```{r, warning=FALSE}
+# Realizar el clustering k-means sobre los individuos seleccionados
+clusters <- kmeans(inds_selected[, 1:2], centers = 3, nstart = 20)
+```
+
+Se grafica los clústeres en el plano principal
+
+```{r, warning=FALSE}
+# Graficar los clusters obtenidos
+fviz_cluster(list(data = inds_selected, cluster = clusters$cluster), 
+            geom = "point", 
+             stand = FALSE,
+             main = "PCA con Clusters")
+```
+
+## d) En el círculo de correlacion determine e interprete la correlación entre las variables. Compare las correlaciones con las que se obtienen usando los gráficos que ofrecen paquetes de R para visualizar las correlaciones. ¿Cuál cálculo es más exacto? ¿Por qué?
+
+Nuevamente, se visualiza el círculo de correlación para su respectiva interpretación
+
+```{r, warning=FALSE}
+fviz_pca_var(beans_ACP,col.var="#FF8C69", select.var = list(cos2 = 0.1),repel = TRUE)
+```
+Es posible observar que existen variables que se correlacionan positivamente fuertes, lo que signfica que se comportan de manera similar. Esto se puede identificar si el ángulo es cercano a cero por lo cual, la correlación tiende a 1.
+Las variables que muestran este comportamiento son:
+
+- Eccentricity y AspectRation.
+- Area y ConvexArea.
+- Area y EquivDiameter.
+- ConvexArea. y EquivDiameter.
+- Solidity y roundness.
+- ShapeFactor4 y ShapeFactor2.
+
+También, se muestran variables que tiene correlación positiva pero no tan fuertes como las anteriores, tales como todas las correlaciones de las variables que pertencen a un mismo cuadrante.
+
+
+Por otro lado, hay variables que presentan correlaciones fuertemente negativas , es decir, que se comportan de manera inversa. Estas variables muestran un ángulo cercano a 180 grados lo que implica que la correlación tiende a -1.
+Las variables que tienen este comportamiento son:
+
+- Eccentricity y Compactness
+- AspectRation y Compactness
+- ShapeFactor1 y MinorAxesLength
+
+Además, se identifican otras variables que tiene correlación negativa pero no tan fuertes como las anteriores, tales como todas la variables que se encuentran en el cuadrante 1 con respecto a las del cuadrante 3, y las del cuadrante 2 con las del cuadrante 4.
+
+Finalmente, existen variables con correlación casi nula, lo que significa que el comportamiento de una no afecta a la otra. Esto se puede
+identificar si el ángulo es cercano a 90 grados. Las variables que muestran este comportamiento son:
+
+- ShapeFactor1 y Eccentricity
+- ShapeFactor1 y AspectRation
+- Compactness y MinorAxesLength
+
+Ahora, se realiza otro gráfico de correlación para comparar la exacitud de la interpretación de las correlaciones con las 
+obtenidas del círculo de correlación.
+
+```{r,fig.width=20, fig.height=12, warning=FALSE}
+correlaciones <- cor(beans_datos[,-17])
+corrplot(correlaciones, method = "number")
+```
+Este gráfico permite corroborar las correlaciones mencionadas anteriormente.Sin embargo, este indica la magnitud
+de las correlaciones lo cual, da más claridad a diferencia del círculo de correlaciones, pues, este es una herramienta en la se puede interpretar que la correlación tiende a cierto valor más no se sabe con precisión dicha magnitud. 
+Además, el círculo de correlación presenta un porcentaje de la información debido al ACP, en cambio, la matriz de correlaciones muestran la información de manera completa. Por tanto, se permite conlcuir que la matriz de correlación
+es más exacto para el cálculo de las correlaciones.
+
+## e) Interprete la formación de los 3 clústeres basado en la sobre-posición del círculo y el plano
+
+A continuación, se muestra el gráfico de sobre-posición 
+
+```{r, warning=FALSE}
+fviz_pca_biplot(beans_ACP,col.var = "#FF8C69",col.ind = "#458B74",
+                select_var = list(cos2 = 0.1), select.ind =list(cos2 = 0.1),
+                geom.ind = "point",
+                repel = TRUE)
+```
+Basandose en los cluster ya calculados anteriormente, es posible observar que de los individuos que pertenecen al clúster 1 (segundo y tercer cuadrante), en especial aquellos que pertenecen al segundo cuadrante, se ven mayormente impactados por las variables: Compactness, ShapeFactor3, roundness, Extent, Solidity, ShapeFactor4 y ShapeFactor2. Mientras que, los individuos del clúster 1 del tercer cuadrante, se ven más impactados por la variable ShapeFactor1. Por otro lado, al analizar el clúster 2 (primer y cuarto cuadrante), se observa que aquellos del primer cuadrante se relacionan mayormente con las variables: MinorAxisLength, Area, ConvexArea, EquivDiameter, Perimeter y MajorAxisLength. En cuanto a los del cuarto cuadrante, estos se relacionan principalmente con las variables AspectRation y Eccentricity. Finalmente, los individuos del clúster 3 (esquina superior del primer cudrante) se relacionan fuertemente con las variables: MinorAxisLength, Area, ConvexArea, EquivDiameter, Perimeter y MajorAxisLength.
+
+## f) Convierta la variable Class a código disyuntivo, efectúe de nuevo el ACP e interprete de nuevo la formación de los 3 clústeres basado en la sobre-posición del círculo y el plano. ¿Se gana interpretabilidad?
+
+Inicialmente se identifican las categorías de la variable "class" y se genera el código disyuntivo.
+
+```{r}
+categorias_class  <- unique(beans_datos$Class)
+categorias_class
+
+lista_disyuntivo  <- list()
+beans_datos2<- beans_datos[,-17]
+
+for (i in 1:length(categorias_class)) {
+  lista_disyuntivo[[i]] <- as.numeric(beans_datos$Class == categorias_class[i])
+  names(lista_disyuntivo)[i] <- paste("Class_", categorias_class[i], sep = "")
+  beans_datos2 <- cbind(beans_datos2, lista_disyuntivo[i])
+}
+```
+
+Una vez que contamos con la nueva base de datos con el código disyuntivo, se procede con el ACP.
+
+```{r}
+beans_ACP2 <- PCA(beans_datos2, scale.unit=TRUE, ncp=4, graph = FALSE)
+
+#individuos y variables mal representados
+cos2.ind2<-(beans_ACP2$ind$cos2[,1]+beans_ACP2$ind$cos2[,2])*100
+head(cos2.ind2)
+
+cos2.var2<-(beans_ACP2$var$cos2[,1]+beans_ACP2$var$cos2[,2])*100
+cos2.var2
+```
+Ahora se grafican los individuos y variables con coseno cuadrado mayor a 0,1.
+
+```{r}
+fviz_pca_ind(beans_ACP2, col.ind = "#458B74",label = "none" , select.ind = list(cos2 = 0.1))
+
+fviz_pca_var(beans_ACP2,col.var="#FF8C69", select.var = list(cos2 = 0.1), repel = TRUE)
+```
+
+Seguidamente, se construyen los clústers y se grafican.
+
+```{r}
+# Filtrar los individuos  con cos2 mayor a 0.1
+inds_selected2 <- beans_ACP2$ind$coord[rowSums(beans_ACP2$ind$cos2[,1:2]) > 0.1, ]
+
+# Realizar el clustering k-means sobre los individuos seleccionados
+clusters2 <- kmeans(inds_selected2[, 1:2], centers = 3, nstart = 20)
+
+# Graficar los clusters obtenidos
+fviz_cluster(clusters2, inds_selected2[,1:2], 
+             axes = c(1,2),
+             geom = "point",
+             stand = FALSE,
+             main = "PCA con Clusters")
+```
+
+Por último se genera el gráfico de sobre-posición.
+```{r}
+fviz_pca_biplot(beans_ACP2,col.var = "#FF8C69",col.ind = "#458B74",
+                select.var = list(cos2 = 0.1), select.ind = list(cos2 = 0.1),
+                geom.ind = "point",
+                repel = TRUE)
+```
+Como se evidencia en el gráfico anterior, es posible afirmar que se gana interpretabilidad pues, ahora es posible asociar a los individuos con una clase de frijol y el impacto de las otras variables sobre la clase de frijol.
+
+# Ejercicio 2
+
+## a) Cargue los datos en R, recuerde transformar la variable Potability en categórica, además verifique bien si hay nombres de fila o no, verifique los separadores de datos y de decimales con un editor de texto.
+
+
+Inicialmente, se carga la base de datos y se transforma la variable Potability en categórica.
+
+```{r, warning=FALSE}
+water_datos <- read.csv("water_potability.csv", header=TRUE, sep=',',
+                     dec='.')
+water_datos$Potability <- factor(water_datos$Potability)
+str(water_datos)
+```
+
+## b) Con R efectue un ACP y dé una interpretación siguiendo los siguientes pasos:
+
+Se efectúa el ACP sobre la base de datos únicamente con las variables númericas
+```{r, warning=FALSE}
+water_ACP <- PCA(water_datos[,-10], scale.unit=TRUE, ncp=4, graph = FALSE)
+water_ACP
+```
+
+Seguidamente, se visualiza el plano principal de los individuos y el gráfico de correlación de las variables:
+
+```{r}
+fviz_pca_ind(water_ACP, col.ind = "#87CEFA",label = "none")
+
+fviz_pca_var(water_ACP,col.var="#CD4F39",repel = TRUE)
+```
+
+
+
+### 1) elimine individuos mal representados y variables mal representadas (coseno cuadrado menor al 5 %)
+
+Se calculan los cosenos al cuadrado de los individuos y variables
+```{r, warning=FALSE}
+#Individuos
+cos2.ind_water <-(water_ACP$ind$cos2[,1]+water_ACP$ind$cos2[,2])*100
+head(cos2.ind_water)
+
+#Variables
+cos2.var_water<-(water_ACP$var$cos2[,1]+water_ACP$var$cos2[,2])*100
+cos2.var_water
+```
+Se eliminan del plano principal y del círculo de correlación los individuos y variables mal representados (coseno al cuadrado menor al 5%), respectivamente
+```{r, warning=FALSE}
+plano_inicial <-fviz_pca_ind(water_ACP, col.ind = "#87CEFA",label = "none" , select.ind = list(cos2 = 0.05))
+print(plano_inicial)
+
+fviz_pca_var(water_ACP,col.var="#CD4F39", select.var = list(cos2 = 0.05),repel = TRUE)
+```
+### 2) en el plano principal identifique un clúster en cada cuadrante
+
+```{r, warning=FALSE}
+# Filtrar los individuos con cos2 mayor a 0.05
+inds_selected_water <- water_ACP$ind$coord[rowSums(water_ACP$ind$cos2[,1:2]) > 0.05, ]
+inds_selected_water <- as.data.frame(inds_selected_water)
+
+#Se definen límites para los cuadrantes
+x_median <- median(inds_selected_water$Dim.1)
+y_median <- median(inds_selected_water$Dim.2)
+
+# Crear una variable para almacenar los clusters correspondientes a cada punto
+inds_selected_water$cluster <- ifelse(inds_selected_water$Dim.1 > x_median,
+                                      ifelse(inds_selected_water$Dim.2 > y_median, 1, 2),
+                                      ifelse(inds_selected_water$Dim.2 > y_median, 4, 3))
+
+# Graficar los puntos con colores según los clusters en el plano inicial
+plano_inicial + geom_point(data = inds_selected_water, aes(x = Dim.1, y = Dim.2,
+  color = factor(cluster)), size = 3)+
+  labs(color = "cluster")
+```
+
+
+### 3) en el círculo de correlación determine e interprete la correlación entre las variables
+
+Nuevamente, se presenta el círculo de correlación para su debida interpretación:
+
+```{r, warning=FALSE}
+fviz_pca_var(water_ACP,col.var="#CD4F39", select.var = list(cos2 = 0.05),repel = TRUE)
+```
+Se muestran variables que se correlacionan positivamente, lo que signfica que se comportan de manera similar. Esto se puede identificar si el ángulo es menor a 90 grados.
+Las variables que muestran este comportamiento son:
+
+- Hardness y ph.
+- Solids y Turbidity.
+- Turbidity y Choramines.
+- Choramines y Sulfate.
+
+Por otro lado, hay variables que presentan correlaciones fuertemente negativas , es decir, que se comportan de manera inversa. Estas variables muestran un ángulo cercano a 180 grados lo que implica que la correlación tiende a -1.
+Las variables que tienen este comportamiento son:
+
+- ph y Turbidity
+- Solids y Sulfate
+- Hardness y Choramines
+- Hardness y Turbidity
+- Hardness y Sulfate
+
+Finalmente, existen variables con correlación casi nula, lo que significa que el comportamiento de una no afecta a la otra. Esto se puede identificar si el ángulo es cercano a 90 grados. Las variables que muestran este comportamiento son:
+
+- ph y Sulfate
+- Hardness y Solids
+
+
+
+### 4) explique la formación de los clústeres basado en la sobre-posición del círculo y el plano.
+
+A continuación, se muestra el gráfico de sobre-posición:
+
+```{r, warning=FALSE}
+fviz_pca_biplot(water_ACP,col.var = "#CD4F39",col.ind = "#87CEFA",
+                select.var = list(cos2 = 0.05), select.ind = list(cos2 = 0.05),
+                geom.ind = "point",
+                repel = TRUE)
+```
+
+
+De acuerdo con los clústeres que coorresponden a cada cuadrante, es posible observar que de los individuos que pertenecen al clúster 1 (primer cuadrante) se ven mayormente impactados por las variables: ph y Hardness de manera positiva. Para el caso de los individuos que se encuentran en el segundo clúster (cuadrante 2) se ven impactos por la variable Solids de manera positiva. Por otro lado, al analizar el clúster 3 (tercer cuadrante), se identifica que se relacionan mayormente con la variable  turbidity. Finalmente, los individuos del clúster 4  (cuarto cudrante) se relacionan fuertemente con las variables: Sulfate y Choramines.
+
+## c) En el círculo de correlación, usando los componentes 1 y 3, interprete la correlación entre las variables Conductivity, Trihalomethanes y Organic carbon, que están mal representadas en los componentes 1 y 2.
+
+```{r, warning=FALSE}
+fviz_pca_var(water_ACP, axes = c(1,3), col.var="#CD4F39", select.var = list(cos2 = 0.05),repel = TRUE)
+```
+
+Con este gráfico se puede observar que, las variables Organic_carbon y Conductivity tienen una correlación fuerte negativa con Trihalomethanes, lo que significa que cuando hay una menor cantidad de trihalometano en el agua entonces, hay una mayor cantidad de carbón orgánico y conductividad eléctrica.
+
+Además, Organic_carbon y Conductivity presentan una correlación fuerte positiva, es decir, cuando hay una mayor cantidad de carbón orgánico en el agua entonces, hay una mayor conductividad eléctrica.
+
+## d) Ahora desde R convierta la variable Potability en Código Disyuntivo Completo  y repita el ACP ¿Se gana interpretabilidad al convertirla en Código Disyuntivo Completo? En este caso use solamente 2 clústeres para la interpretación. Use en R el graficos 3D, (con algún paquete de graficación 3D y usando 3 componentes principales) para confirmar los resultados e interpretaciones. ¿Por qué el gráfico en 3D aporta resultados más confiables?
+
+Se convierte la variable Potability en código disyuntivo completo
+
+```{r, warning=FALSE}
+Potability_1 <- as.numeric(water_datos$Potability == "1")
+Potability_0 <- as.numeric(water_datos$Potability == "0")
+
+water_datos2<- water_datos[,-10]
+water_datos2<- cbind(water_datos2, Potability_0, Potability_1)
+str(water_datos2)
+```
+
+Ahora, se efectúa ACP a la nueva base de datos
+
+```{r, warning=FALSE}
+ACP_agua_disyuntivo <- PCA(water_datos2, scale.unit=TRUE, ncp=4, 
+                           graph = FALSE)
+```
+
+Primeramente, se visualiza un gráfico de sobre-posición en 2D
+
+```{r,warning=FALSE}
+fviz_pca_biplot(ACP_agua_disyuntivo, col.var = "#CD4F39",col.ind = "#87CEFA",
+                select.ind = list(cos2 = 0.05),select.var = list(cos2 = 0.05),
+                repel= TRUE, geom = "point")
+```
+Con respecto a la pregunta sobre si gana intepretabilidad al convertir la variable Potability en código disyuntivo, la respuesta es no, pues, aunque permite clasificar los individuos según la potabilidad del agua se puede observar que las otras variables tiene un bajo impacto sobre las dos categorías ya que, las flechas se encuentran cerca del origen lo que indica que no están tan bien representados y se ubican lejos de los individuos. Por lo cual, se puede decir que se pierde interpretabiliad de las otras variables. 
+
+Seguidamente, se muestra un gráfico de sobre-posición en 3D con 2 clústeres solicitados bajo los tres componentes
+principales
+
+```{r, warning=FALSE}
+# Filtrar los individuos y variables con cos2 mayor a 0.05
+inds_selected_water2 <- ACP_agua_disyuntivo$ind$coord[rowSums(ACP_agua_disyuntivo$ind$cos2[,1:3]) > 0.05, ]
+vars_selected_water2 <- ACP_agua_disyuntivo$var$coord[rowSums(ACP_agua_disyuntivo$var$cos2[,1:3]) > 0.05, ]
+
+inds_selected_water2 <- as.data.frame(inds_selected_water2)
+vars_selected_water2 <- as.data.frame(vars_selected_water2)
+
+#Gráficos 3D
+
+x <- inds_selected_water2$Dim.1
+y <-inds_selected_water2$Dim.2
+z <- inds_selected_water2$Dim.3
+
+variables <- vars_selected_water2
+
+sobreposicion <- plot_ly() %>%
+  add_trace(x=x, y=y, z=z,
+            type="scatter3d", mode="markers",
+            marker = list(color=x, 
+                          colorscale = c("#FFE1A1", "#683531"), 
+                          opacity = 0.7, size = 2), showlegend = FALSE)
+
+for (k in 1:nrow(variables)) {
+  x_vector <- c(0, variables[k,1])
+  y_vector <- c(0, variables[k,2])
+  z_vector <- c(0, variables[k,3])
+  sobreposicion <- sobreposicion %>% add_trace(x=x_vector, y=y_vector, z=z_vector,
+                       type="scatter3d", mode="lines",
+                       line = list(width=2),
+                       opacity = 1, name = rownames(variables)[k]) 
+}
+
+sobreposicion
+
+```
+
+Con este gráfico se confirma la separación de los individuos debido a la potabilidad del agua y el poco impacto de las otras variables sobre estos. Lo que indica que la variable Potability tiene más peso en la distribución de los individuos al graficar. Por lo cual, no sería adecuado la inclusión de esta variable mediante código disyuntivo en el análisis ACP .
+En cuanto a ¿Por qué el gráfico en 3D aporta resultados más confiables?, esto se debe que al considerar 3 dimensiones
+se presenta mayor información lo que brinda más confiabilidad en las intepretaciones.
+
+

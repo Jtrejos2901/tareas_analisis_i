@@ -8,7 +8,6 @@ library(GGally)
 library(corrplot)
 library(plotly)
 
-set.seed(123)
 mi.tema <- theme_grey() + theme(panel.border = element_rect(fill = NA,color = "white"), plot.title = element_text(hjust = 0.5))
 
 beans_datos <- read.csv("Tarea 2/beansV2.csv")
@@ -16,7 +15,7 @@ str(beans_datos)
 
 
 #ACP solo con las variables númericas
-beans_ACP <- PCA(beans_datos[,-17], scale.unit=TRUE, ncp=5, graph = FALSE)
+beans_ACP <- PCA(beans_datos[,-17], scale.unit=TRUE, ncp=4, graph = FALSE)
 beans_ACP
 beans_ACP$eig
 beans_ACP$ind
@@ -27,14 +26,13 @@ beans_ACP$var
 cos2.ind <-(beans_ACP$ind$cos2[,1]+beans_ACP$ind$cos2[,2])*100
 cos2.ind
 
-fviz_pca_ind(beans_ACP, col.ind = "#458B74",label = "none" , select.ind = list(cos2 = 0.1),ggtheme = mi.tema)
-
+fviz_pca_ind(beans_ACP, col.ind = "#458B74",label = "none" , select.ind = list(cos2 = 0.1))
 
 #Eliminar del círculo las variables mal representadas
 cos2.var<-(beans_ACP$var$cos2[,1]+beans_ACP$var$cos2[,2])*100
 cos2.var
 
-fviz_pca_var(beans_ACP,col.var="#FF8C69", select.var = list(cos2 = 0.1),ggtheme = mi.tema)
+fviz_pca_var(beans_ACP,col.var="#FF8C69", select.var = list(cos2 = 0.1),repel = TRUE)
 
 #c) Encontrar 3 clústeres en el plano principal
 
@@ -42,7 +40,7 @@ fviz_pca_var(beans_ACP,col.var="#FF8C69", select.var = list(cos2 = 0.1),ggtheme 
 inds_selected <- beans_ACP$ind$coord[rowSums(beans_ACP$ind$cos2[,1:2]) > 0.1, ]
 
 # Realizar el clustering k-means sobre los individuos seleccionados
-clusters <- kmeans(inds_selected[, 1:2], centers = 3)
+clusters <- kmeans(inds_selected[, 1:2], centers = 3, nstart = 20)
 
 # Graficar los clusters obtenidos
 fviz_cluster(list(data = inds_selected, cluster = clusters$cluster), 
@@ -64,7 +62,7 @@ corrplot(correlaciones)
 fviz_pca_biplot(beans_ACP,col.var = "#FF8C69",col.ind = "#458B74",
                 select_var = list(cos2 = 0.1), select.ind =list(cos2 = 0.1),
                 geom.ind = "point",
-                ggtheme = mi.tema)
+                repel = TRUE)
 
 #f) Convertir Class a código disyuntivo
 
@@ -85,7 +83,7 @@ for (i in 1:length(categorias_class)) {
 str(beans_datos2)
 
 #ACP
-beans_ACP2 <- PCA(beans_datos2, scale.unit=TRUE, ncp=5, graph = FALSE)
+beans_ACP2 <- PCA(beans_datos2, scale.unit=TRUE, ncp=4, graph = FALSE)
 beans_ACP2
 beans_ACP2$eig
 beans_ACP2$ind
@@ -99,9 +97,9 @@ cos2.var2<-(beans_ACP2$var$cos2[,1]+beans_ACP2$var$cos2[,2])*100
 cos2.var2
 
 #gráficos de los individuos y variables con cos > 0.1
-fviz_pca_ind(beans_ACP2, col.ind = "#458B74",label = "none" , select.ind = list(cos2 = 0.1),ggtheme = mi.tema)
+fviz_pca_ind(beans_ACP2, col.ind = "#458B74",label = "none" , select.ind = list(cos2 = 0.1))
 
-fviz_pca_var(beans_ACP2,col.var="#FF8C69", select.var = list(cos2 = 0.1),ggtheme = mi.tema)
+fviz_pca_var(beans_ACP2,col.var="#FF8C69", select.var = list(cos2 = 0.1), repel = TRUE)
 
 
 #Formación clústeres basado en la sobreposición de los gráficos 
@@ -110,21 +108,22 @@ fviz_pca_var(beans_ACP2,col.var="#FF8C69", select.var = list(cos2 = 0.1),ggtheme
 inds_selected2 <- beans_ACP2$ind$coord[rowSums(beans_ACP2$ind$cos2[,1:2]) > 0.1, ]
 
 # Realizar el clustering k-means sobre los individuos seleccionados
-clusters2 <- kmeans(inds_selected2[, 1:2], centers = 3)
+clusters2 <- kmeans(inds_selected2[, 1:2], centers = 3, nstart = 20)
 
 # Graficar los clusters obtenidos
-fviz_cluster(list(data = inds_selected2, cluster = clusters2$cluster), 
+fviz_cluster(clusters2, inds_selected2[,1:2], 
              axes = c(1,2),
              geom = "point", 
              stand = FALSE,
              main = "PCA con Clusters")
+
 
 # Sobre posición gráficos 
 
 fviz_pca_biplot(beans_ACP2,col.var = "#FF8C69",col.ind = "#458B74",
                 select.var = list(cos2 = 0.1), select.ind = list(cos2 = 0.1),
                 geom.ind = "point",
-                ggtheme = mi.tema)
+                repel = TRUE)
 
 
 #------------------------Ejercicio 2--------------------------------------------
@@ -159,10 +158,10 @@ cos2.ind_water
 cos2.var_water<-(water_ACP$var$cos2[,1]+water_ACP$var$cos2[,2])*100
 cos2.var_water
 
-plano_inicial <-fviz_pca_ind(water_ACP, col.ind = "#87CEFA",label = "none" , select.ind = list(cos2 = 0.05),ggtheme = mi.tema)
+plano_inicial <-fviz_pca_ind(water_ACP, col.ind = "#87CEFA",label = "none" , select.ind = list(cos2 = 0.05))
 print(plano_inicial)
 
-fviz_pca_var(water_ACP,col.var="#CD4F39", select.var = list(cos2 = 0.05),ggtheme = mi.tema)
+fviz_pca_var(water_ACP,col.var="#CD4F39", select.var = list(cos2 = 0.05),repel = TRUE)
 
 #2) en el plano principal identifique un cluster en cada cuadrante
 
@@ -189,7 +188,7 @@ plano_inicial + geom_point(data = inds_selected_water, aes(x = Dim.1, y = Dim.2,
 fviz_pca_biplot(water_ACP,col.var = "#CD4F39",col.ind = "#87CEFA",
                 select.var = list(cos2 = 0.05), select.ind = list(cos2 = 0.05),
                 geom.ind = "point",
-                ggtheme = mi.tema)
+                repel = TRUE)
 
 #c) En el circulo de correlacion, usando los componentes 1 y 3, interprete la correlacion entre
 #las variables Conductivity, Trihalomethanes y Organic carbon, que estan mal representadas
@@ -198,7 +197,7 @@ fviz_pca_biplot(water_ACP,col.var = "#CD4F39",col.ind = "#87CEFA",
 cos2.var_water2<-(water_ACP$var$cos2[,1]+water_ACP$var$cos2[,3])*100
 cos2.var_water2
 
-fviz_pca_var(water_ACP, axes = c(1,3), col.var="#CD4F39", select.var = list(cos2 = 0.05),ggtheme = mi.tema)
+fviz_pca_var(water_ACP, axes = c(1,3), col.var="#CD4F39", select.var = list(cos2 = 0.05),repel = TRUE)
 
 #d) convierta la variable Potability en Codigo Disyuntivo Completo y repita
 #el ACP
