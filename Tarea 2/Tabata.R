@@ -170,16 +170,13 @@ plot3d(ACP_agua_disyuntivo$ind$coord[,1], ACP_agua_disyuntivo$ind$coord[,2],
        zlab = "Dim 3")
 
 #grafico 3D
-scores <- ACP_agua_disyuntivo$ind$coord
-x <- scores[,1]
-y <- scores[,2]
-z <- scores[,3]
+individuos <- ACP_agua_disyuntivo$ind$coord
+x <- individuos[,1]
+y <- individuos[,2]
+z <- individuos[,3]
 
 # Loadings
-loads <- ACP_agua_disyuntivo$var$coord
-
-# Scale factor for loadings
-scale.loads <- 5
+variables <- ACP_agua_disyuntivo$var$coord
 
 # 3D plot
 p <- plot_ly() %>%
@@ -187,16 +184,16 @@ p <- plot_ly() %>%
             type="scatter3d", mode="markers",
             marker = list(color=y, 
                           colorscale = c("#FFE1A1", "#683531"), 
-                          opacity = 0.7, size = 2)) 
+                          opacity = 0.7, size = 2), showlegend = FALSE) 
 
-for (k in 1:nrow(loads)) {
-  x_vector <- c(0, loads[k,1])*scale.loads
-  y_vector <- c(0, loads[k,2])*scale.loads
-  z_vector <- c(0, loads[k,3])*scale.loads
+for (k in 1:nrow(variables)) {
+  x_vector <- c(0, variables[k,1])
+  y_vector <- c(0, variables[k,2])
+  z_vector <- c(0, variables[k,3])
   p <- p %>% add_trace(x=x_vector, y=y_vector, z=z_vector,
                        type="scatter3d", mode="lines",
                        line = list(width=2),
-                       opacity = 1) 
+                       opacity = 1, name = rownames(variables)[k]) 
 }
 print(p)
 
