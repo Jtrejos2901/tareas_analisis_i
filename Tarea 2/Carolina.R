@@ -235,6 +235,7 @@ inds_selected_water2 <- water_ACP2$ind$coord[rowSums(water_ACP2$ind$cos2[,1:3]) 
 vars_selected_water2 <- water_ACP2$var$coord[rowSums(water_ACP2$var$cos2[,1:3]) > 0.05, ]
 
 inds_selected_water2 <- as.data.frame(inds_selected_water2)
+vars_selected_water2 <- as.data.frame(vars_selected_water2)
 
 #Gráfico de los individuos con cos2 > 0.05 con 2 clusters
 
@@ -246,7 +247,7 @@ z <- inds_selected_water2$Dim.3
 clusters_water_3dim <- kmeans(inds_selected_water2[, 1:3], centers = 2)
 inds_selected_water2$cluster <- factor(clusters_water_3dim$cluster)
 
-plot_ly(mpg, x = x, y = y, z = z, color = inds_selected_water2$cluster)%>%
+ind_plot <-plot_ly(mpg, x = x, y = y, z = z, color = inds_selected_water2$cluster)%>%
   add_markers(size=1.5) %>%
   layout(scene = list(
       xaxis = list(title = "Dim1"),
@@ -254,44 +255,27 @@ plot_ly(mpg, x = x, y = y, z = z, color = inds_selected_water2$cluster)%>%
       zaxis = list(title = "Dim3")
     )
   )
+ind_plot
 
 #Gráfico de las variables con cos2 > 0.05
 
 # Obtener la matriz de correlación
-correlacion_matriz<- vars_selected_water2
 
-# Eliminar los nombres de filas y columnas
-rownames(correlacion_matriz) <- NULL
-colnames(correlacion_matriz) <- NULL
+x_var <- vars_selected_water2$Dim.1
+y_var <-vars_selected_water2$Dim.2
+z_var <- vars_selected_water2$Dim.3
 
-# Crear un gráfico 3D con tres ejes
-plot_ly(x = c(0, vars_selected_water2[1, ]),
-        y = c(0, vars_selected_water2[2, ]),
-        z = c(0, vars_selected_water2[3, ]),
-        type = "scatter3d",
-        mode = "lines+markers",
-        marker = list(size = 5),
-        line = list(color = "blue")) %>%
-  add_trace(x = c(0, vars_selected_water2[4, ]),
-            y = c(0, vars_selected_water2[5, ]),
-            z = c(0, vars_selected_water2[6, ]),
-            line = list(color = "red")) %>%
-  add_trace(x = c(0, vars_selected_water2[7, ]),
-            y = c(0, vars_selected_water2[8, ]),
-            z = c(0, correlation_matrix[9, ]),
-            line = list(color = "green")) %>%
-  layout(scene = list(xaxis = list(title = "Dim.1"),
-                      yaxis = list(title = "Dim.2"),
-                      zaxis = list(title = "Dim.3")),
-         title = "Círculo de correlación en 3D")
+vars <- rownames(vars_selected_water2)
 
+var_plot <- plot_ly(x = ~c(0, x_var), y = ~c(0, y_var), z = ~c(0, z_var), 
+       type = "scatter3d", mode = "lines", line = list(width = 5)) %>%
+  add_trace(marker = list(size = 10)) %>%
+  layout(scene = list(xaxis = list(title = "Dim.1"), yaxis = list(title = "Dim.2"), zaxis = list(title = "Dim.3")))
+var_plot
 
 # Explicación clusteres basado en la sobre posición de gráficos 
 
-fviz_pca_biplot(beans_ACP2,col.var = "#FF8C69",col.ind = "#458B74",
-                select.var = list(cos2 = 0.1), select.ind = list(cos2 = 0.1),
-                geom.ind = "point",
-                ggtheme = mi.tema)
+subplot(ind_plot,var_plot)
 
 
 
