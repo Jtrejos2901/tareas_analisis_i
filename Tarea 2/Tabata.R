@@ -182,7 +182,7 @@ variables <- ACP_agua_disyuntivo$var$coord
 p <- plot_ly() %>%
   add_trace(x=x, y=y, z=z,
             type="scatter3d", mode="markers",
-            marker = list(color=y, 
+            marker = list(color=x, 
                           colorscale = c("#FFE1A1", "#683531"), 
                           opacity = 0.7, size = 2), showlegend = FALSE) 
 
