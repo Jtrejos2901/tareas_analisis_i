@@ -1,0 +1,215 @@
+library(readr)
+library(FactoMineR)
+library(factoextra)
+library(GGally)
+library(corrplot)
+
+# EJ1:
+
+# Inicialmente se procede a cargar la base de datos.
+beans_set <- read.table(file = "Tarea 2/beansV2.csv", header=TRUE, sep=',', 
+                       dec='.')
+
+# Con la función prcomp que trae por defecto R, se realiza el análisis de 
+# componentes principales solo de las variables numéricas.
+model <- PCA(beans_set[,-17], scale.unit=TRUE, ncp=2, graph = FALSE)
+
+# Dado el anlisis realizado anteriormente, se elimina aquellos individuos mal
+# representados y se plotea el ACP.
+fviz_pca_ind(model, pointsize = 1, pointshape = 23, fill = "#E7B800", 
+             label = "none", select.ind = list(cos2 = 0.1))
+
+# Se filtran los individuos con un coseno cuadrado mayor de 0,1.
+filtered_beans <- model$ind$coord[rowSums(model$ind$cos2[,1:2]) > 0.1, ]
+
+# Se raliza el clusterring.
+kmeans_result <- kmeans(filtered_beans, centers = 3, nstart = 25)
+
+# Se plotean los clusters.
+fviz_cluster(kmeans_result, data = filtered_beans, ellipse = FALSE, labelsize = 0,)
+
+# Se plotea el círculo de correlación y demás gráficos.
+fviz_pca_var(model, select.var = list(cos2 = 0.1), repel = TRUE)
+ggpairs(beans_set[,-17], upper = list(continuous = wrap("cor", size = 2)))
+corrplot(cor(beans_set[,-17]))
+
+# Ahora se sobrepone el círculo con los datos.
+fviz_pca_biplot(model, col.var = "#000000", col.ind = "#E7B800",
+                select_var = list(cos2 = 0.1), select.ind =list(cos2 = 0.1),
+                geom.ind = "point", repel = TRUE)
+
+# Se identifican las categorías de la variable class
+categories_class  <- unique(beans_set$Class)
+categories_class
+
+# Se hace código disyuntivo
+dis_list  <- list()
+beans_set2<- beans_set[,-17]
+
+for (i in 1:length(categories_class)) {
+  dis_list[[i]] <- as.numeric(beans_set$Class == categories_class[i])
+  names(dis_list)[i] <- paste("Class_", categories_class[i], sep = "")
+  print(dis_list[[i]])
+  beans_set2 <- cbind(beans_set2, dis_list[i])
+}
+
+# Ahora se realiza nuevamente el analisis.
+model_2 <- PCA(beans_datos2, scale.unit=TRUE, ncp=2, graph = FALSE)
+fviz_pca_ind(model_2, col.ind = "#000000",label = "none" , select.ind = list(cos2 = 0.1))
+fviz_pca_var(model_2,col.var="#E7B800", select.var = list(cos2 = 0.1))
+
+filtered_beans_2 <- model_2$ind$coord[rowSums(model_2$ind$cos2[,1:2]) > 0.1, ]
+kmeans_result_2 <- kmeans(filtered_beans_2[, 1:2], centers = 3)
+fviz_cluster(list(data = filtered_beans_2, cluster = kmeans_result_2$cluster), 
+             axes = c(1,2), geom = "point", stand = FALSE, 
+             main = "PCA con Clusters", ellipse = FALSE)
+
+fviz_pca_biplot(model_2,col.var = "#000000",col.ind = "#E7B800",
+                select.var = list(cos2 = 0.1), select.ind = list(cos2 = 0.1),
+                geom.ind = "point", repel = TRUE)
+
+# EJ2
+
+water_set <- read.csv("Tarea 2/water_potability.csv")
+for(i in 1: length(water_set$Potability)){
+  if(water_set$Potability[i] == 0){
+    water_set$Potability[i] <- "No"
+  }else
+    water_set$Potability[i] <- "Si"
+}
+
+#b) 
+
+#ACP solo con las variables númericas
+water_ACP <- PCA(water_set[,-10], scale.unit=TRUE, ncp=5, graph = FALSE)
+
+#1) elimine individuos mal representados y variables mal representadas 
+#(coseno cuadrado menor al 5 %)
+
+cos2.ind_water <-(water_ACP$ind$cos2[,1]+water_ACP$ind$cos2[,2])*100
+cos2.var_water<-(water_ACP$var$cos2[,1]+water_ACP$var$cos2[,2])*100
+
+plano_inicial <-fviz_pca_ind(water_ACP, col.ind = "#000000",label = "none" , select.ind = list(cos2 = 0.05),ggtheme = mi.tema)
+print(plano_inicial)
+
+fviz_pca_var(water_ACP,col.var="#E7B800", select.var = list(cos2 = 0.05),ggtheme = mi.tema)
+
+#2) en el plano principal identifique un cluster en cada cuadrante
+
+# Filtrar los individuos con cos2 mayor a 0.05
+inds_selected_water <- water_ACP$ind$coord[rowSums(water_ACP$ind$cos2[,1:2]) > 0.05, ]
+inds_selected_water <- as.data.frame(inds_selected_water)
+
+#Se definen límites para los cuadrantes
+x_median <- median(inds_selected_water$Dim.1)
+y_median <- median(inds_selected_water$Dim.2)
+
+# Crear una variable para almacenar los clusters correspondientes a cada punto
+inds_selected_water$cluster <- ifelse(inds_selected_water$Dim.1 > x_median,
+                                      ifelse(inds_selected_water$Dim.2 > y_median, 1, 2),
+                                      ifelse(inds_selected_water$Dim.2 > y_median, 4, 3))
+
+# Graficar los puntos con colores según los clusters en el plano inicial
+plano_inicial + geom_point(data = inds_selected_water, aes(x = Dim.1, y = Dim.2,
+                                                           color = factor(cluster)), size = 3)+
+  labs(color = "cluster")
+
+#4) explique la formación de los clusteres basado en la sobre-posicion del circulo y el plano.
+
+fviz_pca_biplot(water_ACP,col.var = "#000000",col.ind = "#E7B800",
+                select.var = list(cos2 = 0.05), select.ind = list(cos2 = 0.05),
+                geom.ind = "point",
+                ggtheme = mi.tema)
+
+#c) En el circulo de correlacion, usando los componentes 1 y 3, interprete la correlacion entre
+#las variables Conductivity, Trihalomethanes y Organic carbon, que estan mal representadas
+#en los componentes 1 y 2.
+
+cos2.var_water2<-(water_ACP$var$cos2[,1]+water_ACP$var$cos2[,3])*100
+cos2.var_water2
+
+fviz_pca_var(water_ACP, axes = c(1,3), col.var="#E7B800", select.var = list(cos2 = 0.05),ggtheme = mi.tema)
+
+#d) convierta la variable Potability en Codigo Disyuntivo Completo y repita
+#el ACP
+
+#Se hace código disyuntivo
+
+Potability_No <- as.numeric(water_datos$Potability == "No")
+Potability_Si <- as.numeric(water_datos$Potability == "Si")
+
+print(Potability_No)
+print(Potability_Si)
+
+water_datos2<- water_datos[,-10]
+water_datos2 <- cbind(water_datos2, Potability_No)
+water_datos2 <- cbind(water_datos2, Potability_Si)
+str(water_datos2)
+
+#ACP
+water_ACP2 <- PCA(water_datos2, scale.unit=TRUE, ncp=5, graph = FALSE)
+water_ACP2
+water_ACP2$eig
+water_ACP2$ind
+water_ACP2$var
+
+#Ver individuos y variables mal representados 
+cos2.ind_3dim<-(water_ACP2$ind$cos2[,1]+water_ACP2$ind$cos2[,2]+ water_ACP2$ind$cos2[,3])*100
+cos2.ind_3dim
+
+cos2.var_3dim<-(water_ACP2$var$cos2[,1]+water_ACP2$var$cos2[,2] +water_ACP2$var$cos2[,3])*100
+cos2.var_3dim
+
+# Filtrar los individuos y variables con cos2 mayor a 0.05
+inds_selected_water2 <- water_ACP2$ind$coord[rowSums(water_ACP2$ind$cos2[,1:3]) > 0.05, ]
+vars_selected_water2 <- water_ACP2$var$coord[rowSums(water_ACP2$var$cos2[,1:3]) > 0.05, ]
+
+inds_selected_water2 <- as.data.frame(inds_selected_water2)
+vars_selected_water2 <- as.data.frame(vars_selected_water2)
+
+#Gráfico de los individuos con cos2 > 0.05 con 2 clusters
+
+x <- inds_selected_water2$Dim.1
+y <-inds_selected_water2$Dim.2
+z <- inds_selected_water2$Dim.3
+
+# Realizar el clustering k-means sobre los individuos seleccionados
+clusters_water_3dim <- kmeans(inds_selected_water2[, 1:3], centers = 2)
+inds_selected_water2$cluster <- factor(clusters_water_3dim$cluster)
+
+ind_plot <-plot_ly(mpg, x = x, y = y, z = z, color = inds_selected_water2$cluster)%>%
+  add_markers(size=1.5) %>%
+  layout(scene = list(
+    xaxis = list(title = "Dim1"),
+    yaxis = list(title = "Dim2"),
+    zaxis = list(title = "Dim3")
+  )
+  )
+print(ind_plot)
+
+#Gráfico de las variables con cos2 > 0.05
+
+x_var <- vars_selected_water2$Dim.1
+y_var <-vars_selected_water2$Dim.2
+z_var <- vars_selected_water2$Dim.3
+
+vars <- rownames(vars_selected_water2)
+
+var_plot <- plot_ly()
+
+for (i in 1:length(x_var)) {
+  var_plot <- var_plot %>%
+    add_trace(x = c(0, x_var[i]), y = c(0, y_var[i]), z = c(0, z_var[i]),
+              type = "scatter3d", mode = "lines", line = list(width = 5),
+              name = vars[i])
+}
+
+var_plot <- var_plot %>%
+  layout(scene = list(xaxis = list(title = "Dim.1"), 
+                      yaxis = list(title = "Dim.2"), 
+                      zaxis = list(title = "Dim.3")))
+
+print(var_plot)
+# Explicación clusteres basado en la sobre posición de gráficos 
+
+subplot(ind_plot,var_plot)
