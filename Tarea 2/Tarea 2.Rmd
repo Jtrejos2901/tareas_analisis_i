@@ -379,7 +379,7 @@ Con respecto a la pregunta sobre si gana intepretabilidad al convertir la variab
 Seguidamente, se muestra un gráfico de sobre-posición en 3D con 2 clústeres solicitados bajo los tres componentes
 principales
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, fig.dim=c(7, 5)}
 # Filtrar los individuos y variables con cos2 mayor a 0.05
 inds_selected_water2 <- ACP_agua_disyuntivo$ind$coord[rowSums(ACP_agua_disyuntivo$ind$cos2[,1:3]) > 0.05, ]
 vars_selected_water2 <- ACP_agua_disyuntivo$var$coord[rowSums(ACP_agua_disyuntivo$var$cos2[,1:3]) > 0.05, ]
@@ -411,6 +411,17 @@ for (k in 1:nrow(variables)) {
                        line = list(width=2),
                        opacity = 1, name = rownames(variables)[k]) 
 }
+
+l <- list(
+  font = list(
+    family = "sans-serif",
+    size = 10,
+    color = "#000"),
+  bgcolor = "#E2E2E2",
+  bordercolor = "#FFFFFF",
+  borderwidth = 2)
+
+sobreposicion <- sobreposicion %>% layout(legend = l)
 
 sobreposicion
 
