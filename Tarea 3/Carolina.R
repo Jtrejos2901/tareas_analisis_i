@@ -1,6 +1,7 @@
 #---------------------------Ejercicio 2-----------------------------------------
 
 library(FactoMineR)
+library(readr)
 
 #Para el desarrollo de los ejercicios se emplea la siguiente matriz
 X <- matrix(c(8,1,0,4,6,5,6,8,7,10,4,7,8,2,5,0,3,6), nrow = 6, ncol = 3, byrow
@@ -14,9 +15,6 @@ X_inicial <- X
 #El algoritmo del ACP cuenta con los siguientes pasos:
 
 #1) Centrar y reducir la matriz 
-#Para esto le restamos la media y dividimos por la desviación estándar a cada 
-#columna de la matriz. Por tanto, primero calculamos las medias y desviaciones 
-#estándar correspondientes con las siguiente funciones
 
 #Medias
 
@@ -220,3 +218,158 @@ plot(X_ACP, axes=c(1, 2), choix="ind", col.ind="blue",new.plot=TRUE)
 
 #Podemos observar que las inercias correpondiente al eje x y y obtenidas con 
 #FactoMiner son iguales a las dadas por el algoritmo.
+
+
+#------------------ Ejercicio 8-------------------------------------------------
+#Verifique todo lo programado en los puntos anteriores con el ejemplo estudiantes.csv
+# y con los datos del ejercicio 1 de la tarea anterior
+
+#----- Estudiantes--------
+
+estudiantes_datos <- read.table('Tarea 3/EjemploEstudiantes.csv', header=TRUE, sep=';',dec=',',row.names=1)
+estudiantes_datos<- as.matrix(estudiantes_datos)
+estudiantes_datos_original <- estudiantes_datos
+
+#1) Centrar y reducir la matriz 
+
+medias_estudiantes <- medias(estudiantes_datos)
+medias_estudiantes
+
+sd_estudiantes <- sd_poblacional(estudiantes_datos)
+sd_estudiantes
+
+estudiantes_datos <- centrar_y_reducir(estudiantes_datos,medias_estudiantes, sd_estudiantes)
+estudiantes_datos
+
+
+#2)Calcular la matriz de correlaciones 
+
+estudiantes_R <- R(estudiantes_datos)
+estudiantes_R
+
+
+#3 y 4) Calcular los vectores y valores propios de la matriz de correlaciones y 
+#ordenar los valores propios de mayor a menor
+
+estudiantes.R_e <- eigen(estudiantes_R)
+
+estudiantes.R_valores.propios <- estudiantes.R_e$values #ya vienen ordenados de mayor a menor
+estudiantes.R_valores.propios
+
+estudiantes.R_vectores.propios <- estudiantes.R_e$vectors
+estudiantes.R_vectores.propios
+
+#5) Construir matriz V que tiene como columnas los vectores propios de la matriz
+#de correlaciones
+
+V_estudiantes <- estudiantes.R_vectores.propios
+V_estudiantes
+
+#6) Calcular la matriz de componentes principales
+
+C_estudiantes <- estudiantes_datos%*%V_estudiantes
+C_estudiantes
+
+#7) Calcular la matriz de calidades de los individuos (cosenos cuadrados)
+
+estudiantes_Q <- Q(C_estudiantes, estudiantes_datos)
+estudiantes_Q
+
+#Ahora debemos calcular la contribución de cada individuo i a la varianza total 
+#del eje r
+
+estudiantes_contrib <- contribucion(C_estudiantes, estudiantes.R_valores.propios)
+estudiantes_contrib
+
+#8) Calcular la matriz de coordenadas T de las variables
+
+estudiantes_T <- T(V_estudiantes, estudiantes.R_valores.propios)
+estudiantes_T
+
+#9)Calcular la matriz de calidades de las variables (cosenos cuadrados)
+
+S_estudiantes <- estudiantes_T^2
+S_estudiantes
+
+#10) Calcular vector I (1xm) de inercias de los ejes
+
+estudiantes_I <- I(estudiantes.R_valores.propios)
+estudiantes_I
+
+ACP <-PCA(estudiantes_datos)
+plot(ACP)
+
+#----- beans--------
+
+beans_datos <- read.csv("Tarea 3/beansV2.csv")
+beans_datos <- as.matrix(beans_datos[,-17])
+beans_datos_original <- beans_datos
+
+#1) Centrar y reducir la matriz 
+
+medias_beans <- medias(beans_datos)
+medias_beans
+
+sd_beans <- sd_poblacional(beans_datos)
+sd_beans
+
+beans_datos <- centrar_y_reducir(beans_datos,medias_beans, sd_beans)
+beans_datos
+
+
+#2)Calcular la matriz de correlaciones 
+
+beans_R <- R(beans_datos)
+beans_R
+
+
+#3 y 4) Calcular los vectores y valores propios de la matriz de correlaciones y 
+#ordenar los valores propios de mayor a menor
+
+beans.R_e <- eigen(beans_R)
+
+beans.R_valores.propios <- beans.R_e$values #ya vienen ordenados de mayor a menor
+beans.R_valores.propios
+
+beans.R_vectores.propios <- beans.R_e$vectors
+beans.R_vectores.propios
+
+#5) Construir matriz V que tiene como columnas los vectores propios de la matriz
+#de correlaciones
+
+V_beans <- beans.R_vectores.propios
+V_beans
+
+#6) Calcular la matriz de componentes principales
+
+C_beans <- beans_datos%*%V_beans
+C_beans
+
+#7) Calcular la matriz de calidades de los individuos (cosenos cuadrados)
+
+beans_Q <- Q(C_beans, beans_datos)
+beans_Q
+
+#Ahora debemos calcular la contribución de cada individuo i a la varianza total 
+#del eje r
+
+beans_contrib <- contribucion(C_beans, beans.R_valores.propios)
+beans_contrib
+
+#8) Calcular la matriz de coordenadas T de las variables
+
+beans_T <- T(V_beans, beans.R_valores.propios)
+beans_T
+
+#9)Calcular la matriz de calidades de las variables (cosenos cuadrados)
+
+S_beans <- beans_T^2
+S_beans
+
+#10) Calcular vector I (1xm) de inercias de los ejes
+
+beans_I <- I(beans.R_valores.propios)
+beans_I
+
+ACP_beans <-PCA(beans_datos)
+plot(ACP_beans)
