@@ -24,7 +24,9 @@ plano_principal <- function(matriz){
   
   #Convertimos la matriz en un dataframe
   C_data <- as.data.frame(C)
-  names(C_data) <- c("Dim 1", "Dim 2", "Dim 3")
+  col_names <- paste("Dim", 1:ncol(C_data))  # Genera nombres como "Dim 1", "Dim 2", etc.
+  colnames(C_data) <- col_names
+  #names(C_data) <- c("Dim 1", "Dim 2", "Dim 3")
   C_data$individuo <- seq_len(nrow(C_data))
   
   #Graficamos
@@ -59,7 +61,9 @@ circulo_correlaciones <- function(matriz){
   
   #Convertimos la matriz en un dataframe y ajustamos para el gráfico
   X_T_data <- as.data.frame(X_T)
-  names(X_T_data) <- c("Dim 1", "Dim 2", "Dim 3")
+  col_names <- paste("Dim", 1:ncol(X_T_data))  # Genera nombres como "Dim 1", "Dim 2", etc.
+  colnames(X_T_data) <- col_names
+  #names(X_T_data) <- c("Dim 1", "Dim 2", "Dim 3")
   X_T_data$variable <- seq_len(nrow(X_T_data))
   X_T_data$`x origen` <- 0
   X_T_data$`y origen` <- 0
