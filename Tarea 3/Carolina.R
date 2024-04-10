@@ -103,8 +103,8 @@ V
 
 #6) Calcular la matriz de componentes principales
 
-C <- X%*%V
-C
+C <- X%*%V 
+C #Tiene las coordendas de los individuos 
 
 #Con FactoMiner se obtiene lo siguiente:
 X_ACP$ind$coord
