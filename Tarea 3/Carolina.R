@@ -48,6 +48,7 @@ centrar_y_reducir <- function(matriz, medias, desviaciones) {
 }
 
 
+
 #Aplicamos las funciones anteriores a la matriz X
 medias_X <- medias(X)
 medias_X
@@ -382,32 +383,67 @@ plot(ACP_beans)
 #programado en el punto2. Compare los resultados obtenidos con respecto a 
 #FactoMineR
 
-var.sup_proyeccion <- function(columna) {
-  #se calcula la media y desviación estándar
+H <- function(matriz) {
+  n <- nrow(matriz) 
+  resultado <- (1/n)*matriz %*% t(matriz)
+  return(resultado)
+}
+
+
+var.sup_proyeccion <- function(columna, matriz) {
+  #se calcula la media y desviación estándar de la columna y la matriz
   media <- mean(columna)
   n <- length(columna)
   sd <-sqrt(((n-1)/n))*sd(columna)
   
-  #centramos y reducimos
+  medias <- medias(matriz)
+  sd_matriz <-sd_poblacional(matriz)
+  
+  #centramos y reducimos la columna y la matriz
   
   columna <- (columna-media)/sd
+  matriz <- centrar_y_reducir(matriz, medias, sd_matriz)
   
-  #Se calcula la matriz de correlaciones 
-  H <- (1/n)*columna%*%t(columna)
+  #Matriz de correlaciones
+  correlaciones <- R(matriz)
   
-  # Se construye la matriz V como el vector propio de H
-  H.e <- eigen(H)
-  V <- H.e$vectors
+  #Vectores y valores propios
+  matriz.e <- eigen(correlaciones)
+  V <- matriz.e$vectors
+
+  #Se calculan los componentes principales
+  C <- matriz%*%V
   
-  #Se calcula el componente principal 
-  C <- H%*%V
-  
+  #Se calculan las correlaciones de la columna con los componentes principales
+  coordenada <- c()
+  for(i in 1: ncol(matriz)){
+    coordenada[i] <-cor(columna, C[,i])
+  }
   #Se gráfica en el círculo de correlaciones
+  circulo <- circulo_correlaciones(matriz)
+  graf_circulo <- circulo$variables0
   
-  return(C)
+  #Convertimos la matriz en un dataframe y ajustamos para el gráfico
+  coordenada_var <- as.data.frame(coordenada)
+  col_names <- paste("Dim", 1:ncol(coordenada_var))  # Genera nombres como "Dim 1", "Dim 2", etc.
+  colnames(coordenada_var) <- col_names
+  #names(X_T_data) <- c("Dim 1", "Dim 2", "Dim 3")
+  coordenada_var$variable <- ncol(matriz) + 1
   
+  resultado <- graf_circulo + 
+    geom_segment(data = coordenada_var, aes(xend = `Dim 1`, yend = `Dim 2`), 
+    arrow = arrow(length = unit(0.2, "inches")), color = "red")+
+    geom_text(data = coordenada_var, aes(x = `Dim 1`, y = `Dim 2`), 
+              vjust = -0.5, hjust = -0.5, color = "red", label = coordenada_var$individuo )
+  return(resultado)
 }
 
-circulo <- circulo_correlaciones(X_inicial[,-1])
-sup <- var.sup_proyeccion(X[,1])
+columna <- X_inicial[,3]
+coordenadas_sup <- var.sup_proyeccion(columna, X_inicial[,-3])
+coordenadas_sup
 
+
+ACP <- PCA( X_inicial,quanti.sup = 3, graph = F)
+hola <-ACP$quanti.sup$cor
+
+hola <- as.data.frame(hola)
