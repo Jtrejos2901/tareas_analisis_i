@@ -373,3 +373,41 @@ beans_I
 
 ACP_beans <-PCA(beans_datos)
 plot(ACP_beans)
+
+
+#----------------- Ejercicio 5--------------------------------------------------
+
+#5. Programe una función en R que reciba una columna (variable) de una matriz y
+#calcule su proyección en suplementario en el círculo de correlaciones 2D 
+#programado en el punto2. Compare los resultados obtenidos con respecto a 
+#FactoMineR
+
+var.sup_proyeccion <- function(columna) {
+  #se calcula la media y desviación estándar
+  media <- mean(columna)
+  n <- length(columna)
+  sd <-sqrt(((n-1)/n))*sd(columna)
+  
+  #centramos y reducimos
+  
+  columna <- (columna-media)/sd
+  
+  #Se calcula la matriz de correlaciones 
+  H <- (1/n)*columna%*%t(columna)
+  
+  # Se construye la matriz V como el vector propio de H
+  H.e <- eigen(H)
+  V <- H.e$vectors
+  
+  #Se calcula el componente principal 
+  C <- H%*%V
+  
+  #Se gráfica en el círculo de correlaciones
+  
+  return(C)
+  
+}
+
+circulo <- circulo_correlaciones(X_inicial[,-1])
+sup <- var.sup_proyeccion(X[,1])
+
