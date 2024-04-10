@@ -26,16 +26,29 @@ plano_principal <- function(matriz){
   C_data <- as.data.frame(C)
   col_names <- paste("Dim", 1:ncol(C_data))  # Genera nombres como "Dim 1", "Dim 2", etc.
   colnames(C_data) <- col_names
-  #names(C_data) <- c("Dim 1", "Dim 2", "Dim 3")
-  C_data$individuo <- seq_len(nrow(C_data))
+
+  if(is.null(rownames(C_data))) {
+    C_data$individuo <- seq_len(nrow(C_data))
+  } else {
+    C_data$individuo <- rownames(C_data)
+  }
+
   
   #Graficamos
-  individuos <- ggplot(C_data, aes(x = `Dim 1`, y = `Dim 2`)) +
-    geom_point(color = "lightblue") +  
-    labs(title = "Plano principal (Individuos)") +
-    geom_text(aes(label = individuo), vjust = 0, hjust = -0.5, 
-              color = "lightblue") + 
-    theme_minimal()
+  
+  if(nrow(C_data) <= 10){
+    individuos <- ggplot(C_data, aes(x = `Dim 1`, y = `Dim 2`)) +
+      geom_point(color = "lightblue") +  
+      labs(title = "Plano principal (Individuos)") +
+      geom_text(aes(label = individuo), vjust = 0, hjust = -0.5, 
+                color = "lightblue") + 
+      theme_minimal()
+  }else{
+    individuos <- ggplot(C_data, aes(x = `Dim 1`, y = `Dim 2`)) +
+      geom_point(color = "lightblue") +  
+      labs(title = "Plano principal (Individuos)") +
+      theme_minimal()
+  }
   
   return(individuos)
 }
@@ -61,10 +74,15 @@ circulo_correlaciones <- function(matriz){
   
   #Convertimos la matriz en un dataframe y ajustamos para el gráfico
   X_T_data <- as.data.frame(X_T)
+  
   col_names <- paste("Dim", 1:ncol(X_T_data))  # Genera nombres como "Dim 1", "Dim 2", etc.
   colnames(X_T_data) <- col_names
-  #names(X_T_data) <- c("Dim 1", "Dim 2", "Dim 3")
-  X_T_data$variable <- seq_len(nrow(X_T_data))
+  
+  if(is.null(colnames(matriz))) {
+    X_T_data$variable <- seq_len(ncol(matriz))
+  } else {
+    X_T_data$variable <- colnames(matriz)
+  }
   X_T_data$`x origen` <- 0
   X_T_data$`y origen` <- 0
   
@@ -103,11 +121,23 @@ variables_FM <- plot(X_ACP, axes=c(1, 2), choix="var", col.var="orange",
 grid.arrange(circulo_correlaciones(X)[["variables"]], variables_FM, ncol = 2)
 
 #---------------------------Grafico Dual----------------------------------------
-grafico_dual <- function(graf_ind, graf_var) {
+grafico_dual <- function(graf_ind, graf_var, matriz) {
   # Obtener los graficos y las etiquetas 
   grafico_circulo <- graf_var$variables0
   data_graf_ind <- ggplot_build(graf_ind)$data[[1]]
-  data_graf_ind$label <- seq_len(nrow(data_graf_ind))
+  data_graf_var <-ggplot_build(grafico_circulo)$data[[1]]
+  
+  if(is.null(rownames(matriz))) {
+    data_graf_ind$label <- seq_len(nrow(matriz))
+  } else {
+    data_graf_ind$label <- rownames(matriz)
+  } 
+  
+  if (is.null(colnames(matriz))){
+    data_graf_var$label <- seq_len(ncol(matriz))
+  }else {
+    data_graf_var$label <- colnames(matriz)
+  }
   
   # Superponer los gráficos
   if(nrow(data_graf_ind) <= 10){
@@ -116,15 +146,20 @@ grafico_dual <- function(graf_ind, graf_var) {
       geom_text(data = data_graf_ind, aes(x, y, label = label), 
                 vjust = -0.5, hjust = -0.5, color = "lightblue")
   }else{
-    grafico_final <- grafico_circulo +
-      geom_point(data = data_graf_ind, aes(x, y), color = "lightblue", size=1)
+    #grafico_final <- grafico_circulo +
+      #geom_point(data = data_graf_ind, aes(x, y), color = "lightblue", size=1)
+    grafico_final <- graf_ind + 
+      geom_segment(data = data_graf_var, aes(x = x, y = y, xend =  xend, yend = yend), 
+                   arrow = arrow(length = unit(0.2, "inches")), color = "red")+
+      geom_text(data = data_graf_var, aes(x = xend, y = yend, label =label), 
+                vjust = -0.5, hjust = -0.5, color = "red" )
   }
   
   return(grafico_final)
 }
 
 # Utilizar la función superponer_graficos para obtener el gráfico final
-grafico_dual(plano_principal(X), circulo_correlaciones(X))
+grafico_dual(plano_principal(X), circulo_correlaciones(X), X)
 
 #Comparar con FactoExtra 
 dual_FM <- fviz_pca_biplot(X_ACP,col.var = "orange",col.ind = "lightblue")
@@ -142,7 +177,7 @@ estudiantes_datos_original <- estudiantes_datos
 plano_principal(estudiantes_datos)
 circulo_correlaciones(estudiantes_datos)
 grafico_dual(plano_principal(estudiantes_datos), 
-             circulo_correlaciones(estudiantes_datos))
+             circulo_correlaciones(estudiantes_datos), estudiantes_datos)
 
 #------beans--------------
 beans_datos <- read.csv("Tarea 3/beansV2.csv")
@@ -151,8 +186,7 @@ beans_datos_original <- beans_datos
 plano_principal(beans_datos)
 circulo_correlaciones(beans_datos)
 grafico_dual(plano_principal(beans_datos), 
-             circulo_correlaciones(beans_datos))
-
+             circulo_correlaciones(beans_datos), beans_datos)
 
 #------------------- Ejercicio 4------------------------------------------------
 
@@ -184,25 +218,43 @@ ind.sup_proyeccion <- function(fila, matriz) {
   C_data_ind <- as.data.frame(C)
   col_names <- paste("Dim", 1:ncol(C_data_ind))  # Genera nombres como "Dim 1", "Dim 2", etc.
   colnames(C_data_ind) <- col_names
-  #names(C_data) <- c("Dim 1", "Dim 2", "Dim 3")
-  C_data_ind$individuo <- nrow(matriz) + 1
+ 
+  if(is.null(rownames(fila))){
+    C_data_ind$individuo <- nrow(matriz) + 1
+  }else {
+    C_data_ind$individuo <- rownames(fila)
+  }
   
   resultado <- plano_principal(matriz) + geom_point(data = C_data_ind, aes(x = `Dim 1`, y = `Dim 2`),
                                                     color = "red")+
     geom_text(data = C_data_ind, aes(x = `Dim 1`, y = `Dim 2`), 
               vjust = -0.5, hjust = -0.5, color = "red", label = C_data_ind$individuo )
-  
-  
   return(resultado)
   
 }
 
-
-fila <- X_inicial[3,]
-coordenadas_sup <- ind.sup_proyeccion(fila, X_inicial[-3,])
+fila <- X_inicial[6,]
+coordenadas_sup <- ind.sup_proyeccion(fila, X_inicial[-6,])
 coordenadas_sup
 
-ACP <- PCA( X_inicial,ind.sup = 3, graph = F)
-ACP$ind.sup$coord
+ACP <- PCA( X_inicial,ind.sup = 6, graph = F)
+plot.PCA(ACP, choix = "ind")
 
+#Comparando con FactoMiner, los individuos quedan igual pero reflejados en el eje y.
+
+
+#----------------------------Ejercicio 8---------------------------------------
+
+#Estudiantes
+fila_sup_estudiantes <- as.matrix(estudiantes_datos_original[6,])
+colnames(fila_sup_estudiantes) <- (rownames(estudiantes_datos_original))[6]
+fila_sup_estudiantes <- t(fila_sup_estudiantes)
+
+coordenadasind_sup_estudiantes <- ind.sup_proyeccion(fila_sup_estudiantes, estudiantes_datos_original[-6,])
+coordenadasind_sup_estudiantes
+
+#beans
+fila_sup_beans <- beans_datos_original[6,] 
+coordenadasind_sup_beans <- ind.sup_proyeccion(fila_sup_beans, beans_datos_original[-6,])
+coordenadasind_sup_beans
 
