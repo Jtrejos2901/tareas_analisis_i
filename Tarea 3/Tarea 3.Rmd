@@ -1,0 +1,453 @@
+---
+title: Análisis de Datos I <br> Tarea 2
+author:
+  - "Maria Carolina Navarro Monge C05513"
+  - "Tábata Picado Carmona C05961"
+  - "Jose Pablo Trejos Conejo C07862"
+output:
+  rmdformats::robobook:
+        code_folding: show
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Se cargan las librerías necesarias.
+```{r, warning=FALSE, message=FALSE}
+library(readr)
+library(FactoMineR)
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+library(factoextra)
+```
+
+ Para el desarrollo de los ejercicios se emplea la siguiente matriz:
+
+```{r, warning=FALSE, message=FALSE}
+X <- matrix(c(8,1,0,4,6,5,6,8,7,10,4,7,8,2,5,0,3,6), nrow = 6, ncol = 3, byrow
+            = TRUE)
+X_inicial <- X
+```
+
+# Ejercicio 2
+**Implemente en lenguaje R funciones que permitan ejecutar el algoritmo del Análisis en Componentes Principales (ACP) visto en clase para variables numéricas. Compare los resultados obtenidos con respecto a FactoMineR **
+
+El algoritmo del ACP cuenta con los siguientes pasos:
+
+## 1) Centrar y reducir la matriz 
+```{r, warning=FALSE, message=FALSE}
+#Medias
+medias <- function(matriz) {
+  resultado <-list()
+  for(i in 1:ncol(matriz)) {
+    resultado[[i]] <- mean(matriz[,i])
+  }
+  return(resultado)
+}
+
+#desviaciones estándar poblacionales 
+sd_poblacional <- function(matriz) {
+  resultado <- list()
+  n <- nrow(matriz)
+  for(i in 1:ncol(matriz)) {
+    resultado[[i]] <- sqrt(((n-1)/n))*sd(matriz[,i])
+  }
+  return(resultado)
+}
+  
+#Centramos y reducimos con la siguiente función
+centrar_y_reducir <- function(matriz, medias, desviaciones) {
+  
+  for(i in 1 : ncol(matriz)){
+    matriz[, i] <- (matriz[,i]-medias[[i]])/ desviaciones[[i]]
+  }
+  return(matriz)
+}
+```
+
+Aplicamos las funciones anteriores a la matriz X
+
+```{r, warning=FALSE, message=FALSE}
+medias_X <- medias(X)
+sd_X <- sd_poblacional(X)
+
+X <- centrar_y_reducir(X,medias_X, sd_X)
+X
+
+```
+## 2)Calcular la matriz de correlaciones 
+
+Una vez centrada y reducida la matriz, se procede a calcular la matriz de 
+varianzas-covarianzas la cual, es la misma que la matriz de correlaciones pues 
+está centrada y reducida. Se calcula con la siguiente función
+
+```{r, warning=FALSE, message=FALSE}
+R <- function(matriz) {
+  n <- nrow(matriz) 
+  resultado <- (1/n)*t(matriz)%*%matriz
+  return(resultado)
+}
+```
+
+Obtenemos mediante esa función la matriz de correlaciones de X
+
+```{r, warning=FALSE, message=FALSE}
+X_R <- R(X)
+X_R
+```
+
+## 3 y 4) Calcular los vectores y valores propios de la matriz de correlaciones y ordenar los valores propios de mayor a menor
+
+```{r, warning=FALSE, message=FALSE}
+X.R_e <- eigen(X_R)
+
+X.R_valores.propios <- X.R_e$values #ya vienen ordenados de mayor a menor
+X.R_valores.propios
+
+X.R_vectores.propios <- X.R_e$vectors
+X.R_vectores.propios
+```
+
+Comparamos con lo obtenido con FactoMiner
+
+```{r, warning=FALSE, message=FALSE}
+X_ACP <- PCA(X, ncp = 4, graph = FALSE)
+X_ACP$eig
+```
+
+Se puede observar que los valores propios obtenidos con FactoMiner son iguales
+a los del algoritmo.
+
+## 5) Construir matriz V que tiene como columnas los vectores propios de la matriz de correlaciones
+
+```{r, warning=FALSE, message=FALSE}
+V <- X.R_vectores.propios
+V
+```
+
+
+## 6) Calcular la matriz de componentes principales
+
+```{r, warning=FALSE, message=FALSE}
+C <- X%*%V 
+C #Tiene las coordendas de los individuos 
+```
+
+Con FactoMiner se obtiene lo siguiente:
+
+```{r, warning=FALSE, message=FALSE}
+X_ACP$ind$coord
+```
+
+Podemos observar que lo único que varía es el signo de algunas entradas, pero
+esto solo indica que se refleja con respecto a algunos de los ejes al graficar.
+
+## 7) Calcular la matriz de calidades de los individuos (cosenos cuadrados)
+
+Se calculan con la siguiente función
+
+```{r, warning=FALSE, message=FALSE}
+Q <- function(C, matriz) {
+  n <-nrow(matriz)
+  m <-ncol(matriz)
+  resultado <- matrix(0, n,m)
+  
+  for(i in 1: n){
+    suma <- 0 
+    for(j in 1: m){
+      suma <- suma + matriz[i,j]^2
+    }
+    for(r in 1: m){
+      resultado[i,r] <- (C[i,r]^2)/suma
+    }
+  }
+  return(resultado)
+}
+```
+
+Aplicamos la función anterior a los datos que tenemos
+
+```{r, warning=FALSE, message=FALSE}
+X_Q <- Q(C, X)
+X_Q
+```
+
+Vemos los resultados de FactoMiner
+```{r}
+X_ACP$ind$cos2
+```
+
+Los cuales son iguales a los obtenidos con el algoritmo
+
+Ahora debemos calcular la contribución de cada individuo i a la varianza total del eje r. Para la cual, 
+se usa la siguiente función:
+
+```{r}
+contribucion <- function(C, valores.propios) {
+  n <-nrow(C)
+  m <-ncol(C)
+  resultado <- matrix(0, n, m)
+  
+  for(i in 1: n){
+    for(r in 1: m){
+      resultado[i,r] <- ((C[i,r]^2)/(n*valores.propios[r]))*100
+    }
+  }
+  return(resultado)
+}
+```
+
+La matriz de contribuciones para los individuos de X es:
+
+```{r}
+X_contrib <- contribucion(C, X.R_valores.propios)
+X_contrib
+```
+
+Con FactoMiner se tiene:
+
+```{r}
+X_ACP$ind$contrib
+```
+
+Por lo tanto, se tiene el mismo resultado
+
+## 8) Calcular la matriz de coordenadas T de las variables
+
+```{r}
+T <- function(V, valores.propios){
+  m <- ncol(V)
+  resultado <- matrix(0, m, m)
+  
+  for(r in 1:m){
+      resultado[,r] <- sqrt(valores.propios[r])*V[,r]
+    }
+    
+  return(resultado)
+}
+```
+
+La matriz de coordenadas de las variables para los datos que tenemos es:
+```{r}
+X_T <- T(V, X.R_valores.propios)
+X_T
+```
+
+Y la dada con FactoMiner es:
+```{r}
+X_ACP$var$coord
+```
+
+## 9)Calcular la matriz de calidades de las variables (cosenos cuadrados)
+```{r}
+S <- X_T^2
+S
+```
+
+Con FactoMiner da:
+```{r}
+X_ACP$var$cos2
+```
+
+Por temas computacionales, el primer valor de la tercera dimensión de la matriz de coordenadas y calidades 
+de las variables, obtenida con el algoritmo, es muy cercano a cero. Por lo cual, con FactoMiner aparece como cero.
+
+## 10) Calcular vector I (1xm) de inercias de los ejes
+```{r}
+I <- function(valores.propios){
+  m <- length(valores.propios)
+  resultado <- c()
+  
+  for(j in 1: m){
+    resultado[j] <-100*(valores.propios[j]/m)
+  }
+  return(resultado)
+}
+```
+
+El vector de inercias para los datos con los que estamos trabajando es:
+```{r}
+X_I <- I(X.R_valores.propios)
+X_I
+```
+
+Con FactoMiner se tiene:
+```{r}
+plot(X_ACP, axes=c(1, 2), choix="ind", col.ind="blue",new.plot=TRUE)
+```
+
+Podemos observar que las inercias correpondiente al eje x y y obtenidas con 
+FactoMiner son iguales a las dadas por el algoritmo.
+
+# Ejercicio 3
+**Implemente en lenguaje R funciones que grafiquen el plano principal (en 2 dimensiones),el círculo de correlaciones (en 2 dimensiones) que incluya la inercia, el gráfico dual (en 2D) para ver ambos gráficos juntos. Compare los resultados obtenidos con respecto a FactoMineR**
+
+A continuación se presentan las funciones para calcular dichos gráficos 
+
+```{r, warning=FALSE, message=FALSE}
+#---------------------------Plano principal individuos--------------------------
+
+plano_principal <- function(matriz){
+  #Obtenemos la matriz con las coordenadas de los individuos
+  medias_X <- medias(matriz)
+  sd_X <- sd_poblacional(matriz)
+  X <- centrar_y_reducir(matriz, medias_X, sd_X)
+  X_R <- R(X)
+  X.R_e <- eigen(X_R)
+  V <- X.R_e$vectors
+  C <- X%*%V
+  
+  #Convertimos la matriz en un dataframe
+  C_data <- as.data.frame(C)
+  col_names <- paste("Dim", 1:ncol(C_data))  # Genera nombres como "Dim 1", "Dim 2", etc.
+  colnames(C_data) <- col_names
+
+  if(is.null(rownames(C_data))) {
+    C_data$individuo <- seq_len(nrow(C_data))
+  } else {
+    C_data$individuo <- rownames(C_data)
+  }
+
+  
+  #Graficamos
+  
+  if(nrow(C_data) <= 10){
+    individuos <- ggplot(C_data, aes(x = `Dim 1`, y = `Dim 2`)) +
+      geom_point(color = "lightblue") +  
+      labs(title = "Plano principal (Individuos)") +
+      geom_text(aes(label = individuo), vjust = 0, hjust = -0.5, 
+                color = "lightblue") + 
+      theme_minimal()
+  }else{
+    individuos <- ggplot(C_data, aes(x = `Dim 1`, y = `Dim 2`)) +
+      geom_point(color = "lightblue") +  
+      labs(title = "Plano principal (Individuos)") +
+      theme_minimal()
+  }
+  
+  return(individuos)
+}
+
+```
+
+```{r,warning=FALSE, message=FALSE}
+#----------------------------Círculo de correlaciones---------------------------
+circulo_correlaciones <- function(matriz){
+  #Obtenemos la matriz con las coordenadas de los individuos
+  medias_X <- medias(matriz)
+  sd_X <- sd_poblacional(matriz)
+  X <- centrar_y_reducir(matriz, medias_X, sd_X)
+  X_R <- R(X)
+  X.R_e <- eigen(X_R)
+  V <- X.R_e$vectors
+  X.R_valores.propios <- X.R_e$values
+  X_T <- T(V, X.R_valores.propios)
+  
+  #Convertimos la matriz en un dataframe y ajustamos para el gráfico
+  X_T_data <- as.data.frame(X_T)
+  
+  col_names <- paste("Dim", 1:ncol(X_T_data))  # Genera nombres como "Dim 1", "Dim 2", etc.
+  colnames(X_T_data) <- col_names
+  
+  if(is.null(colnames(matriz))) {
+    X_T_data$variable <- seq_len(ncol(matriz))
+  } else {
+    X_T_data$variable <- colnames(matriz)
+  }
+  X_T_data$`x origen` <- 0
+  X_T_data$`y origen` <- 0
+  
+  #Sacamos la inercia
+  X_I <- I(X.R_valores.propios)
+  X_I_redondeados <- round(X_I, 2)
+  inercia <- X_I_redondeados[1] + X_I_redondeados[2]
+  
+  #Graficamos
+  variables0 <- ggplot(X_T_data, aes(x = `x origen`, y = `y origen`)) +
+    geom_segment(aes(xend = `Dim 1`, yend = `Dim 2`), 
+                 arrow = arrow(length = unit(0.2, "inches")), color = "orange") +
+    geom_text(aes(x = `Dim 1`, y = `Dim 2`, label = variable), vjust = -0.5, 
+              nudge_y = 0, nudge_x = 0, color ="orange") +
+    labs(x = paste("Dim 1 (", X_I_redondeados[1], "%)"), 
+         y = paste("Dim 2 (", X_I_redondeados[2], "%)"), 
+         subtitle = paste("Inercia = ", inercia, "%")) +
+    theme_minimal()
+  
+  variables <- variables0 + 
+    geom_path(data = data.frame(x = cos(seq(0, 2 * pi, length.out = 100)),
+                                y = sin(seq(0, 2 * pi, length.out = 100))),
+              aes(x, y), color = "black", linewidth = 1, linetype = "dashed") +
+    labs(title = "Círculo de correlaciones")
+  
+  return(list(variables0 = variables0, variables = variables))
+}
+```
+
+```{r,warning=FALSE, message=FALSE}
+#---------------------------Grafico Dual----------------------------------------
+grafico_dual <- function(graf_ind, graf_var, matriz) {
+  # Obtener los graficos y las etiquetas 
+  grafico_circulo <- graf_var$variables0
+  data_graf_ind <- ggplot_build(graf_ind)$data[[1]]
+  data_graf_var <-ggplot_build(grafico_circulo)$data[[1]]
+  
+  if(is.null(rownames(matriz))) {
+    data_graf_ind$label <- seq_len(nrow(matriz))
+  } else {
+    data_graf_ind$label <- rownames(matriz)
+  } 
+  
+  if (is.null(colnames(matriz))){
+    data_graf_var$label <- seq_len(ncol(matriz))
+  }else {
+    data_graf_var$label <- colnames(matriz)
+  }
+  
+  # Superponer los gráficos
+  if(nrow(data_graf_ind) <= 10){
+    grafico_final <- grafico_circulo +
+      geom_point(data = data_graf_ind, aes(x, y), color = "lightblue") +
+      geom_text(data = data_graf_ind, aes(x, y, label = label), 
+                vjust = -0.5, hjust = -0.5, color = "lightblue")
+  }else{
+    #grafico_final <- grafico_circulo +
+      #geom_point(data = data_graf_ind, aes(x, y), color = "lightblue", size=1)
+    grafico_final <- graf_ind + 
+      geom_segment(data = data_graf_var, aes(x = x, y = y, xend =  xend, yend = yend), 
+                   arrow = arrow(length = unit(0.2, "inches")), color = "red")+
+      geom_text(data = data_graf_var, aes(x = xend, y = yend, label =label), 
+                vjust = -0.5, hjust = -0.5, color = "red" )
+  }
+  
+  return(grafico_final)
+}
+
+```
+
+Ahora, comparamos los gráficos obtenidos con el algoritmo para la matriz X y los
+dados por FactoMiner.
+
+```{r,warning=FALSE, message=FALSE}
+individuos_FM <- plot(X_ACP)
+
+grid.arrange(plano_principal(X), individuos_FM, ncol = 2)
+```
+
+```{r,warning=FALSE, message=FALSE}
+variables_FM <- plot(X_ACP, axes=c(1, 2), choix="var", col.var="orange",
+                     new.plot=TRUE)
+
+grid.arrange(circulo_correlaciones(X)[["variables"]], variables_FM, ncol = 2)
+```
+
+```{r,warning=FALSE, message=FALSE}
+dual_FM <- fviz_pca_biplot(X_ACP,col.var = "orange",col.ind = "lightblue")
+grid.arrange(grafico_dual(plano_principal(X), circulo_correlaciones(X)), 
+             dual_FM, ncol = 2)
+```
+
