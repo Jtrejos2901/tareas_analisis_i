@@ -152,3 +152,57 @@ plano_principal(beans_datos)
 circulo_correlaciones(beans_datos)
 grafico_dual(plano_principal(beans_datos), 
              circulo_correlaciones(beans_datos))
+
+
+#------------------- Ejercicio 4------------------------------------------------
+
+ind.sup_proyeccion <- function(fila, matriz) {
+  #se calcula la media y desviación estándar de cada columna
+  medias <- medias(matriz)
+  sd <-sd_poblacional(matriz)
+  
+  #centramos y reducimos la fila y la matriz
+  
+  for(i in 1:length(fila)){
+    fila[i] <- (fila[i]-medias[[i]])/sd[[i]]
+  }
+  
+  matriz <- centrar_y_reducir(matriz, medias, sd)
+  
+  #Matriz de correlaciones
+  correlaciones <- R(matriz)
+  #Vectores propios
+  matriz.e <- eigen(correlaciones)
+  V <- matriz.e$vectors
+  
+  #Se calcula las coordenadas 
+  C <- fila%*%V
+  
+  #Se gráfica esas coordenadas en el plano
+  
+  #Convertimos la fila en un dataframe
+  C_data_ind <- as.data.frame(C)
+  col_names <- paste("Dim", 1:ncol(C_data_ind))  # Genera nombres como "Dim 1", "Dim 2", etc.
+  colnames(C_data_ind) <- col_names
+  #names(C_data) <- c("Dim 1", "Dim 2", "Dim 3")
+  C_data_ind$individuo <- nrow(matriz) + 1
+  
+  resultado <- plano_principal(matriz) + geom_point(data = C_data_ind, aes(x = `Dim 1`, y = `Dim 2`),
+                                                    color = "red")+
+    geom_text(data = C_data_ind, aes(x = `Dim 1`, y = `Dim 2`), 
+              vjust = -0.5, hjust = -0.5, color = "red", label = C_data_ind$individuo )
+  
+  
+  return(resultado)
+  
+}
+
+
+fila <- X_inicial[3,]
+coordenadas_sup <- ind.sup_proyeccion(fila, X_inicial[-3,])
+coordenadas_sup
+
+ACP <- PCA( X_inicial,ind.sup = 3, graph = F)
+ACP$ind.sup$coord
+
+
