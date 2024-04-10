@@ -383,12 +383,6 @@ plot(ACP_beans)
 #programado en el punto2. Compare los resultados obtenidos con respecto a 
 #FactoMineR
 
-H <- function(matriz) {
-  n <- nrow(matriz) 
-  resultado <- (1/n)*matriz %*% t(matriz)
-  return(resultado)
-}
-
 
 var.sup_proyeccion <- function(columna, matriz) {
   #se calcula la media y desviación estándar de la columna y la matriz
@@ -421,20 +415,26 @@ var.sup_proyeccion <- function(columna, matriz) {
   }
   #Se gráfica en el círculo de correlaciones
   circulo <- circulo_correlaciones(matriz)
-  graf_circulo <- circulo$variables0
+  graf_circulo <- circulo$variables
   
   #Convertimos la matriz en un dataframe y ajustamos para el gráfico
-  coordenada_var <- as.data.frame(coordenada)
+  coordenada_var <- as.data.frame(t(coordenada))
   col_names <- paste("Dim", 1:ncol(coordenada_var))  # Genera nombres como "Dim 1", "Dim 2", etc.
   colnames(coordenada_var) <- col_names
-  #names(X_T_data) <- c("Dim 1", "Dim 2", "Dim 3")
-  coordenada_var$variable <- ncol(matriz) + 1
+  coordenada_var$`x origen` <- 0
+  coordenada_var$`y origen` <- 0
+  
+  if(is.null(colnames(columna))){
+   coordenada_var$variable <- ncol(matriz) + 1
+  }else {
+    coordenada_var$variable <- colnames(columna)
+  }
   
   resultado <- graf_circulo + 
-    geom_segment(data = coordenada_var, aes(xend = `Dim 1`, yend = `Dim 2`), 
+    geom_segment(data = coordenada_var, aes(x = `x origen`, y = `y origen`, xend = `Dim 1`, yend = `Dim 2`), 
     arrow = arrow(length = unit(0.2, "inches")), color = "red")+
     geom_text(data = coordenada_var, aes(x = `Dim 1`, y = `Dim 2`), 
-              vjust = -0.5, hjust = -0.5, color = "red", label = coordenada_var$individuo )
+              vjust = -0.5, hjust = -0.5, color = "red", label = coordenada_var$variable )
   return(resultado)
 }
 
@@ -442,8 +442,25 @@ columna <- X_inicial[,3]
 coordenadas_sup <- var.sup_proyeccion(columna, X_inicial[,-3])
 coordenadas_sup
 
-
+#Comparando con FactoMiner
 ACP <- PCA( X_inicial,quanti.sup = 3, graph = F)
-hola <-ACP$quanti.sup$cor
+plot.PCA(ACP, choix = "var")
 
-hola <- as.data.frame(hola)
+#Comparando, quedan igual solo que reflejadas con respecto al eje X.
+
+
+#----------------------------Ejercicio 8---------------------------------------
+
+#Estudiantes
+columna_sup_estudiantes <- as.matrix(estudiantes_datos_original[,2])
+colnames(columna_sup_estudiantes) <- (colnames(estudiantes_datos_original))[2]
+
+coordenadasvar_sup_estudiantes <- var.sup_proyeccion(columna_sup_estudiantes, estudiantes_datos_original[,-2])
+coordenadasvar_sup_estudiantes
+
+#beans
+columna_sup_beans <- as.matrix(beans_datos_original[,2])
+colnames(columna_sup_beans) <- (colnames(beans_datos_original))[2]
+
+coordenadasvar_sup_beans <- var.sup_proyeccion(columna_sup_beans, beans_datos_original[,-2])
+coordenadasvar_sup_beans
