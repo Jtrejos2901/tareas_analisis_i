@@ -435,19 +435,20 @@ dados por FactoMiner.
 ```{r,warning=FALSE, message=FALSE}
 individuos_FM <- plot(X_ACP)
 
-grid.arrange(plano_principal(X), individuos_FM, ncol = 2)
+grid.arrange(plano_principal(X_inicial), individuos_FM, ncol = 2)
 ```
 
 ```{r,warning=FALSE, message=FALSE}
 variables_FM <- plot(X_ACP, axes=c(1, 2), choix="var", col.var="orange",
                      new.plot=TRUE)
 
-grid.arrange(circulo_correlaciones(X)[["variables"]], variables_FM, ncol = 2)
+grid.arrange(circulo_correlaciones(X_inicial)[["variables"]], variables_FM, ncol = 2)
 ```
 
 ```{r,warning=FALSE, message=FALSE}
 dual_FM <- fviz_pca_biplot(X_ACP,col.var = "orange",col.ind = "lightblue")
-grid.arrange(grafico_dual(plano_principal(X), circulo_correlaciones(X)), 
+grid.arrange(grafico_dual(plano_principal(X_inicial), circulo_correlaciones(X_inicial), X_inicial), 
              dual_FM, ncol = 2)
 ```
-
+Como se puede observar, todos los gráficos generados por FactoMiner están reflejados con 
+respecto al eje y en comparación con los generados por el algortimo .
