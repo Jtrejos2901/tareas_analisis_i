@@ -34,6 +34,21 @@ X <- matrix(c(8,1,0,4,6,5,6,8,7,10,4,7,8,2,5,0,3,6), nrow = 6, ncol = 3, byrow
 X_inicial <- X
 ```
 
+Además, para el ejercicio 8 se utiliza las siguientes bases de datos:
+```{r, warning=FALSE, message=FALSE}
+#----- Estudiantes--------
+estudiantes_datos <- read.table('EjemploEstudiantes.csv', header=TRUE, sep=';',dec=',',row.names=1)
+estudiantes_datos<- as.matrix(estudiantes_datos)
+estudiantes_datos_original <- estudiantes_datos
+
+#----- beans--------------
+
+beans_datos <- read.csv("beansV2.csv")
+beans_datos <- as.matrix(beans_datos[,-17])
+beans_datos_original <- beans_datos
+```
+
+
 # Ejercicio 2
 **Implemente en lenguaje R funciones que permitan ejecutar el algoritmo del Análisis en Componentes Principales (ACP) visto en clase para variables numéricas. Compare los resultados obtenidos con respecto a FactoMineR **
 
@@ -299,7 +314,9 @@ plano_principal <- function(matriz){
   X <- centrar_y_reducir(matriz, medias_X, sd_X)
   X_R <- R(X)
   X.R_e <- eigen(X_R)
+  X.R_valores.propios <- X.R_e$values
   V <- X.R_e$vectors
+  
   C <- X%*%V
   
   #Convertimos la matriz en un dataframe
@@ -313,20 +330,29 @@ plano_principal <- function(matriz){
     C_data$individuo <- rownames(C_data)
   }
 
+  #Sacamos la inercia
+  X_I <- I(X.R_valores.propios)
+  X_I_redondeados <- round(X_I, 2)
+  inercia <- X_I_redondeados[1] + X_I_redondeados[2]
+  
   
   #Graficamos
   
   if(nrow(C_data) <= 10){
     individuos <- ggplot(C_data, aes(x = `Dim 1`, y = `Dim 2`)) +
       geom_point(color = "lightblue") +  
-      labs(title = "Plano principal (Individuos)") +
-      geom_text(aes(label = individuo), vjust = 0, hjust = -0.5, 
+      geom_text(aes(label = individuo), vjust = 0, hjust = 0, 
                 color = "lightblue") + 
+      labs(x = paste("Dim 1 (", X_I_redondeados[1], "%)"), 
+         y = paste("Dim 2 (", X_I_redondeados[2], "%)"), 
+         subtitle = paste("Inercia = ", inercia, "%"), title = "Plano principal (Individuos)")+
       theme_minimal()
   }else{
     individuos <- ggplot(C_data, aes(x = `Dim 1`, y = `Dim 2`)) +
       geom_point(color = "lightblue") +  
-      labs(title = "Plano principal (Individuos)") +
+      labs(x = paste("Dim 1 (", X_I_redondeados[1], "%)"), 
+         y = paste("Dim 2 (", X_I_redondeados[2], "%)"), 
+         subtitle = paste("Inercia = ", inercia, "%"), title = "Plano principal (Individuos)") +
       theme_minimal()
   }
   
@@ -413,15 +439,15 @@ grafico_dual <- function(graf_ind, graf_var, matriz) {
     grafico_final <- grafico_circulo +
       geom_point(data = data_graf_ind, aes(x, y), color = "lightblue") +
       geom_text(data = data_graf_ind, aes(x, y, label = label), 
-                vjust = -0.5, hjust = -0.5, color = "lightblue")
+                vjust = 0, hjust = 0, color = "lightblue")
   }else{
     #grafico_final <- grafico_circulo +
       #geom_point(data = data_graf_ind, aes(x, y), color = "lightblue", size=1)
     grafico_final <- graf_ind + 
       geom_segment(data = data_graf_var, aes(x = x, y = y, xend =  xend, yend = yend), 
-                   arrow = arrow(length = unit(0.2, "inches")), color = "red")+
+                   arrow = arrow(length = unit(0.2, "inches")), color = "orange")+
       geom_text(data = data_graf_var, aes(x = xend, y = yend, label =label), 
-                vjust = -0.5, hjust = -0.5, color = "red" )
+                vjust = 0, hjust = 0, color = "orange" )
   }
   
   return(grafico_final)
@@ -452,3 +478,394 @@ grid.arrange(grafico_dual(plano_principal(X_inicial), circulo_correlaciones(X_in
 ```
 Como se puede observar, todos los gráficos generados por FactoMiner están reflejados con 
 respecto al eje y en comparación con los generados por el algortimo .
+
+# Ejercicio 4
+**Programe una función en R que reciba una fila (individuo) de una matriz y calcule la proyección en suplementario de este individuo en el plano principal 2D programado en el punto anterior. Compare los resultados obtenidos con respecto a FactoMineR**
+
+Primeramente, es necesario mencionar que el individuo suplementario se considera como una nueva fila que se le añade 
+a la base de datos inicial. Por lo tanto, en caso de que la fila no tenga una etiqueta, se le coloca un identificador que corresponde al número de fila, en este caso, el último.
+
+La función es la siguiente:
+
+```{r, warning=FALSE, message=FALSE}
+ind.sup_proyeccion <- function(fila, matriz) {
+  #se calcula la media y desviación estándar de cada columna
+  medias <- medias(matriz)
+  sd <-sd_poblacional(matriz)
+  
+  #centramos y reducimos la fila y la matriz
+  
+  for(i in 1:length(fila)){
+    fila[i] <- (fila[i]-medias[[i]])/sd[[i]]
+  }
+  
+  matriz <- centrar_y_reducir(matriz, medias, sd)
+  
+  #Matriz de correlaciones
+  correlaciones <- R(matriz)
+  #Vectores propios
+  matriz.e <- eigen(correlaciones)
+  V <- matriz.e$vectors
+  
+  #Se calcula las coordenadas 
+  C <- fila%*%V
+  
+  #Se gráfica esas coordenadas en el plano
+  
+  #Convertimos la fila en un dataframe
+  C_data_ind <- as.data.frame(C)
+  col_names <- paste("Dim", 1:ncol(C_data_ind))  # Genera nombres como "Dim 1", "Dim 2", etc.
+  colnames(C_data_ind) <- col_names
+ 
+  if(is.null(rownames(fila))){
+    C_data_ind$individuo <- nrow(matriz) + 1
+  }else {
+    C_data_ind$individuo <- rownames(fila)
+  }
+  
+  resultado <- plano_principal(matriz) + geom_point(data = C_data_ind, aes(x = `Dim 1`, y = `Dim 2`),
+                                                    color = "red")+
+    geom_text(data = C_data_ind, aes(x = `Dim 1`, y = `Dim 2`), 
+              vjust = -0.5, hjust = -0.5, color = "red", label = C_data_ind$individuo )
+  return(resultado)
+  
+}
+```
+
+Comparamos la proyección suplementaria del individuo en el plano inicial que da esta función
+con el resultado de FactoMiner. Para esto, tomamos como individuo suplementario a la fila número 6 de la 
+matriz X.
+
+
+```{r}
+fila <- X_inicial[6,]
+coordenadasind_sup <- ind.sup_proyeccion(fila, X_inicial[-6,])
+
+ACP_indsup <- PCA( X_inicial,ind.sup = 6, graph = F)
+coordenadasind_sup_FM <-plot.PCA(ACP_indsup, choix = "ind")
+
+grid.arrange(coordenadasind_sup, coordenadasind_sup_FM, ncol = 2)
+```
+Podemos observar que los gráficos se encuentran reflejados con respecto al eje y.Además, el punto de color distinto, en cada gráfico, corresponde al individuo suplementario.
+También, es posible notar que al agregar la proyección suplementaria no se altera las coordenadas de los individuos iniciales. 
+
+
+# Ejercicio 5 
+
+**Programe una función en R que reciba una columna (variable) de una matriz y calcule su proyección en suplementario en el círculo de correlaciones 2D programado en el punto2. Compare los resultados obtenidos con respecto a FactoMineR.**
+
+Primeramente, es necesario mencionar que la variable suplementaria se considera como una nueva columna que se le añade  a la base de datos inicial. Por lo tanto, en caso de que la columna no tenga una etiqueta, se le coloca un identificador que corresponde al número de columna, en este caso, el último.
+
+
+La función es la siguiente:
+
+```{r, warning=FALSE, message=FALSE}
+var.sup_proyeccion <- function(columna, matriz) {
+  #se calcula la media y desviación estándar de la columna y la matriz
+  media <- mean(columna)
+  n <- length(columna)
+  sd <-sqrt(((n-1)/n))*sd(columna)
+  
+  medias <- medias(matriz)
+  sd_matriz <-sd_poblacional(matriz)
+  
+  #centramos y reducimos la columna y la matriz
+  
+  columna <- (columna-media)/sd
+  matriz <- centrar_y_reducir(matriz, medias, sd_matriz)
+  
+  #Matriz de correlaciones
+  correlaciones <- R(matriz)
+  
+  #Vectores y valores propios
+  matriz.e <- eigen(correlaciones)
+  V <- matriz.e$vectors
+
+  #Se calculan los componentes principales
+  C <- matriz%*%V
+  
+  #Se calculan las correlaciones de la columna con los componentes principales
+  coordenada <- c()
+  for(i in 1: ncol(matriz)){
+    coordenada[i] <-cor(columna, C[,i])
+  }
+  #Se gráfica en el círculo de correlaciones
+  circulo <- circulo_correlaciones(matriz)
+  graf_circulo <- circulo$variables
+  
+  #Convertimos la matriz en un dataframe y ajustamos para el gráfico
+  coordenada_var <- as.data.frame(t(coordenada))
+  col_names <- paste("Dim", 1:ncol(coordenada_var))  # Genera nombres como "Dim 1", "Dim 2", etc.
+  colnames(coordenada_var) <- col_names
+  coordenada_var$`x origen` <- 0
+  coordenada_var$`y origen` <- 0
+  
+  if(is.null(colnames(columna))){
+   coordenada_var$variable <- ncol(matriz) + 1
+  }else {
+    coordenada_var$variable <- colnames(columna)
+  }
+  
+  resultado <- graf_circulo + 
+    geom_segment(data = coordenada_var, aes(x = `x origen`, y = `y origen`, xend = `Dim 1`, yend = `Dim 2`), 
+    arrow = arrow(length = unit(0.2, "inches")), color = "red")+
+    geom_text(data = coordenada_var, aes(x = `Dim 1`, y = `Dim 2`), 
+              vjust = -0.5, hjust = -0.5, color = "red", label = coordenada_var$variable )
+  return(resultado)
+}
+```
+
+Para comparar con FactoMiner, tomamos como variable suplementaria a la columna 3.
+
+```{r}
+columna <- X_inicial[,3]
+coordenadasvar_sup <- var.sup_proyeccion(columna, X_inicial[,-3])
+
+ACP_varsup <- PCA( X_inicial,quanti.sup = 3, graph = F)
+coordenadasvar_sup_FM <- plot.PCA(ACP_varsup, choix = "var")
+
+grid.arrange(coordenadasvar_sup, coordenadasvar_sup_FM, ncol = 2)
+```
+
+Para el caso de la variable suplementaria, se puede ver que los gráficos se encuentran reflejados con respecto al eje x. También, el vector con distinto color, en cada gráfico, corresponde a la variable suplementaria.
+Además, es posible observar que al agregar la proyección suplementaria no se alteran las coordenadas de las variables iniciales. 
+
+# Ejercicio 8
+
+**Verifique todo lo programado en los puntos anteriores con el ejemplo estudiantes.csv y con los datos del ejercicio 1 de la tarea anterior.**
+
+
+## Base de datos de estudiantes
+
+### Inciso 2
+
+#### 1) Centrar y reducir la matriz 
+
+```{r}
+medias_estudiantes <- medias(estudiantes_datos)
+sd_estudiantes <- sd_poblacional(estudiantes_datos)
+
+estudiantes_datos <- centrar_y_reducir(estudiantes_datos,medias_estudiantes, sd_estudiantes)
+estudiantes_datos
+```
+
+
+#### 2) Calcular la matriz de correlaciones 
+```{r}
+estudiantes_R <- R(estudiantes_datos)
+estudiantes_R
+```
+
+#### 3 y 4) Calcular los vectores y valores propios de la matriz de correlaciones y ordenar los valores propios de mayor a menor
+
+```{r}
+estudiantes.R_e <- eigen(estudiantes_R)
+
+estudiantes.R_valores.propios <- estudiantes.R_e$values #ya vienen ordenados de mayor a menor
+estudiantes.R_valores.propios
+
+estudiantes.R_vectores.propios <- estudiantes.R_e$vectors
+estudiantes.R_vectores.propios
+```
+
+#### 5) Construir matriz V que tiene como columnas los vectores propios de la matriz de correlaciones
+
+```{r}
+V_estudiantes <- estudiantes.R_vectores.propios
+V_estudiantes
+```
+
+#### 6) Calcular la matriz de componentes principales
+```{r}
+C_estudiantes <- estudiantes_datos%*%V_estudiantes
+C_estudiantes
+
+```
+
+#### 7) Calcular la matriz de calidades de los individuos (cosenos cuadrados)
+```{r}
+estudiantes_Q <- Q(C_estudiantes, estudiantes_datos)
+estudiantes_Q
+```
+
+Ahora debemos calcular la contribución de cada individuo i a la varianza total 
+del eje r
+```{r}
+estudiantes_contrib <- contribucion(C_estudiantes, estudiantes.R_valores.propios)
+estudiantes_contrib
+```
+
+#### 8) Calcular la matriz de coordenadas T de las variables
+```{r}
+estudiantes_T <- T(V_estudiantes, estudiantes.R_valores.propios)
+estudiantes_T
+```
+
+#### 9) Calcular la matriz de calidades de las variables (cosenos cuadrados)
+```{r}
+S_estudiantes <- estudiantes_T^2
+S_estudiantes
+```
+
+#### 10) Calcular vector I (1xm) de inercias de los ejes
+
+```{r}
+estudiantes_I <- I(estudiantes.R_valores.propios)
+estudiantes_I
+```
+
+### Inciso 3
+
+**Plano principal**
+```{r, warning=FALSE, message=FALSE}
+plano_principal(estudiantes_datos)
+
+```
+
+**Círculo de correlaciones**
+```{r}
+circulo_correlaciones(estudiantes_datos)$variables
+
+```
+
+**Gráfico Dual**
+```{r}
+grafico_dual(plano_principal(estudiantes_datos), 
+             circulo_correlaciones(estudiantes_datos), estudiantes_datos)
+```
+
+### Inciso 4
+
+```{r}
+fila_sup_estudiantes <- as.matrix(estudiantes_datos_original[6,])
+colnames(fila_sup_estudiantes) <- (rownames(estudiantes_datos_original))[6]
+fila_sup_estudiantes <- t(fila_sup_estudiantes)
+
+coordenadasind_sup_estudiantes <- ind.sup_proyeccion(fila_sup_estudiantes, estudiantes_datos_original[-6,])
+coordenadasind_sup_estudiantes
+```
+
+### Inciso 5
+```{r}
+columna_sup_estudiantes <- as.matrix(estudiantes_datos_original[,2])
+colnames(columna_sup_estudiantes) <- (colnames(estudiantes_datos_original))[2]
+
+coordenadasvar_sup_estudiantes <- var.sup_proyeccion(columna_sup_estudiantes, estudiantes_datos_original[,-2])
+coordenadasvar_sup_estudiantes
+```
+
+
+## Base de datos beans
+
+#### 1) Centrar y reducir la matriz 
+
+```{r}
+medias_beans <- medias(beans_datos)
+sd_beans <- sd_poblacional(beans_datos)
+
+beans_datos <- centrar_y_reducir(beans_datos,medias_beans, sd_beans)
+head(beans_datos)
+```
+
+### 2) Calcular la matriz de correlaciones 
+```{r}
+beans_R <- R(beans_datos)
+head(beans_R)
+```
+
+### 3 y 4) Calcular los vectores y valores propios de la matriz de correlaciones y ordenar los valores propios de mayor a menor
+```{r}
+beans.R_e <- eigen(beans_R)
+
+beans.R_valores.propios <- beans.R_e$values #ya vienen ordenados de mayor a menor
+head(beans.R_valores.propios)
+
+```
+
+```{r}
+beans.R_vectores.propios <- beans.R_e$vectors
+head(beans.R_vectores.propios)
+```
+
+### 5) Construir matriz V que tiene como columnas los vectores propios de la matriz de correlaciones
+```{r}
+V_beans <- beans.R_vectores.propios
+head(V_beans)
+```
+
+### 6) Calcular la matriz de componentes principales
+```{r}
+C_beans <- beans_datos%*%V_beans
+head(C_beans)
+```
+
+### 7) Calcular la matriz de calidades de los individuos (cosenos cuadrados)
+
+```{r}
+beans_Q <- Q(C_beans, beans_datos)
+head(beans_Q)
+```
+
+Ahora debemos calcular la contribución de cada individuo i a la varianza total del eje r
+```{r}
+beans_contrib <- contribucion(C_beans, beans.R_valores.propios)
+head(beans_contrib)
+```
+
+### 8) Calcular la matriz de coordenadas T de las variables
+```{r}
+beans_T <- T(V_beans, beans.R_valores.propios)
+head(beans_T)
+```
+
+### 9) Calcular la matriz de calidades de las variables (cosenos cuadrados)
+
+```{r}
+S_beans <- beans_T^2
+head(S_beans)
+```
+
+#### 10) Calcular vector I (1xm) de inercias de los ejes
+
+```{r}
+beans_I <- I(beans.R_valores.propios)
+beans_I
+```
+### Inciso 3
+
+**Plano principal**
+```{r, warning=FALSE, message=FALSE}
+plano_principal(beans_datos)
+
+```
+
+**Círculo de correlaciones**
+```{r}
+circulo_correlaciones(beans_datos)$variables
+
+```
+
+**Gráfico Dual**
+```{r}
+grafico_dual(plano_principal(beans_datos), 
+             circulo_correlaciones(beans_datos), beans_datos)
+```
+
+
+### Inciso 4
+
+```{r}
+fila_sup_beans <- beans_datos_original[6,] 
+coordenadasind_sup_beans <- ind.sup_proyeccion(fila_sup_beans, beans_datos_original[-6,])
+coordenadasind_sup_beans
+```
+
+### Inciso 5
+```{r}
+columna_sup_beans <- as.matrix(beans_datos_original[,2])
+colnames(columna_sup_beans) <- (colnames(beans_datos_original))[2]
+
+coordenadasvar_sup_beans <- var.sup_proyeccion(columna_sup_beans, beans_datos_original[,-2])
+coordenadasvar_sup_beans
+```
+
