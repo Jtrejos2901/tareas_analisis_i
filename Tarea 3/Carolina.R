@@ -464,3 +464,179 @@ colnames(columna_sup_beans) <- (colnames(beans_datos_original))[2]
 
 coordenadasvar_sup_beans <- var.sup_proyeccion(columna_sup_beans, beans_datos_original[,-2])
 coordenadasvar_sup_beans
+
+
+#------------------------Ejercicio 6 -------------------------------------------
+
+#Programe en R un algoritmo para el ACP que en lugar de calcular la matriz de
+#correlaciones R calcule H  y con base en H realice los cálculos de lado de las variables
+#y luego usando relaciones de dualidad realice todos los cálculos para la parte de los individuos.
+#Verifique los resultados obtenidos con respecto a FactoMineR.
+
+#El algoritmo del ACP realizando los cálculos por el lado de las variables cuenta 
+#con los siguientes pasos:
+
+#1) X centrada y reducida se usa la función el ejercicio 2
+
+
+#2)Calcular la matriz de correlaciones 
+
+#Una vez centrada y reducida la matriz, se procede a calcular la matriz de 
+#varianzas-covarianzas la cual, es la misma que la matriz de correlaciones pues 
+#está centrada y reducida. Se calcula con la siguiente función
+
+H <- function(matriz) {
+  n <- nrow(matriz) 
+  resultado <- (1/n)*matriz%*%t(matriz)
+  return(resultado)
+}
+
+#Obtenemos mediante esa función la matriz de correlaciones de X
+
+X_H <- H(X)
+X_H
+
+#3 y 4) Calcular los vectores y valores propios de la matriz de correlaciones y 
+#ordenar los valores propios de mayor a menor
+
+X.H_e <- eigen(X_H)
+
+X.H_valores.propios <- X.H_e$values #ya vienen ordenados de mayor a menor
+X.H_valores.propios <- X.H_valores.propios[-c(4:6)]
+
+X.H_vectores.propios <- X.H_e$vectors
+X.H_vectores.propios <- X.H_vectores.propios[,-c(4:6)]
+
+#Comparamos con lo obtenido con FactoMiner
+
+X_ACP <- PCA(X, ncp = 4, graph = FALSE)
+X_ACP$eig
+
+#Se puede observar que los valores propios obtenidos con FactoMiner son iguales
+#a los del algoritmo
+
+#5) Construir matriz V 
+
+V <- X.H_vectores.propios
+V
+
+#6) Calcular la matriz de coordenadas de las variables
+
+C <- t(V) %*% X
+C #Tiene las coordendas de los individuos 
+
+#Con FactoMiner se obtiene lo siguiente:
+X_ACP$var$coord
+
+X_R
+
+#Podemos observar que lo único que varía es el signo de algunas entradas, pero
+#esto solo indica que se refleja con respecto a algunos de los ejes al graficar.
+
+#7) Calcular la matriz de calidades de los individuos (cosenos cuadrados)
+
+Q <- function(C, matriz) {
+  n <-nrow(matriz)
+  m <-ncol(matriz)
+  resultado <- matrix(0, n,m)
+  
+  for(i in 1: n){
+    suma <- 0 
+    for(j in 1: m){
+      suma <- suma + matriz[i,j]^2
+    }
+    for(r in 1: m){
+      resultado[i,r] <- (C[i,r]^2)/suma
+    }
+  }
+  return(resultado)
+}
+
+#Aplicamos la función anterior a los datos que tenemos
+
+X_Q <- Q(C, X)
+X_Q
+
+#Vemos los resultados de FactoMiner
+X_ACP$ind$cos2
+
+#Los cuales son iguales a los obtenidos con el algoritmo
+
+#Ahora debemos calcular la contribución de cada individuo i a la varianza total 
+#del eje r
+
+contribucion <- function(C, valores.propios) {
+  n <-nrow(C)
+  m <-ncol(C)
+  resultado <- matrix(0, n, m)
+  
+  for(i in 1: n){
+    for(r in 1: m){
+      resultado[i,r] <- ((C[i,r]^2)/(n*valores.propios[r]))*100
+    }
+  }
+  return(resultado)
+}
+
+#La matriz de contribuciones es:
+
+X_contrib <- contribucion(C, X.R_valores.propios)
+X_contrib
+
+#Con FactoMiner se tiene:
+X_ACP$ind$contrib
+
+#Por lo tanto, se tiene el mismo resultado
+
+#8) Calcular la matriz de coordenadas T de las variables
+
+T <- function(V, valores.propios){
+  m <- ncol(V)
+  resultado <- matrix(0, m, m)
+  
+  for(r in 1:m){
+    resultado[,r] <- sqrt(valores.propios[r])*V[,r]
+  }
+  
+  return(resultado)
+}
+
+#La matriz de coordenadas de las variables para los datos que tenemos es:
+X_T <- T(V, X.R_valores.propios)
+X_T
+
+#Y la dada con FactoMiner es:
+X_ACP$var$coord
+
+#9)Calcular la matriz de calidades de las variables (cosenos cuadrados)
+
+S <- X_T^2
+S
+
+#Con FactoMiner da:
+X_ACP$var$cos2
+
+#10) Calcular vector I (1xm) de inercias de los ejes
+
+I <- function(valores.propios){
+  m <- length(valores.propios)
+  resultado <- c()
+  
+  for(j in 1: m){
+    resultado[j] <-100*(valores.propios[j]/m)
+  }
+  return(resultado)
+}
+
+#El vector de inercias para los datos con los que estamos trabajando es:
+X_I <- I(X.R_valores.propios)
+X_I
+
+#Con FactoMiner se tiene:
+plot(X_ACP, axes=c(1, 2), choix="ind", col.ind="blue",new.plot=TRUE)
+
+
+#Podemos observar que las inercias correpondiente al eje x y y obtenidas con 
+#FactoMiner son iguales a las dadas por el algoritmo.
+
+
