@@ -150,6 +150,22 @@ T <- function(V, valores.propios){
 ```
 
 ```{r}
+#Obtener contribuciones de las variables al cálculo de la varianza total del eje r
+calcular_contribuciones <- function(cos2){
+  m <- ncol(cos2)
+  contribuciones <- matrix(nrow = m, ncol = m)
+  
+  for(i in 1:m){
+    for(j in 1:m){
+      contribuciones[j,i] <- (cos2.var[j,i]/sum(cos2.var[,i]))*100
+    }
+  }
+  
+  return(contribuciones)
+}
+```
+
+```{r}
 #Calcular vector de inercias de los ejes
 I <- function(valores.propios){
   m <- length(valores.propios)
@@ -199,11 +215,14 @@ ACP_funcion <- function(X){
   #9) Matriz de calidades de las variables
   S <- X_T^2
   
+  # Matriz de contribuciones de las variables
+  var.contrib <- contribuciones.var(S)
+  
   #10) Vector de inercias
   X_I <- I(X.R_valores.propios)
   
   resultado <- list(valores_propios = X.R_valores.propios,ind_coord = C, ind_cos2 = X_Q, ind_contrib = X_contrib, 
-                    var_coord = X_T, var_cos2 = S, inercias = X_I)
+                    var_coord = X_T, var_cos2 = S, ind_contrib = var.contrib, inercias = X_I)
 }
 ```
 
@@ -482,7 +501,6 @@ ind.sup_proyeccion <- function(fila, matriz) {
   sd <-sd_poblacional(matriz)
   
   #centramos y reducimos la fila y la matriz
-  
   for(i in 1:length(fila)){
     fila[i] <- (fila[i]-medias[[i]])/sd[[i]]
   }
@@ -491,6 +509,7 @@ ind.sup_proyeccion <- function(fila, matriz) {
   
   #Matriz de correlaciones
   correlaciones <- R(matriz)
+  
   #Vectores propios
   matriz.e <- eigen(correlaciones)
   V <- matriz.e$vectors
@@ -498,9 +517,8 @@ ind.sup_proyeccion <- function(fila, matriz) {
   #Se calcula las coordenadas 
   C <- fila%*%V
   
-  #Se gráfica esas coordenadas en el plano
-  
-  #Convertimos la fila en un dataframe
+  #Se gráfica esas coordenadas en el plano mediante la conversión de la fila en 
+  # un dataframe.
   C_data_ind <- as.data.frame(C)
   col_names <- paste("Dim", 1:ncol(C_data_ind))  # Genera nombres como "Dim 1", "Dim 2", etc.
   colnames(C_data_ind) <- col_names
@@ -524,7 +542,6 @@ Comparamos la proyección suplementaria del individuo en el plano inicial que da
 con el resultado de FactoMiner. Para esto, tomamos como individuo suplementario a la fila número 6 de la 
 matriz X.
 
-
 ```{r}
 fila <- X[6,]
 coordenadasind_sup <- ind.sup_proyeccion(fila, X[-6,])
@@ -537,13 +554,11 @@ grid.arrange(coordenadasind_sup, coordenadasind_sup_FM, ncol = 2)
 Podemos observar que los gráficos se encuentran reflejados con respecto al eje "y". Además, el punto de color distinto, en cada gráfico, corresponde al individuo suplementario.
 También, es posible notar que al agregar la proyección suplementaria no se alteran las coordenadas de los individuos iniciales. 
 
-
 # Ejercicio 5 
 
 **Programe una función en R que reciba una columna (variable) de una matriz y calcule su proyección en suplementario en el círculo de correlaciones 2D programado en el punto2. Compare los resultados obtenidos con respecto a FactoMineR.**
 
 Primeramente, es necesario mencionar que la variable suplementaria se considera como una nueva columna que se le añade  a la base de datos inicial. Por lo tanto, en caso de que la columna no tenga una etiqueta, se le coloca un identificador que corresponde al número de columna, en este caso, el último.
-
 
 La función es la siguiente:
 
@@ -563,6 +578,7 @@ var.sup_proyeccion <- function(columna, matriz) {
   for(i in 1: ncol(matriz)){
     coordenada[i] <-cor(columna, C[,i])
   }
+  
   #Se gráfica en el círculo de correlaciones
   circulo <- circulo_correlaciones(matriz)
   graf_circulo <- circulo$variables
@@ -608,11 +624,9 @@ Además, es posible observar que al agregar la proyección suplementaria no se a
 
 **Verifique todo lo programado en los puntos anteriores con el ejemplo estudiantes.csv y con los datos del ejercicio 1 de la tarea anterior.**
 
-
 ## Base de datos de estudiantes
 
 ### Inciso 2
-
 
 ```{r}
 ACP_estudiantes <- ACP_funcion(estudiantes_datos)

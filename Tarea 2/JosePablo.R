@@ -54,13 +54,13 @@ for (i in 1:length(categories_class)) {
 }
 
 # Ahora se realiza nuevamente el analisis.
-model_2 <- PCA(beans_datos2, scale.unit=TRUE, ncp=2, graph = FALSE)
+model_2 <- PCA(beans_datos2, scale.unit=TRUE, ncp=4, graph = FALSE)
 fviz_pca_ind(model_2, col.ind = "#000000",label = "none" , select.ind = list(cos2 = 0.1))
 fviz_pca_var(model_2,col.var="#E7B800", select.var = list(cos2 = 0.1))
 
 filtered_beans_2 <- model_2$ind$coord[rowSums(model_2$ind$cos2[,1:2]) > 0.1, ]
-kmeans_result_2 <- kmeans(filtered_beans_2[, 1:2], centers = 3)
-fviz_cluster(list(data = filtered_beans_2, cluster = kmeans_result_2$cluster), 
+kmeans_result_2 <- kmeans(filtered_beans_2[,1:2], centers = 3)
+fviz_cluster(list(data = filtered_beans_2[,1:2], cluster = kmeans_result_2$cluster), 
              axes = c(1,2), geom = "point", stand = FALSE, 
              main = "PCA con Clusters", ellipse = FALSE)
 
