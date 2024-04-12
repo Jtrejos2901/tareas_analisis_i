@@ -26,7 +26,15 @@ library(gridExtra)
 library(factoextra)
 ```
 
-Para el desarrollo de los ejercicios se emplea la siguiente matriz:
+# Ejercicio 1
+
+**Complete todas las demostraciones que quedaron como tarea en la presentación de la clase.**
+
+<img src= "1.jpg" >
+<img src= "2.jpg" >
+<img src= "3.jpg" >
+
+Para el desarrollo de los siguientes ejercicios se emplea la siguiente matriz:
 
 ```{r, warning=FALSE, message=FALSE}
 X <- matrix(c(8,1,0,4,6,5,6,8,7,10,4,7,8,2,5,0,3,6), nrow = 6, ncol = 3, byrow
@@ -40,11 +48,20 @@ estudiantes_datos <- read.table('EjemploEstudiantes.csv', header=TRUE, sep=';',d
 estudiantes_datos<- as.matrix(estudiantes_datos)
 
 #----- beans--------------
-
 beans_datos <- read.csv("beansV2.csv")
-beans_datos <- as.matrix(beans_datos[,-17])
-```
 
+#Convertir Class a código disyuntivo
+categorias_class  <- unique(beans_datos$Class)
+lista_disyuntivo  <- list()
+beans_datos_disyuntivo <- beans_datos[,-17]
+
+for (i in 1:length(categorias_class)) {
+  lista_disyuntivo[[i]] <- as.numeric(beans_datos$Class == categorias_class[i])
+  names(lista_disyuntivo)[i] <- paste("Class_", categorias_class[i], sep = "")
+  beans_datos_disyuntivo <- cbind(beans_datos_disyuntivo, lista_disyuntivo[i])
+}
+beans_datos <- as.matrix(beans_datos_disyuntivo)
+```
 
 # Ejercicio 2
 **Implemente en lenguaje R funciones que permitan ejecutar el algoritmo del Análisis en Componentes Principales (ACP) visto en clase para variables numéricas. Compare los resultados obtenidos con respecto a FactoMineR **
@@ -53,54 +70,34 @@ Primeramente, se construyen las siguientes funciones necesarias para plantear un
 que realice un ACP de una base de datos.
 
 ```{r, warning=FALSE, message=FALSE}
-  #Obtner medias de las columnas de la matriz
-medias <- function(matriz) {
-  resultado <-list()
-  for(i in 1:ncol(matriz)) {
-    resultado[[i]] <- mean(matriz[,i])
-  }
-  return(resultado)
-}
-```
-
-
-```{r, warning=FALSE, message=FALSE}
-#Obtener desviaciones estándar poblacionales de las columnas de la matriz 
-sd_poblacional <- function(matriz) {
-  resultado <- list()
-  n <- nrow(matriz)
-  for(i in 1:ncol(matriz)) {
-    resultado[[i]] <- sqrt(((n-1)/n))*sd(matriz[,i])
-  }
-  return(resultado)
-}
-```
-
-```{r, warning=FALSE, message=FALSE}
 #Centramos y reducimos la matriz con la siguiente función
-centrar_y_reducir <- function(matriz, medias, desviaciones) {
+centrar_y_reducir <-  function(matriz){
+  # Se obtiene la cantidad de filas y columnas que posee la matriz.
+  columnas <- ncol(matriz)
+  filas <- nrow(matriz)
   
-  for(i in 1 : ncol(matriz)){
-    matriz[, i] <- (matriz[,i]-medias[[i]])/ desviaciones[[i]]
+  # Se crea una nueva matriz con los datos centrados y reducidos.
+  for(i in 1:columnas){
+    matriz[,i] <- (matriz[,i] - mean(matriz[,i])) / (sd(matriz[,i])*sqrt((filas - 1)/filas))
   }
+  
   return(matriz)
 }
 ```
 
 ```{r}
 #Calcular la matriz de correlaciones 
-R <- function(matriz) {
+matriz_correlaciones_ind <- function(matriz) {
   n <- nrow(matriz) 
   resultado <- (1/n)*t(matriz)%*%matriz
   return(resultado)
 }
 ```
 
-
 ```{r, warning=FALSE, message=FALSE}
 
 #Calcular la matriz de calidades de los individuos (cosenos cuadrados)
-Q <- function(C, matriz) {
+matriz_cos2_ind <- function(C, matriz) {
   n <-nrow(matriz)
   m <-ncol(matriz)
   resultado <- matrix(0, n,m)
@@ -118,17 +115,16 @@ Q <- function(C, matriz) {
 }
 ```
 
-
 ```{r}
 #Calcular la contribución de cada individuo i a la varianza total del eje r
-contribucion <- function(C, valores.propios) {
+contribucion_ind <- function(C, valores_propios) {
   n <-nrow(C)
   m <-ncol(C)
   resultado <- matrix(0, n, m)
   
   for(i in 1: n){
     for(r in 1: m){
-      resultado[i,r] <- ((C[i,r]^2)/(n*valores.propios[r]))*100
+      resultado[i,r] <- ((C[i,r]^2)/(n*valores_propios[r]))*100
     }
   }
   return(resultado)
@@ -136,28 +132,29 @@ contribucion <- function(C, valores.propios) {
 ```
 
 ```{r}
-# Calcular la matriz de coordenadas T de las variables
-T <- function(V, valores.propios){
+# Calcular la matriz de coordenadas de las variables
+coordenadas_var <- function(V, valores_propios){
   m <- ncol(V)
   resultado <- matrix(0, m, m)
   
   for(r in 1:m){
-      resultado[,r] <- sqrt(valores.propios[r])*V[,r]
+      resultado[,r] <- sqrt(valores_propios[r])*V[,r]
     }
     
   return(resultado)
 }
 ```
 
+
 ```{r}
 #Obtener contribuciones de las variables al cálculo de la varianza total del eje r
-calcular_contribuciones <- function(cos2){
+contribuciones_var <- function(cos2){
   m <- ncol(cos2)
   contribuciones <- matrix(nrow = m, ncol = m)
   
   for(i in 1:m){
     for(j in 1:m){
-      contribuciones[j,i] <- (cos2.var[j,i]/sum(cos2.var[,i]))*100
+      contribuciones[j,i] <- (cos2[j,i]/sum(cos2[,i]))*100
     }
   }
   
@@ -167,12 +164,12 @@ calcular_contribuciones <- function(cos2){
 
 ```{r}
 #Calcular vector de inercias de los ejes
-I <- function(valores.propios){
-  m <- length(valores.propios)
+calcular_inercias <- function(valores_propios){
+  m <- length(valores_propios)
   resultado <- c()
   
   for(j in 1: m){
-    resultado[j] <-100*(valores.propios[j]/m)
+    resultado[j] <-100*(valores_propios[j]/m)
   }
   return(resultado)
 }
@@ -184,45 +181,45 @@ el ACP de una base de datos.
 ```{r, warning= FALSE, message=FALSE}
 ACP_funcion <- function(X){
   #1) centrar y reducir X
-  medias_X <- medias(X)
-  sd_X <- sd_poblacional(X)
-  X <- centrar_y_reducir(X,medias_X, sd_X)
+  X <- centrar_y_reducir(X)
   
   #2) matriz de correlaciones
-  X_R <- R(X)
+  X_R <- matriz_correlaciones_ind(X)
   
   #3y 4) valores y vectores propios de la matriz de correlaciones
-  X.R_e <- eigen(X_R)
-  X.R_valores.propios <- X.R_e$values #ya vienen ordenados de mayor a menor
-  X.R_vectores.propios <- X.R_e$vectors
-  X.R_vectores.propios
+  X_R_e <- eigen(X_R)
+  X_R_valores_propios <- X_R_e$values #ya vienen ordenados de mayor a menor
+  X_R_vectores_propios <- X_R_e$vectors
+  X_R_vectores_propios
   
   #5) Construir matriz V que tiene como columnas los vectores propios de la matriz de correlaciones
-  V <- X.R_vectores.propios
+  V <- X_R_vectores_propios
 
   #6) Calcular la matriz de componentes principales 
   C <- X%*%V 
   
   #7) Calcular la matriz de calidades de los individuos
-  X_Q <- Q(C, X)
+  X_Q <- matriz_cos2_ind(C, X)
   
   # La matriz de contribuciones para los individuos de X es:
-  X_contrib <- contribucion(C, X.R_valores.propios)
+  X_contrib <- contribucion_ind(C, X_R_valores_propios)
   
   #8) La matriz de coordenadas de las variables
-  X_T <- T(V, X.R_valores.propios)
+  X_T <- coordenadas_var(V, X_R_valores_propios)
   
   #9) Matriz de calidades de las variables
   S <- X_T^2
   
   # Matriz de contribuciones de las variables
-  var.contrib <- contribuciones.var(S)
+  var_contrib <- contribuciones_var(S)
   
   #10) Vector de inercias
-  X_I <- I(X.R_valores.propios)
+  X_I <- calcular_inercias(X_R_valores_propios)
   
-  resultado <- list(valores_propios = X.R_valores.propios,ind_coord = C, ind_cos2 = X_Q, ind_contrib = X_contrib, 
-                    var_coord = X_T, var_cos2 = S, ind_contrib = var.contrib, inercias = X_I)
+  resultado <- list(valores_propios = X_R_valores_propios,
+                    ind = list(coord = C, cos2 =   X_Q, contrib = X_contrib),
+                    var = list(coord = X_T, cos2 = S, contrib = var_contrib),
+                    inercias = X_I)
 }
 ```
 
@@ -246,7 +243,7 @@ a los del algoritmo.
 **Coordenadas de los individuos**
 
 ```{r, warning=FALSE, message=FALSE}
-ACP_X$ind_coord
+ACP_X$ind$coord
 ```
 
 Con FactoMiner se obtiene lo siguiente:
@@ -261,7 +258,7 @@ esto solo indica que se refleja con respecto a algunos de los ejes al graficar.
 
 
 ```{r, warning=FALSE, message=FALSE}
-ACP_X$ind_cos2
+ACP_X$ind$cos2
 ```
 Vemos los resultados de FactoMiner
 ```{r}
@@ -272,7 +269,7 @@ Los cuales son iguales a los obtenidos con el algoritmo.
 **Constribución de los individuos**
 
 ```{r}
-ACP_X$ind_contrib
+ACP_X$ind$contrib
 ```
 
 Con FactoMiner se tiene:
@@ -285,7 +282,7 @@ Por lo tanto, se tiene el mismo resultado que FactoMiner.
 **Coordenadas de las variables**
 La matriz de coordenadas de las variables para los datos que tenemos es:
 ```{r}
-ACP_X$var_coord
+ACP_X$var$coord
 ```
 
 Y la dada con FactoMiner es:
@@ -296,14 +293,23 @@ X_ACP$var$coord
 **Matriz de cosenos al cuadrado de las variables**
 
 ```{r}
-ACP_X$var_cos2
+ACP_X$var$cos2
 ```
 Con FactoMiner da:
 ```{r}
 X_ACP$var$cos2
 ```
-Por temas computacionales, el primer valor de la tercera dimensión de la matriz de coordenadas y calidades 
-de las variables, obtenida con el algoritmo, es muy cercano a cero. Por lo cual, con FactoMiner aparece como cero.
+**Contribución de las variables**
+```{r}
+ACP_X$var$contrib
+```
+
+Con FactoMiner se obtiene 
+
+```{r}
+X_ACP$var$contrib
+```
+Por temas computacionales, el primer valor de la tercera dimensión de las matrices de coordenadas, calidades y contribuciones de las variables, obtenidas con el algoritmo, es muy cercano a cero. Por lo cual, con FactoMiner aparece como cero.
 
 **Inercias**
 ```{r}
@@ -329,7 +335,7 @@ plano_principal <- function(matriz){
   #Obtenemos la matriz con las coordenadas de los individuos
   
   ACP_matriz <- ACP_funcion(matriz)
-  C <- ACP_matriz$ind_coord
+  C <- ACP_matriz$ind$coord
  
   #Convertimos la matriz en un dataframe
   C_data <- as.data.frame(C)
@@ -380,7 +386,7 @@ circulo_correlaciones <- function(matriz){
   
   ACP_matriz <- ACP_funcion(matriz)
   
-  X_T <- ACP_matriz$var_coord
+  X_T <- ACP_matriz$var$coord
   
   #Convertimos la matriz en un dataframe y ajustamos para el gráfico
   X_T_data <- as.data.frame(X_T)
@@ -495,24 +501,34 @@ Primeramente, es necesario mencionar que el individuo suplementario se considera
 La función es la siguiente:
 
 ```{r, warning=FALSE, message=FALSE}
-ind.sup_proyeccion <- function(fila, matriz) {
-  #se calcula la media y desviación estándar de cada columna
-  medias <- medias(matriz)
-  sd <-sd_poblacional(matriz)
+ind_sup_proyeccion <- function(fila, matriz) {
   
+ #Obtener medias de las columnas de la matriz
+  medias <-c()
+  for(i in 1:ncol(matriz)) {
+    medias[i] <- mean(matriz[,i])
+  }
+ 
+#desviaciones estándar poblacionales de la matriz 
+  sd <- c()
+  n <- nrow(matriz)
+  for(i in 1:ncol(matriz)) {
+    sd[i] <- sqrt(((n-1)/n))*sd(matriz[,i])
+  }
+
   #centramos y reducimos la fila y la matriz
   for(i in 1:length(fila)){
     fila[i] <- (fila[i]-medias[[i]])/sd[[i]]
   }
   
-  matriz <- centrar_y_reducir(matriz, medias, sd)
+  matriz <- centrar_y_reducir(matriz)
   
   #Matriz de correlaciones
-  correlaciones <- R(matriz)
+  correlaciones <- matriz_correlaciones_ind(matriz)
   
   #Vectores propios
-  matriz.e <- eigen(correlaciones)
-  V <- matriz.e$vectors
+  matriz_e <- eigen(correlaciones)
+  V <- matriz_e$vectors
   
   #Se calcula las coordenadas 
   C <- fila%*%V
@@ -544,7 +560,7 @@ matriz X.
 
 ```{r}
 fila <- X[6,]
-coordenadasind_sup <- ind.sup_proyeccion(fila, X[-6,])
+coordenadasind_sup <- ind_sup_proyeccion(fila, X[-6,])
 
 ACP_indsup <- PCA( X,ind.sup = 6, graph = F)
 coordenadasind_sup_FM <-plot.PCA(ACP_indsup, choix = "ind")
@@ -563,7 +579,7 @@ Primeramente, es necesario mencionar que la variable suplementaria se considera 
 La función es la siguiente:
 
 ```{r, warning=FALSE, message=FALSE}
-var.sup_proyeccion <- function(columna, matriz) {
+var_sup_proyeccion <- function(columna, matriz) {
   #se calcula la media y desviación estándar de la columna 
   media <- mean(columna)
   n <- length(columna)
@@ -571,7 +587,7 @@ var.sup_proyeccion <- function(columna, matriz) {
   
   #Se obtienen los componentes principales 
   ACP_matriz <- ACP_funcion(matriz)
-  C <- ACP_matriz$ind_coord
+  C <- ACP_matriz$ind$coord
   
   #Se calculan las correlaciones de la columna con los componentes principales
   coordenada <- c()
@@ -609,7 +625,7 @@ Para comparar con FactoMiner, tomamos como variable suplementaria a la columna 3
 
 ```{r}
 columna <- X[,3]
-coordenadasvar_sup <- var.sup_proyeccion(columna, X[,-3])
+coordenadasvar_sup <- var_sup_proyeccion(columna, X[,-3])
 
 ACP_varsup <- PCA( X,quanti.sup = 3, graph = F)
 coordenadasvar_sup_FM <- plot.PCA(ACP_varsup, choix = "var")
@@ -659,7 +675,7 @@ fila_sup_estudiantes <- as.matrix(estudiantes_datos[6,])
 colnames(fila_sup_estudiantes) <- (rownames(estudiantes_datos))[6]
 fila_sup_estudiantes <- t(fila_sup_estudiantes)
 
-coordenadasind_sup_estudiantes <- ind.sup_proyeccion(fila_sup_estudiantes, estudiantes_datos[-6,])
+coordenadasind_sup_estudiantes <- ind_sup_proyeccion(fila_sup_estudiantes, estudiantes_datos[-6,])
 coordenadasind_sup_estudiantes
 ```
 
@@ -668,31 +684,39 @@ coordenadasind_sup_estudiantes
 columna_sup_estudiantes <- as.matrix(estudiantes_datos[,2])
 colnames(columna_sup_estudiantes) <- (colnames(estudiantes_datos))[2]
 
-coordenadasvar_sup_estudiantes <- var.sup_proyeccion(columna_sup_estudiantes, estudiantes_datos[,-2])
+coordenadasvar_sup_estudiantes <- var_sup_proyeccion(columna_sup_estudiantes, estudiantes_datos[,-2])
 coordenadasvar_sup_estudiantes
 ```
 
 
 ## Base de datos beans
 
-```{r}
+```{r, warning=FALSE}
 ACP_beans <- ACP_funcion(beans_datos)
-head(ACP_beans$ind_coord)
+head(ACP_beans$ind$coord[,1:3],15)
+```
+
+
+
+```{r}
+head(ACP_beans$ind$cos2[,1:3],15)
 ```
 
 ```{r}
-head(ACP_beans$ind_cos2)
+head(ACP_beans$ind$contrib[,1:3],15)
 ```
 
 ```{r}
-head(ACP_beans$ind_contrib)
+head(ACP_beans$var$coord[,1:3],15)
 ```
 ```{r}
-head(ACP_beans$var_coord)
+head(ACP_beans$var$cos2[,1:3],15)
 ```
+
 ```{r}
-head(ACP_beans$var_cos2)
+head(ACP_beans$var$contrib[,1:3],15)
 ```
+
 ```{r}
 head(ACP_beans$inercias)
 ```
@@ -705,13 +729,13 @@ plano_principal(beans_datos)
 ```
 
 **Círculo de correlaciones**
-```{r}
+```{r, warning=FALSE}
 circulo_correlaciones(beans_datos)$variables
 
 ```
 
 **Gráfico Dual**
-```{r}
+```{r, warning=FALSE}
 grafico_dual(plano_principal(beans_datos), 
              circulo_correlaciones(beans_datos), beans_datos)
 ```
@@ -719,18 +743,19 @@ grafico_dual(plano_principal(beans_datos),
 
 ### Inciso 4
 
-```{r}
+```{r, warning=FALSE}
 fila_sup_beans <- beans_datos[6,] 
-coordenadasind_sup_beans <- ind.sup_proyeccion(fila_sup_beans, beans_datos[-6,])
+coordenadasind_sup_beans <- ind_sup_proyeccion(fila_sup_beans, beans_datos[-6,])
 coordenadasind_sup_beans
 ```
 
 ### Inciso 5
-```{r}
+```{r, warning=FALSE}
 columna_sup_beans <- as.matrix(beans_datos[,2])
 colnames(columna_sup_beans) <- (colnames(beans_datos))[2]
 
-coordenadasvar_sup_beans <- var.sup_proyeccion(columna_sup_beans, beans_datos[,-2])
+coordenadasvar_sup_beans <- var_sup_proyeccion(columna_sup_beans, beans_datos[,-2])
 coordenadasvar_sup_beans
 ```
+
 
