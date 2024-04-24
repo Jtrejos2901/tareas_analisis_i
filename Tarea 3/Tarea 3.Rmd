@@ -636,6 +636,203 @@ grid.arrange(coordenadasvar_sup, coordenadasvar_sup_FM, ncol = 2)
 Para el caso de la variable suplementaria, se puede ver que los gráficos se encuentran reflejados con respecto al eje x. También, el vector con distinto color, en cada gráfico, corresponde a la variable suplementaria.
 Además, es posible observar que al agregar la proyección suplementaria no se alteran las coordenadas de las variables iniciales. 
 
+# Ejercicio 6
+**Programe en R un algoritmo para el ACP que en lugar de calcular la matriz de correlaciones R calcule H y con base en H realice los cálculos de lado de las variables y luego usando relaciones de dualidad realice todos los cálculos para la parte de los individuos. Verifique los resultados obtenidos con respecto a FactoMineR.**
+
+```{r}
+ACP_basado_en_H <- function(matriz_cyr){
+  # Se crea una función para generar la matriz H.
+  calcular_H <- function(matriz){
+    # Se retorna la matriz de Varianzas-covarianzas.
+    return((1/nrow(matriz))* matriz %*% t(matriz))
+  }
+  
+  # Se corre la función y se genera la matriz H.
+  H <- calcular_H(matriz_cyr)
+  
+  # Se calculan los valores y vectores propios de la matriz H.
+  e <- eigen(H)
+  val_propios_var <- e$values
+  vec_propios_var <- e$vectors
+
+  # Dado que pude suceder que se obtengan valores propios cercanos a cero, 
+  # entonces se procede a filtrar los valores y vectores propios.
+  val_propios_var <- val_propios_var[val_propios_var > 1e-10]
+  vec_propios_var <- vec_propios_var[,1:length(val_propios_var)]
+
+  
+  
+  # Se crea una función que calcule las coordenadas de las variables.
+  calcular_coordenadas <- function(matriz, vectores.propios){
+    # Se obtiene la cantidad de filas y columnas que posee la matriz.
+    m <- ncol(vectores.propios)
+    n <- ncol(matriz)
+    
+    # Se crea una matriz en blanco la cual se rellenará con las coordenadas.
+    coordenadas <- matrix(0,n,m)
+    
+    # Se rellena la matriz mediante un resultado obtenido a partir de la relación
+    # de dualidad.
+    for(i in 1:n){
+      for(j in 1:m){
+        x <- matriz_cyr[,i]
+        v <- vec_propios_var[,j]
+        
+        coordenadas[i,j] <- t(x)%*%v/sqrt(t(x)%*%x%*%t(v)%*%v)
+      }
+    }
+    
+    return(coordenadas)
+  }
+  
+  # Se calcula la matriz de coordenadas para las variables.
+  coordenadas_var <- calcular_coordenadas(matriz_cyr, vec_propios_var)
+
+  # Una vez que se cuenta con matriz de coordenadas, se procede a elevar al
+  # cuadrado dicha matriz para obtener la matriz de cosenos cuadrados. Además se
+  # compara el resultado con el obtenido con FactoMineR.
+  cos2_var <- (coordenadas_var)^2
+  
+  # Se crea una función para calcular la contribución de las variables.
+  calcular_contribuciones <- function(matriz){
+    m <- ncol(matriz)
+    n <- nrow(matriz)
+    
+    # Se genera una matriz vacía a rellenar con las contribuciones.
+    resultado <- matrix(0,n,m)
+    
+    for(i in 1:m){
+      for(j in 1:n){
+        resultado[j,i] <- matriz[j,i]/sum(matriz[,i])*100
+      }
+    }
+    
+    return(resultado)
+  }
+  
+  # Se calculan las contribuciones.
+  contribuciones_var <- calcular_contribuciones(cos2_var)
+  
+  # Ahora que se cuenta con toda la información útil sobre las variables, se 
+  # se procede a crear una función para calcular los vectores propios de los
+  # individuos.
+  calcular_vec_propios_ind <- function(matriz, vec_p_v, val_p_v){
+    n <- ncol(matriz)
+    f <- nrow(matriz)
+    m <- ncol(vec_p_v)
+    
+    # Se genera una matriz vacía a rellenar con los vectores propios de los
+    # individuos.
+    resultado <- matrix(0,n,m)
+    
+    for(i in 1:m){
+      resultado[,i] <- (t(matriz)%*%vec_p_v[,i])/sqrt(f*val_p_v[i])
+    }
+    
+    return(resultado)
+  }
+  
+  # Se calculan los vectores propios de los individuos.
+  vec_propios_ind <- calcular_vec_propios_ind(matriz_cyr, vec_propios_var, 
+                                              val_propios_var)
+  
+  # Se calculan las coordenadas de los individuos.
+  coordenadas_ind <- matriz_cyr%*%vec_propios_ind
+  
+  # Se crea la funcion para el calculo de los cosenos cuadrados.
+  calcular_cos2_ind <- function(C, matriz) {
+    n <-nrow(matriz)
+    m <-ncol(matriz)
+    f <- ncol(C)
+    
+    
+    resultado <- matrix(0, n,f)
+    
+    for(i in 1: n){
+      suma <- 0 
+      for(j in 1: m){
+        suma <- suma + matriz[i,j]^2
+      }
+      for(r in 1: f){
+        resultado[i,r] <- (C[i,r]^2)/suma
+      }
+    }
+    return(resultado)
+  }
+  
+  # Se calcula la matriz de cosenos cuadrados.
+  cos2_ind <- calcular_cos2_ind(coordenadas_ind, matriz_cyr)
+  
+  # Se calcula la matriz de contribuciones.
+  contribuciones_ind <- contribucion_ind(coordenadas_ind, val_propios_var)
+  
+  # Se calcula la inercia.
+  inercia <- calcular_inercias(val_propios_var)
+  
+  resultado <- list(
+    eigen = list(values = val_propios_var, vectors = vec_propios_ind),
+    var = list(coord = coordenadas_var, cos2 = cos2_var, 
+               contrib = contribuciones_var),
+    ind = list(coord = coordenadas_ind, cos2 = cos2_ind, 
+               contrib = contribuciones_ind)
+  )
+  
+  return(resultado)
+}
+```
+
+Finalmente se corre todo el algoritmo y se compara los resultados con los obtenidos por FactoMineR.
+
+```{r}
+X_cyr <- centrar_y_reducir(X)
+
+ACP_a_mano <- ACP_basado_en_H(X_cyr)
+ACP_con_FM <- PCA(X_cyr, graph = FALSE)
+
+# Valores propios,
+ACP_a_mano$eigen$values
+ACP_con_FM$eig
+
+# Coordenadas de las variables.
+ACP_a_mano$var$coord
+ACP_con_FM$var$coord
+
+# Coseno cuadrado de las variables.
+ACP_a_mano$var$cos2
+ACP_con_FM$var$cos2
+
+# Contribuciones de las variables.
+ACP_a_mano$var$contrib
+ACP_con_FM$var$contrib
+
+# Coordenadas de los individuos.
+ACP_a_mano$ind$coord
+ACP_con_FM$ind$coord
+
+# Coseno cuadrado de los individuos.
+ACP_a_mano$ind$cos2
+ACP_con_FM$ind$cos2
+
+# Contribuciones de los individuos.
+ACP_a_mano$ind$contrib
+ACP_con_FM$ind$contrib
+```
+
+# Ejercicio 7
+
+**Programe en R un algoritmo óptimo para el ACP que tome en cuenta cual matriz sea más pequeña R  o H.**
+```{r}
+ACP <- function(X){
+  if(nrow(X) >= ncol(X)){
+    return(ACP_funcion(X))
+  } else{
+    X_cyr <- centrar_y_reducir(X)
+    return(ACP_basado_en_H(X_cyr))
+  }
+}
+```
+
+
 # Ejercicio 8
 
 **Verifique todo lo programado en los puntos anteriores con el ejemplo estudiantes.csv y con los datos del ejercicio 1 de la tarea anterior.**
@@ -686,6 +883,19 @@ colnames(columna_sup_estudiantes) <- (colnames(estudiantes_datos))[2]
 
 coordenadasvar_sup_estudiantes <- var_sup_proyeccion(columna_sup_estudiantes, estudiantes_datos[,-2])
 coordenadasvar_sup_estudiantes
+```
+
+### Inciso 6
+
+```{r}
+ACP_estudiantes_H <- ACP_basado_en_H(centrar_y_reducir(estudiantes_datos))
+ACP_estudiantes_H
+```
+### Inciso 7
+
+```{r}
+ACP_estudiantes_optimo <- ACP(estudiantes_datos)
+ACP_estudiantes_optimo
 ```
 
 
@@ -758,4 +968,18 @@ coordenadasvar_sup_beans <- var_sup_proyeccion(columna_sup_beans, beans_datos[,-
 coordenadasvar_sup_beans
 ```
 
+### Inciso 6
+
+Dado que la base de datos `beans_datos` posee un total de 4767 individuos, al calcular la matriz H, se obtienen unas dimensiones de 4767x4767 lo cual genera que al pasarlo por la función `eigen()`, se tarde un periodo de tiempo elevado al calcular los vectores y valores propios. Por lo tanto, se decide no evaluar el código. Esto se corrobora en el inciso 7 donde la función `ACP()`, ejecuta a la función basada en la matriz de correlaciones R.
+
+```{r, eval=FALSE}
+ACP_beans_H <- ACP_basado_en_H(centrar_y_reducir(beans_datos))
+ACP_beans_H
+```
+
+### Inciso 7
+
+```{r, warning=FALSE}
+ACP_beans_optimo <- ACP(beans_datos)
+```
 
