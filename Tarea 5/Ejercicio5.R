@@ -61,13 +61,27 @@ Q
 #Encontramos los valores y vectores propios de Q 
 propios <- eigen(Q)
 valores_propios <- propios$values
+valores_propios <- valores_propios[-c(5,6)]
 vectores_propios <- propios$vectors
+vectores_propios <- vectores_propios[,-c(5,6)]
 valores_propios
 vectores_propios
 
 #Calculamos las coordenadas 
+coordenadas <- matrix(0, nrow = 6, ncol = 4)
+for (i in 1:6) {
+  for (j in 1:4) {
+    coordenadas[i,j] <- sqrt(valores_propios[j])*vectores_propios[i,j]
+  }
+}
 
+coordenadas[,1:2]
 
+#Graficamos
+plot(coordenadas[,1], coordenadas[,2], col = "orange", pch = 16,
+     xlab = "Coordenada X", ylab = "Coordenada Y", main = "Plot de Coordenadas")
+text(coordenadas[,1], coordenadas[,2], 
+     labels = rownames(m), pos = 4, cex = 0.7, col = "black")
 
 #------------------------------Ejemplo 2-----------------------------------
 
@@ -110,7 +124,7 @@ plot(-aire.mds$points[,1],aire.mds$points[,2],type="n",xlab="Coordenada 1",
 text(-aire.mds$points[,1],aire.mds$points[,2],labels=row.names(aire.dist))
 
 #otra manera de dibujar las coordenadas 
-plot(aire.mds$points[,1], aire.mds$points[,2], col = "orange", 
+plot(aire.mds$points[,1], aire.mds$points[,2], col = "orange", pch = 16, 
      xlab = "Coordenada X", ylab = "Coordenada Y", main = "Plot de Coordenadas")
 text(aire.mds$points[,1], aire.mds$points[,2], 
      labels = rownames(aire.mds$points), pos = 3, cex = 0.3, col = "black")
@@ -136,8 +150,8 @@ text(swiss.mds$points, labels=as.character(1:nrow(swiss.x)))
 coordenadas <- swiss.mds$points
 nombres <- rownames(swiss.mds$points)
 
-plot(coordenadas[,1], coordenadas[,2], col = "orange", xlab = "Coordenada X", 
-     ylab = "Coordenada Y", main = "Plot de Coordenadas")
+plot(coordenadas[,1], coordenadas[,2], col = "orange", pch = 16, 
+     xlab = "Coordenada X", ylab = "Coordenada Y", main = "Plot de Coordenadas")
 text(coordenadas[,1], coordenadas[,2], labels = nombres, pos = 4, cex = 0.3, 
      col = "black")
 
