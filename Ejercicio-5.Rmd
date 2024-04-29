@@ -1,0 +1,45 @@
+---
+title: "Tarea 5"
+author: "Jose Pablo Trejos Conejo"
+date: "2024-04-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Librerías.
+```{r, warning=FALSE, message=FALSE}
+library(datasets)
+library(FactoMineR) 
+library(factoextra)
+```
+
+# Ejercicio 1.
+**Para la tabla de datos `eurodist` que viene con el paquete datasets el cual contiene las distancias entre algunas de las ciudades más importantes de Europa ejecute un Escalamiento Multidimensional y luego compare el resultado con el mapa de Europa.**
+
+Primero se obtienen los datos de las distancias apartir del paquete `datasets`.
+```{r}
+matriz_distancias <- eurodist
+```
+
+Una vez que se cuenta con las distancias, se ejecuta el ACP o *Multidimensional Scalling*, a partir de la matriz de distancias.
+```{r}
+MDS <- cmdscale(matriz_distancias,eig=TRUE, k=2)
+MDS
+```
+
+Finalmente se gráfica a los individuos y se muestra una comparación con el mapa verdadero.
+
+*Ubicaciones apartir del MDS:*
+```{r}
+x <- MDS$points[,1]
+y <- -1*MDS$points[,2]
+plot(x, y, xlab="Componente 1", ylab="Componente 2",main="MDS",pch = 19)
+text(x, y, labels = labels(matriz_distancias), cex=0.85 , pos = 1) 
+```
+
+*Mapa real:*
+<img src="mapa_europa.jpg">
+
