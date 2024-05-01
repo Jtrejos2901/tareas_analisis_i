@@ -1,0 +1,143 @@
+---
+title: Análisis de Datos I <br> Tarea 6
+author:
+  - "Maria Carolina Navarro Monge C05513"
+  - "Tábata Picado Carmona C05961"
+  - "Jose Pablo Trejos Conejo C07862"
+output:
+  rmdformats::robobook:
+        code_folding: show
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Librerías
+
+```{r, warning=FALSE, message=FALSE}
+library(FactoMineR)
+library(factoextra)
+```
+
+# Ejercicio 1
+
+# Ejercicio 2
+
+# Ejercicio 3
+
+**3. El código abajo ilustra como construir una Tabla Cruzada en R a partir de una tabla Individuos × Variables. Explique en detalle cada línea del siguiente código y luego con la tabla resultante ejecute un AFC e interprete los resultados:**
+
+Se carga la librería MASS, la cual se utiliza para estimar modelos lineales generalizados mixtos por medio de métodos de cuasi-verosimilitud penalizados (PQL).
+
+```{r, warning=FALSE, message=FALSE}
+library(MASS)
+```
+
+La función head() retorna la primera parte del dataframe Cars93.
+
+```{r}
+head(Cars93)
+```
+
+La función table() utiliza factores de clasificación cruzada para crear una tabla de contingecia. En este caso las columnas Type y DriveTrain son las que deben ser utilizadas como factores para la creación de la tabla cruzada. El resultado se guarda en la variable datos. 
+
+```{r}
+datos <- table(Cars93$Type, Cars93$DriveTrain)
+```
+
+Se imprime la variable datos, la cual muestra la frecuencia de ocurrencia de cada combinación posible de valores entre las variables Type y DriveTrain.
+
+```{r}
+datos
+```
+
+La función class() obtiene qué clase posee el objeto datos. En este caso es de tipo table. 
+
+```{r}
+class(datos)
+```
+
+La función unclass() se encarga de convertir el objeto datos que era de tipo table en una lista sin ninguna clase específica. 
+
+```{r}
+datos <- unclass(datos)
+```
+
+Se obtiene la clase del objeto datos. En este caso puede ser matrix o array. 
+
+```{r}
+class(datos)
+```
+
+Con la función as.data.frame() se convierte el objeto datos en uno de tipo data.frame
+
+```{r}
+datos <- as.data.frame(datos)
+```
+
+Se obtiene la clase del objeto datos. En este caso data.frame debido a la función aplicada anteriormente.
+
+```{r}
+class(datos)
+```
+
+Se imprime la variable datos. 
+
+```{r}
+datos
+```
+
+Ahora vamos a ejecutar un AFC con la tabla cruzada resultante. 
+
+```{r}
+AFC_datos <- CA(datos, graph = F)
+AFC_datos
+```
+
+## Porcentaje de varianza explicada
+```{r}
+fviz_screeplot(AFC_datos, addlabels = TRUE)
+```
+Como se puede observar el mayor porecentaje de varianza explicada como es de esperase viene dado por la dimensión 1. En total si se toman en cuenta las dos dimensiones se tiene un porcentaje de varianza explicada del 100%. 
+
+## Biplot
+```{r}
+fviz_ca_biplot(AFC_datos, repel = TRUE)
+```
+
+Analizando el gráfico de individuos y variables se puede notar que los automóviles que poseen tracción delantera son los pequeños, compactos y medianos. Los de tracción trasera son los deportivos y grandes. Por último, los vehículos que poseen doble tracción son las camionetas. 
+
+## Cosenos cuadrados para filas 
+```{r}
+fviz_cos2(AFC_datos, choice = "row", axes = 1:2)
+```
+
+## Cosenos cuadrados para columnas 
+```{r}
+fviz_cos2(AFC_datos, choice = "col", axes = 1:2)
+```
+
+Tanto en el gráfico de cosenos cuadrados de filas como de columnas todos los individios y variables están completamente bien representados ya que su coseno cuadrado es igual a 1.
+
+## Contribuciones para las filas 
+```{r}
+fviz_ca_row(AFC_datos, col.row = "contrib", 
+            gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+            repel = TRUE)
+```
+
+Para las filas se tiene que el individuo con mayor contribución es el vehículo de tipo camioneta y el de menor de tipo compacto, los demás poseen contribuciones similares.   
+
+## Contribuciones para las columnas
+```{r}
+fviz_ca_col(AFC_datos, col.col = "contrib",
+            gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+            repel = TRUE)
+```
+
+En el lado de las variables la que posee mayor contribución es la de doble tracción, seguidamente tracción trasera y por último, la tracción delantera. 
+
