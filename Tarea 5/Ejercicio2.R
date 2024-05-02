@@ -48,7 +48,8 @@ MDS_algoritmo <- function(X, distancias) {
   
   for(i in 1: n) {
     for(j in 1: m){
-      coordenadas[i,j] <- sqrt(valores_propios_filtrados[j])*vectores_propios[i,j]
+      coordenadas[i,j] <- (sqrt(valores_propios_filtrados[j])*
+                             vectores_propios[i,j])
     }
   }
   
@@ -69,7 +70,8 @@ MDS_algoritmo <- function(X, distancias) {
 # Comparación con cmdscales() 
 
 # Primeramente, se carga la base de datos de estudiantes
-estudiantes_datos <- read.table('Tarea 3/EjemploEstudiantes.csv', header=TRUE, sep=';',dec=',',row.names=1)
+estudiantes_datos <- read.table('Tarea 3/EjemploEstudiantes.csv', 
+                                header=TRUE, sep=';',dec=',',row.names=1)
 
 # Se obtiene las distancias de cada par de individuos
 distancias <- dist(estudiantes_datos)

@@ -25,6 +25,125 @@ library(factoextra)
 
 # Ejercicio 1
 
+**La siguiente tabla representa el tipo de estudios cursados (universitarios, cursos preparatorios, otros) según el tipo bachillerato cursado (A-Literatura, B-Economía, C-Ciencias (matemáticas, física), D-Ciencias naturales (biología, química,...).**
+
+Primero se confecciona la tabla a partir de los datos suministrados en el documento de la tarea 6:
+```{r}
+T_contingencia <- matrix(c(13,2,5,20,20,2,8,30,10,5,5,20,7,1,22,30,50,10,40,100), byrow = T, nrow = 5, ncol = 4, 
+            dimnames = list(c("A", "B", "C", "D","Total"), c("Univ.", "Prepa.", "Otros","Total")))
+T_contingencia
+```
+Ahora se crea la tabla de frecuencias:
+```{r}
+T_frec_relativas <- T_contingencia/100 
+dimnames(T_frec_relativas) <- list(c("A", "B", "C", "D","frec. r columna"), 
+                                c("Univ.", "Prepa.", "Otros","frec. r fila"))
+T_frec_relativas
+```
+
+## a) Encuentre la tabla de efectivos teorica suponiendo independencia.
+
+Para esto, primero calculamos la tabla de *Frecuencias Teóricas* considerando que el elemento en la fila $i$, columna $j$, corresponde al calculo de:
+
+$$f_{i \bullet} \cdot f_{\bullet j}$$
+
+Entonces:
+```{r}
+generar_tabla_efectivos <- function(tabla){
+  resultado <- tabla
+  
+  n_fil <- nrow(tabla)
+  n_col <- ncol(tabla)
+    
+  for(i in 1:(n_fil - 1)){
+    for(j in 1:(n_col - 1)){
+      resultado[i,j] <- tabla[i,n_col]*tabla[n_fil,j]
+    }
+  }
+  
+  return(resultado)
+}
+
+T_frec_teoricas <- generar_tabla_efectivos(T_frec_relativas)
+T_frec_teoricas
+```
+
+Finalmente, multiplicando por el total de individuos la matriz anterior, obtenemos la tabla de efectivos teóricos.
+```{r}
+T_efec_teoricos <- 100*T_frec_teoricas
+T_efec_teoricos
+```
+
+## b) Calcular la distancia de $\chi^{2}$ entre la tabla de contingencia real y la tabla de efectivos teorica en caso de independencia.
+
+Para este calculo se recurre a la formula:
+
+$$\chi^{2} = n\sum_{i=1}^{m_{1}} \sum_{j=1}^{m_{2}} \dfrac{(f_{ij} - f_{i \bullet} f_{\bullet j})^{2}}{f_{i \bullet} f_{\bullet j}}$$
+
+```{r}
+calcular_distancia <- function(tabla){
+  resultado <- 0
+  
+  n_fil <- nrow(tabla)
+  n_col <- ncol(tabla)
+    
+  for(i in 1:(n_fil - 1)){
+    for(j in 1:(n_col - 1)){
+      aux <- tabla[i,n_col]*tabla[n_fil,j]
+      resultado <- resultado + ((tabla[i,j] - aux)**2)/aux
+    }
+  }
+  
+  resultado <- 100*resultado
+  
+  return(resultado)  
+}
+
+distancia_chi <- calcular_distancia(T_frec_relativas)
+distancia_chi
+```
+
+## c) Calcule la matriz X de perfiles de fila y la matriz Y de perfiles de columna.
+
+Para esto, se crearán dos funciones que calcules las matrices $X$ e $Y$.
+```{r}
+perfiles_fila <- function(tabla){
+  resultado <- tabla
+  
+  n_fil <- nrow(tabla)
+  n_col <- ncol(tabla)
+    
+  for(i in 1:(n_fil - 1)){
+    for(j in 1:(n_col - 1)){
+      resultado[i,j] <- resultado[i,j]/tabla[i,n_col]
+    }
+  }
+  
+  return(resultado)
+}
+
+perfiles_columna <- function(tabla){
+  resultado <- tabla
+  
+  n_fil <- nrow(tabla)
+  n_col <- ncol(tabla)
+    
+  for(i in 1:(n_fil - 1)){
+    for(j in 1:(n_col - 1)){
+      resultado[i,j] <- resultado[i,j]/tabla[n_fil,j]
+    }
+  }
+  
+  return(resultado)
+}
+
+X <- perfiles_fila(T_frec_relativas)
+Y <- perfiles_columna(T_frec_relativas)
+
+X
+Y
+```
+
 # Ejercicio 2
 
 # Ejercicio 3
