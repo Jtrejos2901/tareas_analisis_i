@@ -146,6 +146,8 @@ Y
 
 # Ejercicio 2
 
+<img src="Teorema 6.jpeg">
+
 # Ejercicio 3
 
 **3. El código abajo ilustra como construir una Tabla Cruzada en R a partir de una tabla Individuos × Variables. Explique en detalle cada línea del siguiente código y luego con la tabla resultante ejecute un AFC e interprete los resultados:**
