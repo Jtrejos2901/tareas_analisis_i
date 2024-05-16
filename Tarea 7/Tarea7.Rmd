@@ -1,0 +1,53 @@
+---
+title: Análisis de Datos I <br> Tarea 6
+author:
+  - "Maria Carolina Navarro Monge C05513"
+  - "Tábata Picado Carmona C05961"
+  - "Jose Pablo Trejos Conejo C07862"
+output:
+  rmdformats::robobook:
+        code_folding: show
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Librerias
+```{r, warning=FALSE, message=FALSE}
+library(factoextra)
+library(FactoMineR)
+```
+
+# Ejercicio 3
+
+<img src="demostraciones_tarea_7-0001.jpg">
+<img src="demostraciones_tarea_7-0002.jpg">
+<img src="demostraciones_tarea_7-0003.jpg">
+<img src="demostraciones_tarea_7-0004.jpg">
+<img src="demostraciones_tarea_7-0005.jpg">
+
+# Ejercicio 4
+**Usando las variables categóricas de la tabla de datos poison del paquete FactoMineR realice un AFCM con la función MCA(...) del paquete FactoMineR. Incluya e interprete al menos: 1) Grafico de varianzas explicadas por los ejes 2) Grafico de variables 3) Grafico de variables con modalidades 4) el Biplot 5) cos2(x) de modalidades y variables y 6) contribuciones de variables y modalidades a la formación de ejes.**
+
+## Base de datos
+
+Se carga la base de datos `poison` del paquete `FactoMiner`.
+```{r}
+data(poison)
+
+knitr::kable(poison)
+```
+
+## AFCM
+
+Se realiza el *AFCM* con la base de datos `poison`
+```{r eval=FALSE}
+poisonAFCM <- MCA(poison, quanti.sup = 1:2, quali.sup=c(3,4))
+```
+
+
