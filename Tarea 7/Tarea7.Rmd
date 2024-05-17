@@ -194,3 +194,11 @@ De acuerdo con lo mostrado en el gráfico, los individuos que más contribuyen a
 formación de la dimensión 1 y 2 son el 53 y el 44. Además, dado que la contribución
 de los individuos del top 15 están por encima de la línea roja, significa
 que el aporte de estos es superior al umbral promedio de contribución.
+
+# Ejercicio 5
+
+<img src="5.1.png">
+<img src="5.2.png">
+<img src="5.3.png">
+<img src="5.4.png">
+
