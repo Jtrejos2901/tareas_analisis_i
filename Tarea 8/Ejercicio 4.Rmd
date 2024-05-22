@@ -1,0 +1,104 @@
+---
+title: "Ejercicio 4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=FALSE}
+library(cluster)
+library(ggplot2)
+library(factoextra)
+```
+
+
+# Ejercicio 4
+**Dada la siguiente matriz de disimilitudes entre cuatro individuos A1, A2, A3 y A4, construya a mano" una Jerarquía Binaria usando la agregación del Salto Máximo y del Promedio, dibuje el dendograma en ambos casos: **
+
+\[
+D = \begin{bmatrix}
+0 &   &   &    \\
+5 & 0 &   &  \\
+2 & 1 & 0 &   \\
+3 & 7 & 6 & 0 \\
+\end{bmatrix} 
+\]
+
+Primeramente, se crea la matriz de disimilitud D proporcionada.
+```{r}
+disimilitud_matriz <- rbind(rep(0, 4), c(5,0,0,0), c(2,1,0,0), c(3,7,6,0))
+disimilitud_matriz <- as.dist(disimilitud_matriz)
+disimilitud_matriz
+
+```
+
+Con esa matriz, se realiza la Jerarquía Binaria usando la agregación del Salto
+Máximo y del Promedio.
+
+## Agregación Salto Máximo
+<img src= "JB_1.jpg">
+<img src= "dendograma1.jpg">
+
+### Comparación con hclust
+```{r}
+modelo_SM <- hclust(disimilitud_matriz, method = "complete")
+plot(modelo_SM)
+```
+
+Como se puede observar, el dendograma que se obtiene da las mismas agrupaciones
+y alturas que las obtenidas con el procedimiento "a mano".
+
+## Agregación Salto Promedio
+<img src= "JB_2.jpg">
+<img src= "dendograma2.jpg">
+
+### Comparación con hclust
+```{r}
+modelo_SP <- hclust(disimilitud_matriz, method = "average")
+plot(modelo_SP)
+```
+
+El dendograma que se obtiene con hclust es el mismo que el dado con el
+procedimiento a mano. Además, las agrupaciones formadas son las mismas que
+con la agregación de Salto Máximo pero difieren en la altura de la última 
+jerarquía ya que, con Salto Promedio es de 5 y con Salto Máximo es de 7.
+
+# Ejercicio 5
+
+Primeramente, se crea la matriz de disimilitud D proporcionada.
+```{r}
+  disimilitud_matriz_S <- 
+  rbind(c(1,0,0,0,0), c(0.10,1,0,0,0), c(0.42,0.63,1,0,0),c(0.54,0.46,0.41,1,0),c(0.35,0.98,0.85,0.73,1))
+disimilitud_matriz_S <- as.dist(disimilitud_matriz_S)
+disimilitud_matriz_S
+
+```
+
+Con esa matriz, se realiza la Jerarquía Binaria usando la agregación del Salto
+Mínimo y Máximo.
+
+## Agregación Salto Mínimo
+
+
+### Comparación con hclust
+```{r}
+modelo_SMin <- hclust(disimilitud_matriz_S, method = "single")
+plot(modelo_SMin)
+```
+
+Como se puede observar, el dendograma que se obtiene da las mismas agrupaciones
+y alturas que las obtenidas con el procedimiento "a mano".
+
+## Agregación Salto Máximo
+
+
+### Comparación con hclust
+```{r}
+modelo_SMax <- hclust(disimilitud_matriz_S, method = "complete")
+plot(modelo_SMax)
+```
+
+El dendograma que se obtiene con hclust es el mismo que el dado con el
+procedimiento a mano. 
