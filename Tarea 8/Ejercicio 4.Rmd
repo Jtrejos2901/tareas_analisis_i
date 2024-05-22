@@ -66,8 +66,18 @@ con la agregación de Salto Máximo pero difieren en la altura de la última
 jerarquía ya que, con Salto Promedio es de 5 y con Salto Máximo es de 7.
 
 # Ejercicio 5
+**Dada la siguiente matriz de disimilitudes entre cinco individuos A1, A2, A3, A4 y A5 construya a mano" una Jerarquía Binaria usando la agregación del Salto Mínimo y del Salto Máximo, dibuje el dendograma en ambos casos: **
 
-Primeramente, se crea la matriz de disimilitud D proporcionada.
+\[
+S = \begin{bmatrix}
+0.10 & 1    &      &      & \\
+0.42 & 0.63 & 1    &      &  \\
+0.54 & 0.46 & 0.41 & 1    &   \\
+0.35 & 0.98 & 0.85 & 0.73 & 1  \\
+\end{bmatrix} 
+\]
+
+Primeramente, se crea la matriz de disimilitud S proporcionada.
 ```{r}
   disimilitud_matriz_S <- 
   rbind(c(1,0,0,0,0), c(0.10,1,0,0,0), c(0.42,0.63,1,0,0),c(0.54,0.46,0.41,1,0),c(0.35,0.98,0.85,0.73,1))
@@ -77,10 +87,11 @@ disimilitud_matriz_S
 ```
 
 Con esa matriz, se realiza la Jerarquía Binaria usando la agregación del Salto
-Mínimo y Máximo.
+Mínimo y del Salto Máximo.
 
 ## Agregación Salto Mínimo
-
+<img src= "JB_3.jpg">
+<img src= "dendograma3.jpg">
 
 ### Comparación con hclust
 ```{r}
@@ -92,7 +103,8 @@ Como se puede observar, el dendograma que se obtiene da las mismas agrupaciones
 y alturas que las obtenidas con el procedimiento "a mano".
 
 ## Agregación Salto Máximo
-
+<img src= "JB_4.jpg">
+<img src= "dendograma4.jpg">
 
 ### Comparación con hclust
 ```{r}
@@ -101,4 +113,7 @@ plot(modelo_SMax)
 ```
 
 El dendograma que se obtiene con hclust es el mismo que el dado con el
-procedimiento a mano. 
+procedimiento a mano, dado que se tienen las mismas agrupaciones y alturas. Además,
+note que la Jerarquía Binaria por la agregación de Salto Máximo y del Salto Mínimo
+también agrupan 1 con 2 y 3 con 4, pero difieren en la manera de agrupar con 5 y las alturas
+con el Salto Máximo son mayores.
