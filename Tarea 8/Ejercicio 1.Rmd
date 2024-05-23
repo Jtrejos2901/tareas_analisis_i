@@ -1,0 +1,136 @@
+---
+title: "Ejercicio 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(readr)
+library(FactoMineR) 
+library(factoextra)
+library(cluster)
+library(ggplot2)
+library(gridExtra)
+```
+
+# Ejercicio 1
+
+**En este ejercicio usaremos la tabla de datos EjemploAlgoritmosRecomendación.csv, la cual contiene los promedios de evaluación de 100 personas que adquirieron los mismos productos o muy similares en la tienda AMAZON. La idea consiste en recomendar a un cliente los productos que ha comprado otra persona que pertenece al mismo clúster.**
+
+Se carga la base de datos necesaria.
+
+```{r, warning=FALSE, message=FALSE}
+datos_Amazon <- read.table('EjemploAlgoritmosRecomendacion.csv', header=TRUE, sep=';',dec=',',row.names=1)
+```
+
+- **a) Ejecute un Clustering Jerárquico con la distancia euclídea y la agregación del Salto Máximo, Salto Mínimo, Promedio y Ward. Guarde la tabla de datos en el archivo AlgoritmosRecomendación2.csv con el clúster al que pertenece cada individuo para el caso de la agregación de Ward usando 2 clústeres.**
+
+**Clustering Jerárquico con agregación del Salto Máximo**
+
+```{r, warning=FALSE}
+clustering_SaltoMaximo<- hclust(dist(datos_Amazon), method = "complete")
+fviz_dend(clustering_SaltoMaximo, cex = 0.4, repel = TRUE)
+
+```
+**Clustering Jerárquico con agregación del Salto Mínimo**
+```{r, warning=FALSE}
+clustering_SaltoMinimo <- hclust(dist(datos_Amazon), method = "single")
+fviz_dend(clustering_SaltoMinimo, cex = 0.4, repel = TRUE)
+
+```
+**Clustering Jerárquico con agregación del Salto Promedio**
+```{r, warning=FALSE}
+clustering_SaltoPromedio <- hclust(dist(datos_Amazon), method = "average")
+fviz_dend(clustering_SaltoPromedio, cex = 0.4, repel = TRUE)
+
+```
+
+**Clustering Jerárquico con agregación Ward**
+    
+```{r, warning=FALSE}
+clustering_Ward <- hclust(dist(datos_Amazon), method = "ward.D")
+fviz_dend(clustering_Ward , cex = 0.4, repel = TRUE)
+
+```
+
+Ahora, usando el resultado obtenido por la agregación de Ward, se procede a guardar una tabla de datos con el clúster al que pertenece cada individuo usando 2 clústeres en el archivo AlgoritmosRecomendacion2.csv.
+
+Primero, se añade la columna que indica el clúster al que pertenece cada individuo.
+```{r}
+Cluster <- cutree(clustering_Ward,k=2)
+tabla_clusters_ward <- cbind(datos_Amazon,Cluster)
+head(tabla_clusters_ward)
+```
+
+Después, se guarda en un nuevo documento csv.
+
+```{r}
+# Directorio
+setwd("C:\\Users\\Caro\\OneDrive - Universidad de Costa Rica\\Escritorio\\Caro UCR\\I semestre 2024\\Análisis de datos\\tareas_analisis_i\\Tarea 8")
+
+# Se guarda el archivo en como un CSV
+write.csv(tabla_clusters_ward,"AlgoritmosRecomendacion2.csv")
+```
+
+- **b) "Corte" el árbol anterior usando 2 clústeres y la agregación de Ward, interprete los resultados usando gráficos de barras (Horizontal-Vertical) y usando gráficos tipo Radar.**
+
+En el inciso a) se cortó el árbol usando 2 clústeres y la agregación de Ward,
+dicho corte se nombró `Cluster`.
+
+**Interpretación**
+
+A continuación, se realiza una interpretación de los clústeres mediante los 
+centroides. Por lo tanto, es necesario encontrar el centroide de cada clúster.
+
+De tal manera, se obtienen los centroides para cada clúster y se muestran sus 
+coordenadas en el espacio de variables con la siguiente función:
+```{r}
+centroides_coord <- function(num.cluster, datos, clusters) {
+  lista_centroides <- list()
+  for(i in 1: num.cluster) {
+    ind <- (clusters == i)
+    centroide <- colMeans(datos[ind,])
+    lista_centroides[[i]] <-  data.frame("Cluster" = i, "Variable" = names(centroide),
+                              "Valor" = centroide)
+  }
+  return(lista_centroides)
+}
+```
+
+Los centroides para cada clúster son
+```{r}
+
+centroides <- centroides_coord(2,datos_Amazon,Cluster)
+
+for(i in 1:length(centroides)) {
+  print(centroides[[i]])
+}
+```
+
+Seguidamente, se realizan los gráficos de barras para cada centroide.
+```{r}
+# Se juntan los dataframes con las coordenadas de los centroides para cada clúster
+centros <- do.call(rbind, centroides)
+
+#Se crean los gráficos de barra
+barras1 <- ggplot(centros[centros$Cluster == "1", ], aes(x = Variable, y = Valor)) + 
+  geom_bar(stat = "identity", fill = "lightskyblue4") + 
+  labs(x = "Variables", y = "Cluster 1") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+barras2 <- ggplot(centros[centros$Cluster == "2", ], aes(x = Variable, y = Valor)) + 
+  geom_bar(stat = "identity", fill = "darkolivegreen4") + 
+  labs(x = "Variables", y = "Cluster 2") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+grid.arrange(barras1, barras2, ncol = 2)
+
+```
+
+
+
