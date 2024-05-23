@@ -1,5 +1,6 @@
 #--------------------------------Ejercicio 6------------------------------------
 
+library(factoextra)
 # b) Programe una función en R que calcula la distancia de Chebychev entre dos 
 # vectores.
 
@@ -43,4 +44,4 @@ Datos6 <- read.csv("EjemploAlgoritmosRecomendacion.csv",header=TRUE, sep=";",
 distancias <- matriz_distancias(Datos6)
 distancias <- as.dist(distancias)
 clustering <- hclust(distancias, method = "ward.D")
-plot(clustering)
+fviz_dend(clustering, cex = 0.4, repel = TRUE)
