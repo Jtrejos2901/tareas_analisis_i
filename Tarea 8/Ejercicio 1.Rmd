@@ -114,6 +114,7 @@ Seguidamente, se realizan los gráficos de barras para cada centroide.
 ```{r}
 # Se juntan los dataframes con las coordenadas de los centroides para cada clúster
 centros <- do.call(rbind, centroides)
+centros$Cluster <- as.factor(centros$Cluster)        
 
 #Se crean los gráficos de barra
 barras1 <- ggplot(centros[centros$Cluster == "1", ], aes(x = Variable, y = Valor)) + 
@@ -130,6 +131,27 @@ barras2 <- ggplot(centros[centros$Cluster == "2", ], aes(x = Variable, y = Valor
 
 grid.arrange(barras1, barras2, ncol = 2)
 
+```
+
+También, se presenta un gráfico de tipo radar.
+
+```{r}
+for (x in unique(centros$Variable)) {
+  aux <- centros[centros$Variable == x, "Valor"]
+  aux <- aux - min(aux)
+  aux <- aux / max(aux)
+  centros[centros$Variable == x, "Valor"] <- aux
+}
+
+ggplot(data = centros[order(centros$Variable), ],
+       aes(x = Variable, y = Valor, group = Cluster)) + 
+  geom_point(aes(colour = Cluster)) +
+  geom_polygon(aes(colour = Cluster, fill = Cluster), alpha = 0.2) +
+  ylim(-0.1, 1) + labs(x = "", y = "") + theme_minimal() +
+  theme(axis.ticks.y = element_blank(), axis.text.y = element_blank()) +
+  annotate('text', x = 0, y = c(0, 0.25, 0.5, 0.75, 1),
+           label = c("0%", "25%", "50%", "75%", "100%"), color = "black") +
+  coord_polar()
 ```
 
 

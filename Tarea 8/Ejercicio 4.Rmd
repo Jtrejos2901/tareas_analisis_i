@@ -15,7 +15,7 @@ library(factoextra)
 
 
 # Ejercicio 4
-**Dada la siguiente matriz de disimilitudes entre cuatro individuos A1, A2, A3 y A4, construya a mano" una Jerarquía Binaria usando la agregación del Salto Máximo y del Promedio, dibuje el dendograma en ambos casos: **
+**Dada la siguiente matriz de disimilitudes entre cuatro individuos A1, A2, A3 y A4, construya a "mano" una Jerarquía Binaria usando la agregación del Salto Máximo y del Promedio, dibuje el dendograma en ambos casos: **
 
 \[
 D = \begin{bmatrix}
@@ -66,7 +66,7 @@ con la agregación de Salto Máximo pero difieren en la altura de la última
 jerarquía ya que, con Salto Promedio es de 5 y con Salto Máximo es de 7.
 
 # Ejercicio 5
-**Dada la siguiente matriz de disimilitudes entre cinco individuos A1, A2, A3, A4 y A5 construya a mano" una Jerarquía Binaria usando la agregación del Salto Mínimo y del Salto Máximo, dibuje el dendograma en ambos casos: **
+**Dada la siguiente matriz de disimilitudes entre cinco individuos A1, A2, A3, A4 y A5 construya a "mano" una Jerarquía Binaria usando la agregación del Salto Mínimo y del Salto Máximo, dibuje el dendograma en ambos casos: **
 
 \[
 S = \begin{bmatrix}
@@ -77,10 +77,13 @@ S = \begin{bmatrix}
 \end{bmatrix} 
 \]
 
-Primeramente, se crea la matriz de disimilitud S proporcionada.
+Primeramente, se calcula la matriz de disimilitud D a partir de la matriz de
+similitud S proporcionada.
 ```{r}
-  disimilitud_matriz_S <- 
-  rbind(c(1,0,0,0,0), c(0.10,1,0,0,0), c(0.42,0.63,1,0,0),c(0.54,0.46,0.41,1,0),c(0.35,0.98,0.85,0.73,1))
+similitud_matriz <- 
+rbind(rep(1,5), c(0.10,1,1,1,1), c(0.42,0.63,1,1,1),c(0.54,0.46,0.41,1,1),c(0.35,0.98,0.85,0.73,1))
+
+disimilitud_matriz_S <- 1-similitud_matriz
 disimilitud_matriz_S <- as.dist(disimilitud_matriz_S)
 disimilitud_matriz_S
 
@@ -113,7 +116,4 @@ plot(modelo_SMax)
 ```
 
 El dendograma que se obtiene con hclust es el mismo que el dado con el
-procedimiento a mano, dado que se tienen las mismas agrupaciones y alturas. Además,
-note que la Jerarquía Binaria por la agregación de Salto Máximo y del Salto Mínimo
-también agrupan 1 con 2 y 3 con 4, pero difieren en la manera de agrupar con 5 y las alturas
-con el Salto Máximo son mayores.
+procedimiento a mano, dado que se tienen las mismas agrupaciones y alturas.
