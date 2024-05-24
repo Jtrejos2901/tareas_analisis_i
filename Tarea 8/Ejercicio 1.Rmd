@@ -33,15 +33,18 @@ datos_Amazon <- read.table('EjemploAlgoritmosRecomendacion.csv', header=TRUE, se
 ```{r, warning=FALSE}
 clustering_SaltoMaximo<- hclust(dist(datos_Amazon), method = "complete")
 fviz_dend(clustering_SaltoMaximo, cex = 0.4, repel = TRUE)
-
 ```
+
 **Clustering Jerárquico con agregación del Salto Mínimo**
+
 ```{r, warning=FALSE}
 clustering_SaltoMinimo <- hclust(dist(datos_Amazon), method = "single")
 fviz_dend(clustering_SaltoMinimo, cex = 0.4, repel = TRUE)
 
 ```
+
 **Clustering Jerárquico con agregación del Salto Promedio**
+
 ```{r, warning=FALSE}
 clustering_SaltoPromedio <- hclust(dist(datos_Amazon), method = "average")
 fviz_dend(clustering_SaltoPromedio, cex = 0.4, repel = TRUE)
@@ -102,11 +105,10 @@ centroides_coord <- function(num.cluster, datos, clusters) {
 
 Los centroides para cada clúster son
 ```{r}
-
 centroides <- centroides_coord(2,datos_Amazon,Cluster)
 
 for(i in 1:length(centroides)) {
-  print(centroides[[i]])
+  print(head(centroides[[i]]))
 }
 ```
 
@@ -116,7 +118,7 @@ Seguidamente, se realizan los gráficos de barras para cada centroide.
 centros <- do.call(rbind, centroides)
 centros$Cluster <- as.factor(centros$Cluster)        
 
-#Se crean los gráficos de barra
+# Se crean los gráficos de barra
 barras1 <- ggplot(centros[centros$Cluster == "1", ], aes(x = Variable, y = Valor)) + 
   geom_bar(stat = "identity", fill = "lightskyblue4") + 
   labs(x = "Variables", y = "Cluster 1") +
@@ -132,6 +134,12 @@ barras2 <- ggplot(centros[centros$Cluster == "2", ], aes(x = Variable, y = Valor
 grid.arrange(barras1, barras2, ncol = 2)
 
 ```
+
+De estos gráficos, se puede interpretar que las personas que se encuentran en 
+el clúster 1 se inclinan a comprar un producto con un mejor tamaño de paquete y 
+durabilidad. En cuanto al clúster 2, las personas prefieren la durabilidad
+seguido del número de estrellas que tiene el producto. En ambos clústeres, 
+la característica con menor calificación es el precio.  
 
 También, se presenta un gráfico de tipo radar.
 
@@ -154,5 +162,140 @@ ggplot(data = centros[order(centros$Variable), ],
   coord_polar()
 ```
 
+Se puede identificar que, las personas del clúster 1 se inclinan por productos
+con una buena calificación en el tamaño del paquete, como se mencionó anteriormente,
+pero malas calificaciones en las otras características. Con respecto al segundo clúster, 
+se puede interpetrar que los clientes son más cautelesos con los productos que 
+compran, pues, tienen buenas calificaciones en todas las características excepto, 
+en el tamaño del paquete.
 
 
+- **c) Si se tienen 4 clústeres usando agregación de Ward ¿Qué productos recomendaría a Teresa, a Leo y a Justin?, es decir, ¿los productos que compra cuál otro cliente? Usando distancia euclídea ¿cuál es la mejor recomendación de compra que le podemos hacer a Teresa, a Leo y a Justin?**
+
+En este caso, el árbol que se obtuvo con distancia euclídea y agregación de Ward  se "corta" 
+en 4 clústeres.
+
+```{r}
+Cluster_2 <- cutree(clustering_Ward,k=4)
+tabla_clusters_ward_2 <- cbind(datos_Amazon,Cluster_2)
+head(tabla_clusters_ward_2)
+
+```
+
+Para responder a la pregunta, primeros se identifica el clúster al que pertenecen
+Teresa, Leo y Justin.
+
+```{r}
+# Encontrar el índice de la fila para Teresa, Leo y Justin
+fila_idx_Teresa <- which(rownames(tabla_clusters_ward_2) == "Teresa")
+fila_idx_Leo <- which(rownames(tabla_clusters_ward_2) == "Leo")
+fila_idx_Justin <- which(rownames(tabla_clusters_ward_2) == "Justin")
+
+col <- ncol(tabla_clusters_ward_2)
+Teresa <- tabla_clusters_ward_2[fila_idx_Teresa, col]
+Leo <- tabla_clusters_ward_2[fila_idx_Leo, col]
+Justin <- tabla_clusters_ward_2[fila_idx_Justin, col]
+
+num_cluster <- list("Teresa" = Teresa, "Leo" = Leo, "Justin" = Justin)
+print(num_cluster)
+```
+Como se puede observar, Teresa se encuentra el clúster 1, Leo en el 3 y Justin 
+en el 4.
+
+A continuación, se presenta el siguiente radar que permite interpretar qué 
+productos recomendar.
+
+```{r}
+# Centroides para cada clúster
+centroides_2 <- centroides_coord(4,datos_Amazon,Cluster_2)
+
+# Se juntan los dataframes con las coordenadas de los centroides para cada clúster
+centros_2 <- do.call(rbind, centroides_2)
+centros_2$Cluster <- as.factor(centros_2$Cluster)  
+
+# Se crea gráfico de radar
+for (x in unique(centros_2$Variable)) {
+  aux <- centros_2[centros_2$Variable == x, "Valor"]
+  aux <- aux - min(aux)
+  aux <- aux / max(aux)
+  centros_2[centros_2$Variable == x, "Valor"] <- aux
+}
+
+ggplot(data = centros_2[order(centros_2$Variable), ],
+       aes(x = Variable, y = Valor, group = Cluster)) + 
+  geom_point(aes(colour = Cluster)) +
+  geom_polygon(aes(colour = Cluster, fill = Cluster), alpha = 0.2) +
+  ylim(-0.1, 1) + labs(x = "", y = "") + theme_minimal() +
+  theme(axis.ticks.y = element_blank(), axis.text.y = element_blank()) +
+  annotate('text', x = 0, y = c(0, 0.25, 0.5, 0.75, 1),
+           label = c("0%", "25%", "50%", "75%", "100%"), color = "black") +
+  coord_polar()
+
+```
+
+Para el caso de Teresa, dado que se encuentra en el clúster 1, le interesan
+productos con una calificación medianamente buena en durabilidad y 
+velocidad de entrega y muy bajas en las demás características, por lo que, 
+se le recomienda comprar productos similares a los que adquieren las personas de 
+este clúster, como es el caso de Adam según se muestra en la tabla 
+`tabla_clusters_ward_2`.
+
+En cuanto a Leo que se encuentra en el clúster 3, él se inclina por productos
+de buena calidad, con puntuaciones elevadas en valor educativo, tamaño del 
+paquete, servicio de retorno, precio, imagen del producto y número de estrellas.
+Además, con calificaciones medianamente buenas en velocidad de entrega y 
+durabilidad. Por tanto, se le sugiere adquirir productos iguales o similares
+a los comprados por otras personas de este clúster como por ejemplo, Bernard.
+
+Finalmente, se identifica que Justin es más exigente en cuanto a la velocidad
+de entrega, calidad del producto, durabilidad y números de estrellas que los otros
+dos. Además, le gusta comprar por Amazon productos con muy buena puntación en 
+valor educativo pero con calificaciones bajas-intermedias en precio, servicio
+de retorno e imagen del producto y el tamaño del paquete es la característica
+por la que menos se inclina. De tal manera, se le recomienda comprar productos
+parecidos a los que adquieren otras personas del clúster 4 como Emilia.
+
+**d) Construya un clustering jerárquico sobre las componentes principales del ACP.**
+
+Primeramente, se realiza el ACP sobre los datos para obtener las componentes
+principales.
+```{r}
+ACP <- PCA(datos_Amazon, graph = FALSE)
+```
+
+De tal manera,las componentes principales son:
+```{r}
+Componentes_principales <- ACP$ind$coord
+head(Componentes_principales)
+```
+Posteriormente, se realiza el clustering jerárquico sobre las componentes
+principales.
+
+**Clustering Jerárquico con agregación del Salto Máximo**
+
+```{r, warning=FALSE}
+clustering_SaltoMaximo_ACP<- hclust(dist(Componentes_principales), method = "complete")
+fviz_dend(clustering_SaltoMaximo_ACP, cex = 0.4, repel = TRUE)
+
+```
+
+**Clustering Jerárquico con agregación del Salto Mínimo**
+```{r, warning=FALSE}
+clustering_SaltoMinimo_ACP <- hclust(dist(Componentes_principales), method = "single")
+fviz_dend(clustering_SaltoMinimo_ACP, cex = 0.4, repel = TRUE)
+
+```
+
+**Clustering Jerárquico con agregación del Salto Promedio**
+```{r, warning=FALSE}
+clustering_SaltoPromedio_ACP <- hclust(dist(Componentes_principales), method = "average")
+fviz_dend(clustering_SaltoPromedio_ACP, cex = 0.4, repel = TRUE)
+
+```
+
+**Clustering Jerárquico con agregación Ward**
+```{r, warning=FALSE}
+clustering_Ward_ACP <- hclust(dist(Componentes_principales), method = "ward.D")
+fviz_dend(clustering_Ward_ACP , cex = 0.4, repel = TRUE)
+
+```
