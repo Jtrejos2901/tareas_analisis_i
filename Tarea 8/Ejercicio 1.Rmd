@@ -199,6 +199,7 @@ Justin <- tabla_clusters_ward_2[fila_idx_Justin, col]
 num_cluster <- list("Teresa" = Teresa, "Leo" = Leo, "Justin" = Justin)
 print(num_cluster)
 ```
+
 Como se puede observar, Teresa se encuentra el clúster 1, Leo en el 3 y Justin 
 en el 4.
 
@@ -268,6 +269,7 @@ De tal manera,las componentes principales son:
 Componentes_principales <- ACP$ind$coord
 head(Componentes_principales)
 ```
+
 Posteriormente, se realiza el clustering jerárquico sobre las componentes
 principales.
 

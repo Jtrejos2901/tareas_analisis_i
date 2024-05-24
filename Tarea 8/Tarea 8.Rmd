@@ -19,10 +19,305 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Librerías 
 ```{r, warning=FALSE, message=FALSE}
+library(readr)
 library(cluster)
 library(dplyr)
 library(factoextra)
+library(FactoMineR) 
+library(ggplot2)
+library(gridExtra)
 ```
+
+# Ejercicio 1
+
+**En este ejercicio usaremos la tabla de datos EjemploAlgoritmosRecomendación.csv, la cual contiene los promedios de evaluación de 100 personas que adquirieron los mismos productos o muy similares en la tienda AMAZON. La idea consiste en recomendar a un cliente los productos que ha comprado otra persona que pertenece al mismo clúster.**
+
+Se carga la base de datos necesaria.
+
+```{r, warning=FALSE, message=FALSE}
+datos_Amazon <- read.table('EjemploAlgoritmosRecomendacion.csv', header=TRUE, sep=';',dec=',',row.names=1)
+```
+
+- **a) Ejecute un Clustering Jerárquico con la distancia euclídea y la agregación del Salto Máximo, Salto Mínimo, Promedio y Ward. Guarde la tabla de datos en el archivo AlgoritmosRecomendación2.csv con el clúster al que pertenece cada individuo para el caso de la agregación de Ward usando 2 clústeres.**
+
+**Clustering Jerárquico con agregación del Salto Máximo**
+
+```{r, warning=FALSE}
+clustering_SaltoMaximo<- hclust(dist(datos_Amazon), method = "complete")
+fviz_dend(clustering_SaltoMaximo, cex = 0.4, repel = TRUE)
+```
+
+**Clustering Jerárquico con agregación del Salto Mínimo**
+
+```{r, warning=FALSE}
+clustering_SaltoMinimo <- hclust(dist(datos_Amazon), method = "single")
+fviz_dend(clustering_SaltoMinimo, cex = 0.4, repel = TRUE)
+
+```
+
+**Clustering Jerárquico con agregación del Salto Promedio**
+
+```{r, warning=FALSE}
+clustering_SaltoPromedio <- hclust(dist(datos_Amazon), method = "average")
+fviz_dend(clustering_SaltoPromedio, cex = 0.4, repel = TRUE)
+
+```
+
+**Clustering Jerárquico con agregación Ward**
+    
+```{r, warning=FALSE}
+clustering_Ward <- hclust(dist(datos_Amazon), method = "ward.D")
+fviz_dend(clustering_Ward , cex = 0.4, repel = TRUE)
+
+```
+
+Ahora, usando el resultado obtenido por la agregación de Ward, se procede a guardar una tabla de datos con el clúster al que pertenece cada individuo usando 2 clústeres en el archivo AlgoritmosRecomendacion2.csv.
+
+Primero, se añade la columna que indica el clúster al que pertenece cada individuo.
+```{r}
+Cluster <- cutree(clustering_Ward,k=2)
+tabla_clusters_ward <- cbind(datos_Amazon,Cluster)
+head(tabla_clusters_ward)
+```
+
+Después, se guarda en un nuevo documento csv.
+
+```{r}
+# Directorio
+setwd("C:\\Users\\Caro\\OneDrive - Universidad de Costa Rica\\Escritorio\\Caro UCR\\I semestre 2024\\Análisis de datos\\tareas_analisis_i\\Tarea 8")
+
+# Se guarda el archivo en como un CSV
+write.csv(tabla_clusters_ward,"AlgoritmosRecomendacion2.csv")
+```
+
+- **b) "Corte" el árbol anterior usando 2 clústeres y la agregación de Ward, interprete los resultados usando gráficos de barras (Horizontal-Vertical) y usando gráficos tipo Radar.**
+
+En el inciso a) se cortó el árbol usando 2 clústeres y la agregación de Ward,
+dicho corte se nombró `Cluster`.
+
+**Interpretación**
+
+A continuación, se realiza una interpretación de los clústeres mediante los 
+centroides. Por lo tanto, es necesario encontrar el centroide de cada clúster.
+
+De tal manera, se obtienen los centroides para cada clúster y se muestran sus 
+coordenadas en el espacio de variables con la siguiente función:
+```{r}
+centroides_coord <- function(num.cluster, datos, clusters) {
+  lista_centroides <- list()
+  for(i in 1: num.cluster) {
+    ind <- (clusters == i)
+    centroide <- colMeans(datos[ind,])
+    lista_centroides[[i]] <-  data.frame("Cluster" = i, "Variable" = names(centroide),
+                              "Valor" = centroide)
+  }
+  return(lista_centroides)
+}
+```
+
+Los centroides para cada clúster son
+```{r}
+centroides <- centroides_coord(2,datos_Amazon,Cluster)
+
+for(i in 1:length(centroides)) {
+  print(head(centroides[[i]]))
+}
+```
+
+Seguidamente, se realizan los gráficos de barras para cada centroide.
+```{r}
+# Se juntan los dataframes con las coordenadas de los centroides para cada clúster
+centros <- do.call(rbind, centroides)
+centros$Cluster <- as.factor(centros$Cluster)        
+
+# Se crean los gráficos de barra
+barras1 <- ggplot(centros[centros$Cluster == "1", ], aes(x = Variable, y = Valor)) + 
+  geom_bar(stat = "identity", fill = "lightskyblue4") + 
+  labs(x = "Variables", y = "Cluster 1") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+barras2 <- ggplot(centros[centros$Cluster == "2", ], aes(x = Variable, y = Valor)) + 
+  geom_bar(stat = "identity", fill = "darkolivegreen4") + 
+  labs(x = "Variables", y = "Cluster 2") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+grid.arrange(barras1, barras2, ncol = 2)
+
+```
+
+De estos gráficos, se puede interpretar que las personas que se encuentran en 
+el clúster 1 se inclinan a comprar un producto con un mejor tamaño de paquete y 
+durabilidad. En cuanto al clúster 2, las personas prefieren la durabilidad
+seguido del número de estrellas que tiene el producto. En ambos clústeres, 
+la característica con menor calificación es el precio.  
+
+También, se presenta un gráfico de tipo radar.
+
+```{r}
+for (x in unique(centros$Variable)) {
+  aux <- centros[centros$Variable == x, "Valor"]
+  aux <- aux - min(aux)
+  aux <- aux / max(aux)
+  centros[centros$Variable == x, "Valor"] <- aux
+}
+
+ggplot(data = centros[order(centros$Variable), ],
+       aes(x = Variable, y = Valor, group = Cluster)) + 
+  geom_point(aes(colour = Cluster)) +
+  geom_polygon(aes(colour = Cluster, fill = Cluster), alpha = 0.2) +
+  ylim(-0.1, 1) + labs(x = "", y = "") + theme_minimal() +
+  theme(axis.ticks.y = element_blank(), axis.text.y = element_blank()) +
+  annotate('text', x = 0, y = c(0, 0.25, 0.5, 0.75, 1),
+           label = c("0%", "25%", "50%", "75%", "100%"), color = "black") +
+  coord_polar()
+```
+
+Se puede identificar que, las personas del clúster 1 se inclinan por productos
+con una buena calificación en el tamaño del paquete, como se mencionó anteriormente,
+pero malas calificaciones en las otras características. Con respecto al segundo clúster, 
+se puede interpetrar que los clientes son más cautelesos con los productos que 
+compran, pues, tienen buenas calificaciones en todas las características excepto, 
+en el tamaño del paquete.
+
+
+- **c) Si se tienen 4 clústeres usando agregación de Ward ¿Qué productos recomendaría a Teresa, a Leo y a Justin?, es decir, ¿los productos que compra cuál otro cliente? Usando distancia euclídea ¿cuál es la mejor recomendación de compra que le podemos hacer a Teresa, a Leo y a Justin?**
+
+En este caso, el árbol que se obtuvo con distancia euclídea y agregación de Ward  se "corta" 
+en 4 clústeres.
+
+```{r}
+Cluster_2 <- cutree(clustering_Ward,k=4)
+tabla_clusters_ward_2 <- cbind(datos_Amazon,Cluster_2)
+head(tabla_clusters_ward_2)
+
+```
+
+Para responder a la pregunta, primeros se identifica el clúster al que pertenecen
+Teresa, Leo y Justin.
+
+```{r}
+# Encontrar el índice de la fila para Teresa, Leo y Justin
+fila_idx_Teresa <- which(rownames(tabla_clusters_ward_2) == "Teresa")
+fila_idx_Leo <- which(rownames(tabla_clusters_ward_2) == "Leo")
+fila_idx_Justin <- which(rownames(tabla_clusters_ward_2) == "Justin")
+
+col <- ncol(tabla_clusters_ward_2)
+Teresa <- tabla_clusters_ward_2[fila_idx_Teresa, col]
+Leo <- tabla_clusters_ward_2[fila_idx_Leo, col]
+Justin <- tabla_clusters_ward_2[fila_idx_Justin, col]
+
+num_cluster <- list("Teresa" = Teresa, "Leo" = Leo, "Justin" = Justin)
+print(num_cluster)
+```
+
+Como se puede observar, Teresa se encuentra el clúster 1, Leo en el 3 y Justin 
+en el 4.
+
+A continuación, se presenta el siguiente radar que permite interpretar qué 
+productos recomendar.
+
+```{r}
+# Centroides para cada clúster
+centroides_2 <- centroides_coord(4,datos_Amazon,Cluster_2)
+
+# Se juntan los dataframes con las coordenadas de los centroides para cada clúster
+centros_2 <- do.call(rbind, centroides_2)
+centros_2$Cluster <- as.factor(centros_2$Cluster)  
+
+# Se crea gráfico de radar
+for (x in unique(centros_2$Variable)) {
+  aux <- centros_2[centros_2$Variable == x, "Valor"]
+  aux <- aux - min(aux)
+  aux <- aux / max(aux)
+  centros_2[centros_2$Variable == x, "Valor"] <- aux
+}
+
+ggplot(data = centros_2[order(centros_2$Variable), ],
+       aes(x = Variable, y = Valor, group = Cluster)) + 
+  geom_point(aes(colour = Cluster)) +
+  geom_polygon(aes(colour = Cluster, fill = Cluster), alpha = 0.2) +
+  ylim(-0.1, 1) + labs(x = "", y = "") + theme_minimal() +
+  theme(axis.ticks.y = element_blank(), axis.text.y = element_blank()) +
+  annotate('text', x = 0, y = c(0, 0.25, 0.5, 0.75, 1),
+           label = c("0%", "25%", "50%", "75%", "100%"), color = "black") +
+  coord_polar()
+
+```
+
+Para el caso de Teresa, dado que se encuentra en el clúster 1, le interesan
+productos con una calificación medianamente buena en durabilidad y 
+velocidad de entrega y muy bajas en las demás características, por lo que, 
+se le recomienda comprar productos similares a los que adquieren las personas de 
+este clúster, como es el caso de Adam según se muestra en la tabla 
+`tabla_clusters_ward_2`.
+
+En cuanto a Leo que se encuentra en el clúster 3, él se inclina por productos
+de buena calidad, con puntuaciones elevadas en valor educativo, tamaño del 
+paquete, servicio de retorno, precio, imagen del producto y número de estrellas.
+Además, con calificaciones medianamente buenas en velocidad de entrega y 
+durabilidad. Por tanto, se le sugiere adquirir productos iguales o similares
+a los comprados por otras personas de este clúster como por ejemplo, Bernard.
+
+Finalmente, se identifica que Justin es más exigente en cuanto a la velocidad
+de entrega, calidad del producto, durabilidad y números de estrellas que los otros
+dos. Además, le gusta comprar por Amazon productos con muy buena puntación en 
+valor educativo pero con calificaciones bajas-intermedias en precio, servicio
+de retorno e imagen del producto y el tamaño del paquete es la característica
+por la que menos se inclina. De tal manera, se le recomienda comprar productos
+parecidos a los que adquieren otras personas del clúster 4 como Emilia.
+
+**d) Construya un clustering jerárquico sobre las componentes principales del ACP.**
+
+Primeramente, se realiza el ACP sobre los datos para obtener las componentes
+principales.
+```{r}
+ACP <- PCA(datos_Amazon, graph = FALSE)
+```
+
+De tal manera,las componentes principales son:
+```{r}
+Componentes_principales <- ACP$ind$coord
+head(Componentes_principales)
+```
+
+Posteriormente, se realiza el clustering jerárquico sobre las componentes
+principales.
+
+**Clustering Jerárquico con agregación del Salto Máximo**
+
+```{r, warning=FALSE}
+clustering_SaltoMaximo_ACP<- hclust(dist(Componentes_principales), method = "complete")
+fviz_dend(clustering_SaltoMaximo_ACP, cex = 0.4, repel = TRUE)
+
+```
+
+**Clustering Jerárquico con agregación del Salto Mínimo**
+```{r, warning=FALSE}
+clustering_SaltoMinimo_ACP <- hclust(dist(Componentes_principales), method = "single")
+fviz_dend(clustering_SaltoMinimo_ACP, cex = 0.4, repel = TRUE)
+
+```
+
+**Clustering Jerárquico con agregación del Salto Promedio**
+```{r, warning=FALSE}
+clustering_SaltoPromedio_ACP <- hclust(dist(Componentes_principales), method = "average")
+fviz_dend(clustering_SaltoPromedio_ACP, cex = 0.4, repel = TRUE)
+
+```
+
+**Clustering Jerárquico con agregación Ward**
+```{r, warning=FALSE}
+clustering_Ward_ACP <- hclust(dist(Componentes_principales), method = "ward.D")
+fviz_dend(clustering_Ward_ACP , cex = 0.4, repel = TRUE)
+
+```
+
+Se puede notar que los clústeres generados por los cuatros tipos
+de agregación son similares a los obtenidos en el parte a), con diferencias 
+en las alturas y ciertas agrupaciones pero, la cantidad y orden de las jerarquías
+son parecidas.
 
 # Ejercicio 2
 
@@ -152,6 +447,111 @@ plot(Datos.Cluster3$Gender,col=c(4,6),las=2,main="Gender",xlab="Cluster-3")
 ```
 
 Si se realiza un análisis con respecto al género de la persona, se cumple que en general la base de datos cuenta con 1000 individuos divididos con la misma cantidad de hombres y mujeres. Sin embargo, al analizar por cluster se tiene que el cluster 1 se encuentra formado por 518 individuos de ellos más de 300 son mujeres y un poco menos de 200 son hombres. El cluster 2 posee 123 observaciones y para este caso, contraio al anterior, se tienen más hombres que mujeres, aproximadamente 70 y 50 respectivamente. En el último cluster se tiene el mismo comportamiento que el 2, pero con una cantidad de 100 individuos de género femenino y más de 259 de género masculino, para un total de 359 individuos en el presente cluster. 
+
+# Ejercicio 4
+**Dada la siguiente matriz de disimilitudes entre cuatro individuos A1, A2, A3 y A4, construya a "mano" una Jerarquía Binaria usando la agregación del Salto Máximo y del Promedio, dibuje el dendograma en ambos casos: **
+
+\[
+D = \begin{bmatrix}
+0 &   &   &    \\
+5 & 0 &   &  \\
+2 & 1 & 0 &   \\
+3 & 7 & 6 & 0 \\
+\end{bmatrix} 
+\]
+
+Primeramente, se crea la matriz de disimilitud D proporcionada.
+```{r}
+disimilitud_matriz <- rbind(rep(0, 4), c(5,0,0,0), c(2,1,0,0), c(3,7,6,0))
+disimilitud_matriz <- as.dist(disimilitud_matriz)
+disimilitud_matriz
+
+```
+
+Con esa matriz, se realiza la Jerarquía Binaria usando la agregación del Salto
+Máximo y del Promedio.
+
+## Agregación Salto Máximo
+<img src= "JB_1.jpg">
+<img src= "dendograma1.jpg">
+
+### Comparación con hclust
+```{r}
+modelo_SM <- hclust(disimilitud_matriz, method = "complete")
+plot(modelo_SM)
+```
+
+Como se puede observar, el dendograma que se obtiene da las mismas agrupaciones
+y alturas que las obtenidas con el procedimiento "a mano".
+
+## Agregación Salto Promedio
+<img src= "JB_2.jpg">
+<img src= "dendograma2.jpg">
+
+### Comparación con hclust
+```{r}
+modelo_SP <- hclust(disimilitud_matriz, method = "average")
+plot(modelo_SP)
+```
+
+El dendograma que se obtiene con hclust es el mismo que el dado con el
+procedimiento a mano. Además, las agrupaciones formadas son las mismas que
+con la agregación de Salto Máximo pero difieren en la altura de la última 
+jerarquía ya que, con Salto Promedio es de 5 y con Salto Máximo es de 7.
+
+# Ejercicio 5
+**Dada la siguiente matriz de disimilitudes entre cinco individuos A1, A2, A3, A4 y A5 construya a "mano" una Jerarquía Binaria usando la agregación del Salto Mínimo y del Salto Máximo, dibuje el dendograma en ambos casos: **
+
+\[
+S = \begin{bmatrix}
+0.10 & 1    &      &      & \\
+0.42 & 0.63 & 1    &      &  \\
+0.54 & 0.46 & 0.41 & 1    &   \\
+0.35 & 0.98 & 0.85 & 0.73 & 1  \\
+\end{bmatrix} 
+\]
+
+Primeramente, se calcula la matriz de disimilitud D a partir de la matriz de
+similitud S proporcionada.
+```{r}
+similitud_matriz <- 
+rbind(rep(1,5), c(0.10,1,1,1,1), c(0.42,0.63,1,1,1),c(0.54,0.46,0.41,1,1),c(0.35,0.98,0.85,0.73,1))
+
+disimilitud_matriz_S <- 1-similitud_matriz
+disimilitud_matriz_S <- as.dist(disimilitud_matriz_S)
+disimilitud_matriz_S
+
+```
+
+Con esa matriz, se realiza la Jerarquía Binaria usando la agregación del Salto
+Mínimo y del Salto Máximo.
+
+## Agregación Salto Mínimo
+<img src= "JB_3.jpg">
+<img src= "dendograma3.jpg">
+
+### Comparación con hclust
+```{r}
+modelo_SMin <- hclust(disimilitud_matriz_S, method = "single")
+plot(modelo_SMin)
+```
+
+Como se puede observar, el dendograma que se obtiene da las mismas agrupaciones
+y alturas que las obtenidas con el procedimiento "a mano".
+
+## Agregación Salto Máximo
+<img src= "JB_4.jpg">
+<img src= "dendograma4.jpg">
+
+### Comparación con hclust
+```{r}
+modelo_SMax <- hclust(disimilitud_matriz_S, method = "complete")
+plot(modelo_SMax)
+```
+
+El dendograma que se obtiene con hclust es el mismo que el dado con el
+procedimiento a mano, dado que se tienen las mismas agrupaciones y alturas.
+
 
 # Ejercicio 6
 
