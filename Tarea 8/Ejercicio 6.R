@@ -45,3 +45,11 @@ distancias <- matriz_distancias(Datos6)
 distancias <- as.dist(distancias)
 clustering <- hclust(distancias, method = "ward.D")
 fviz_dend(clustering, cex = 0.4, repel = TRUE)
+
+# Se puede notar en comparación con el gráfico del ejercicio 1 hecho con 
+# distancia euclidea que al utilizar la distancia de Chebychev se forman 
+# practicamente los mismo clústeres, excepto por algunas difrencias, la altura
+# en la que se unen los clúster sí difiere un poco entre uno y otro. Además, la 
+# poición de clústeres no es la misma, sin embargo, lo importante son las 
+# agrupaciones las cuales son muy parecidas. Parece ser que las 
+# distancias son un poco menores al utilizar la distancia de Chebychev. 
