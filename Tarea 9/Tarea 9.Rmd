@@ -34,9 +34,25 @@ library(dbscan)
 
 **Explique el método Gap Statistic propuesto por R. Tibshirani, G. Walther, and T. Hastie (Standford University, 2001) y el método The Average Silhouette propuesto por Kaufman and Rousseeuw en 1987-1990.**
 
-**Método Gap Statistic**
+## Método Gap Statistic
 
 El método Gap Statistic permite estimar el número óptimo de clústeres de una base de datos. El método supone que los datos se agrupan en $k$ clústeres obtenidos de cualquier técnica de clusterización  y denota $W_k$ como la suma de cuadrados dentro del clúster, agrupada alrededor de las medias del clúster. Luego, se compara $log(W_k)$ con su valor esperado bajo una distribución de referencia nula adecuada para los datos. El valor de $k$ para el cual el gráfico de $log(W_k)$ se encuentra por debajo de la curva de la distribución de referencia indica el número óptimo de clústeres.
+
+## Método The Average Silhouette
+
+El método Silhouettes es una herramienta gráfica utilizada en el campo del análisis de datos específicamente en el área de conglomerados para ayudar en la interpretación y validación de los resultados obtenidos al agrupar datos. Este método ofrece una representación visual que permite evaluar la cohesión de los puntos dentro de un grupo y su separación con respecto a otros grupos, es decir, la inercia intra-clases y la inercia inter-clases respectivamente. 
+
+Cada individuo en un clúster recibe un valor de silueta, que indica qué tan bien se ajusta a su propio grupo en comparación con otros grupos. Estos valores de silueta se muestran en un gráfico que indica la calidad de la agrupación esto se puede interpretar de la siguiente manera: cuanto más alto sea el valor de silueta, mejor será la separación entre los grupos y la clasificación de las observaciones.
+
+Para calcular el valor de silueta de un objeto, se tienen los siguientes pasos:
+1.	Cálculo de la disimilitud media de i con respecto a todos los demás objetos del conglomerado ($a(i)$)
+2.	Cálculo de la disimilitud media de i con respecto a todos los objetos del grupo más cercano ($b(i)$)
+3.	Asignación del valor de silueta ($s(i)$): 
+-	Si $a(i) < b(i)$, entonces $s(i) = 1 - a(i)/b(i)$
+-	Si $a(i) = b(i)$, entonces $s(i) = 0$
+-	Si $a(i) > b(i)$, entonces $s(i) = b(i)/a(i) – 1$
+
+La representación gráfica de Silhouettes proporciona una forma de comprender la estructura de los clústeres ya que, por medio de este método se puede identificar qué objetos están bien clasificados, cuáles están mal clasificados y cuáles se encuentran en una posición intermedia. Además, permite tener una idea sobre el número de clústeres presentes en los datos, lo cual es de suma importancia a la hora de interpretar los datos y puede ser de gran ayuda para luego complementar con otros métodos. 
 
 # Ejercicio 2
 
