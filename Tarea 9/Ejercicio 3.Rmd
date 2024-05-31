@@ -1,0 +1,196 @@
+---
+title: Análisis de Datos I <br> Tarea 7
+author:
+  - "Maria Carolina Navarro Monge C05513"
+  - "Tábata Picado Carmona C05961"
+  - "Jose Pablo Trejos Conejo C07862"
+output:
+  rmdformats::robobook:
+        code_folding: show
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Librerías
+```{r, warning=FALSE, message=FALSE}
+library(xlsx)
+library(dplyr)
+```
+
+# Ejercicio 3
+**Programe en R funciones para calcular la inercia total, la inercia inter-clases y la inercia intraclases, estas funciones deben recibir al menos la tabla de datos, la cantidad de clústeres y a qué clúster pertenece cada individuo de la tabla de datos. Luego para el ejemplo Estudiantes visto en clase (puede usar el archivo NotasEscolaresExcelKMeans.csv que está en el aula virtual) verifique el Teorema de Fisher utilizando solamente 2 clústeres usando las funciones que usted programó y las respectivos resultados que proporciona R**
+
+## Funciones
+
+Algunas de las siguientes funciones reciben un `dataframe` con la información, un número entero que representa la cantidad de clúster y por último un vector cuyo valor en la posición `i` representa el clúster al que pertenece el *i-ésimo* individuo. Entonces, habiendo definido lo anterior, se procede con la creación de las funciones.
+
+Inicialmente la función `inercia_total` solo recibe un `dataframe`. Esto debido a que en el proceso de calcular la inercia total del conjunto de datos, no es necesario conocer a qué clúster pertenece cada individuos, sino, solo el centro de gravedad general.
+```{r}
+inercia_total <- function(df){
+  # Se obtiene el centro de gravedad.
+  g <- as.vector(colMeans(df))
+  
+  # Se incializa una variable que contendrá la incercia total.
+  inercia <- 0
+  
+  # Se obtiene la inercia total.
+  for(i in 1:nrow(df)){
+    for(j in 1:ncol(df)){
+      inercia <- inercia + (EscolaresDF[i,j] - g[j])**2
+    }
+  }
+  
+  # Se obtiene la media.
+  inercia <- inercia/nrow(df)
+  
+  return(inercia)
+}
+```
+
+Ahora, para la función `inercia_interclases` sí es necesario saber el número `n` de clústers y a qué clúster pertenece cada individuo. Por lo tanto, la función sería la siguiente.
+```{r}
+inercia_interclase <- function(df, n, indices){
+  # Se obtiene el centro de gravedad total.
+  g <- as.vector(colMeans(df))
+  
+  # Se incializa una lista que contendrá los centros de gravedad para cada 
+  # clúster del conjunto y se agragan los indices al df.
+  g_k <- list()
+  df <- cbind(df,indices)
+  
+  # Se obtiene la cantidad de elementos por cluster.
+  abs_ck <- as.vector(table(indices))
+  
+  # Se calculan los centros de gravedad.
+  g_k_matrix <- df %>% group_by(indices) %>%
+                       summarise(across(everything(), mean, 
+                                        .names = "media_{col}")) %>%
+                       as.matrix()
+  
+  for(i in 1:nrow(g_k_matrix)){
+    g_k[[i]] <- as.vector(g_k_matrix[i,-1])
+  }
+  
+  # Se obtiene la inercia inteclase.
+  inercia <- 0
+  for(i in 1:length(g_k)){
+    aux <- 0
+    for(j in 1:length(g)){
+      aux <- aux + (g_k[[i]][j] - g[j])**2
+    }
+    
+    # Se obtiene la inercia interclase del i-ésimo clúster.
+    inercia <- inercia + (abs_ck[i]/nrow(df))*aux
+  }
+  
+  return(inercia)
+}
+```
+
+Finalmente se crea la función `inercia_intraclase` que al igual que recibe los mismo parámetros de la función anterior.
+```{r}
+inercia_intraclase <- function(df, n, indices){
+  # Se incializa una lista que contendrá los centros de gravedad para cada 
+  # clúster del conjunto y se agragan los indices al df.
+  g_k <- list()
+  df <- cbind(df,indices)
+  
+  # Se crea una lista que almacena el df con las particiones por clúster.
+  clusters <- list()
+  for(i in 1:n){
+    clusters[[i]] <- filter(df,df$indices == i)
+  }
+  
+  # Se calculan los centros de gravedad.
+  g_k_matrix <- df %>% group_by(indices) %>%
+                       summarise(across(everything(), mean, 
+                                        .names = "media_{col}")) %>%
+                       as.matrix()
+  
+  for(i in 1:nrow(g_k_matrix)){
+    g_k[[i]] <- as.vector(g_k_matrix[i,-1])
+  }
+  
+  # Se obtiene la inercia intraclase.
+  inercia <- 0
+  for(k in 1:n){
+    for(i in 1:nrow(clusters[[k]])){
+      for(j in 1:length(g_k[[1]])) {
+        inercia <- inercia + (clusters[[k]][i,j] - g_k[[k]][j])**2
+      }
+    }
+  }
+  
+  # Se obtiene la media.
+  inercia <- inercia/nrow(df)
+  
+  return(inercia)
+}
+```
+
+## Pruebas
+
+Se carga la base de datos de los escolares, convirtiéndose la columna con los nombres de los estudiantes en los nombres de las filas del `dataframe` y  además se crea el vector con los indices de los clústers.
+```{r}
+EscolaresDF <- read.xlsx("NotasEscolaresExcelKMeans.xlsx", 1, 
+                         startRow = 2, endRow = 12, stringsAsFactors = T)
+
+# Se cambia el nombre a las filas y se elimina la columna con los nombres.
+rownames(EscolaresDF) <- EscolaresDF[,1]
+EscolaresDF <- EscolaresDF[-1]
+```
+
+Ahora se corre la función `kmeans` de R para comparar las incercias obtenidas por las funciones creadas a mano y las obtenidas con esta función. Además se aprovecha para definir el vector de indices a partir de los generados por esta función.
+```{r}
+# Se define una semilla para reproducibilidad.
+set.seed(2901)
+
+# Se ejecuta kmedias.
+grupos <- kmeans(EscolaresDF, 2, iter.max = 100)
+
+# Se obtiene el vector que indica a qué clúster pertenece cada individuo.
+indices <- as.vector(grupos[[1]])
+```
+
+Se procede a comparar los resultados entre `kmeans` y las funciones creadas a mano, empezando por la inercia total.
+```{r}
+inercia_t <- data.frame(inercia_total(EscolaresDF), grupos$totss)
+colnames(inercia_t) <- c("Función a mano", "Función de R")
+
+knitr::kable(inercia_t)
+```
+
+Ahora se procede con la inercia interclase.
+```{r}
+inercia_inter <- data.frame(inercia_interclase(EscolaresDF, 2, indices), 
+                            grupos$betweenss)
+colnames(inercia_inter) <- c("Función a mano", "Función de R")
+
+knitr::kable(inercia_inter)
+```
+
+Y con la inercia intraclase.
+```{r}
+inercia_intra <- data.frame(inercia_intraclase(EscolaresDF, 2, indices), 
+                            grupos$tot.withinss)
+colnames(inercia_intra) <- c("Función a mano", "Función de R")
+
+knitr::kable(inercia_intra)
+```
+
+Por lo tanto, se evidencia que los resultados obtenidos por las funciones programadas a mano respecto a los que se obtienen de correr la función `kmeans` de R, son los mismo solo que `kmeans` tiene un factor $\times10$ en los resultados que muestra.
+
+Finalmente note que se cumple el **Teorema de Fisher** pues:
+```{r}
+inercia_t[[1]]
+```
+
+Es igual a:
+```{r}
+inercia_inter[[1]] + inercia_intra[[1]]
+```
+
