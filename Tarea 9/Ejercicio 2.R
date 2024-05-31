@@ -112,7 +112,7 @@ k_medias_estandarizado <- kmeans(datos_estandarizados, centers = 3)
 head(k_medias_estandarizado$cluster)
 k_medias_estandarizado$centers
 
-# Dé una interpretación de los resultados del punto anterior usando un gráfico 
+# h) Dé una interpretación de los resultados del punto anterior usando un gráfico 
 # de barras. ¿Hay alguna diferencia respecto a la interpretación del punto f?
 
 centros_gravedad_estandarizados <- k_medias_estandarizado$centers
