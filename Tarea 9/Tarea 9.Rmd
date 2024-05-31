@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Librerías
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(readr)
 library(cluster)
 library(ggplot2)
@@ -28,6 +28,13 @@ library(factoextra)
 library(dbscan)
 ```
 
+# Ejercicio 1
+
+**Explique el método Gap Statistic propuesto por R. Tibshirani, G. Walther, and T. Hastie (Standford University, 2001) y el método The Average Silhouette propuesto por Kaufman and Rousseeuw en 1987-1990.**
+
+**Método Gap Statistic**
+
+El método Gap Statistic permite estimar el número óptimo de clústeres de una base de datos. El método supone que los datos se agrupan en $k$ clústeres obtenidos de cualquier técnica de clusterización  y denota $W_k$ como la suma de cuadrados dentro del clúster, agrupada alrededor de las medias del clúster. Luego, se compara $log(W_k)$ con su valor esperado bajo una distribución de referencia nula adecuada para los datos. El valor de $k$ para el cual el gráfico de $log(W_k)$ se encuentra por debajo de la curva de la distribución de referencia indica el número óptimo de clústeres.
 
 # Ejercicio 2
 
@@ -263,7 +270,7 @@ En el cluster 3 las variables con valores altos, es decir, que impactan fuerteme
 
 ## k) Observe que si ejecutamos el método k−medoides con k = 3 con nstart=50 con esta tabla de datos este método nunca termina o tarda demasiado. ¿Por qué sucede esto?
 
-Esto se debe a que el método de k-medoides es más costoso a nivel computacional ya que, recordemos que este método no utiliza el centro de gravedad del cluster sino que utiliza un representante de la clase esto quiere decir un dato real de la base que pertenezca a ese conglomerado. Para poder enocntrar este representante necesita calcular la distancia entre todos los puntos para poder hallar el mejor. Esta base de datos posee muchas observaciones por lo que va a tardar mucho tiempo o no va a finalizar. 
+Esto se debe a que el método de k-medoides es más costoso a nivel computacional ya que, recordemos que este método no utiliza el centro de gravedad del cluster sino que utiliza un representante de la clase esto quiere decir un dato real de la base que pertenezca a ese conglomerado. Para poder encontrar este representante necesita calcular la distancia entre todos los puntos para poder hallar el mejor. Esta base de datos posee muchas observaciones por lo que va a tardar mucho tiempo o no va a finalizar. 
 
 ##  l) Ejecute un k−medoides con k = 3 con nstart=50. Para esto tome una muestra de 5 % de los datos, esto se puede lograr con el siguiente código:
 
@@ -355,3 +362,11 @@ fviz_nbclust(datos_muestra_20, kmeans, method = "silhouette",k.max = 8)
 ```
 
 Ambos métodos sugieren tomar 2 conglomerados. 
+
+# Ejercicio 4
+
+<img src= "4.1.jpg">
+<img src= "4.2.jpg">
+<img src= "4.3.jpg">
+<img src= "4.4.jpg">
+<img src= "4.5.jpg">
