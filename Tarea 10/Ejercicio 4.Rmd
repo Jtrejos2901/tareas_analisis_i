@@ -26,22 +26,21 @@ Se carga la base de datos.
 titanic_datos <- read.csv("titanicV2024.csv", header = TRUE, sep = ",", dec = ".")
 head(titanic_datos)
 ```
-Se eliminan las variables Passengerid y Name, pues no son necesarias en el 
-análisis
+
+Se eliminan las variables Passengerid, Name, Ticket y Cabin, pues, son valores únicos implicando que 
+la cantidad de cantegorías por variables sean demasiadas, lo cual, resta precisión. 
 
 ```{r}
-titanic_datos <- titanic_datos[, -c(1,4)]
+titanic_datos <- titanic_datos[, -c(1,4,9,11)]
 ```
 
 
 Se re-codifican las variables cualitativas para que sean de tipo factor.
 ```{r}
 titanic_datos <- titanic_datos %>%
-   mutate( Survived =  as.factor(Survived),
+   mutate(Survived =  as.factor(Survived),
           Pclass =  as.factor(Pclass),
-         Sex =  as.factor(Sex),
-          Ticket =  as.factor(Ticket),
-          Cabin =  as.factor(Cabin),
+          Sex =  as.factor(Sex),
           Embarked =  as.factor(Embarked))
 str(titanic_datos)  
 ```
@@ -50,19 +49,10 @@ Se identican la cantidad de NA's presentes en cada variable.
 na_variables <- colSums(is.na(titanic_datos))
 print(na_variables)
 ```
-
-De acuerdo con los mostrado, la columna Cabin contiene muchas observaciones faltantes.Por ende,
-se ignora de la base de datos.
-```{r}
-titanic_datos <- titanic_datos[,-9]
-
-```
-
-Además, la variable Age cuenta con datos faltantes. Por tal motivo, se procede
+De acuerdo con los mostrado, la variable Age cuenta con datos faltantes. Por tal motivo, se procede
 a rellenarlos con el promedio de las edades según el sexo.
 
 ```{r}
-
 # Se filtran las edades
 mujeres_edades <- na.omit(titanic_datos$Age[titanic_datos$Sex == "female"])
 hombres_edades <- na.omit(titanic_datos$Age[titanic_datos$Sex == "male"])
@@ -113,15 +103,14 @@ Primeramente, se presenta un resumen númerico de las variables de la base de da
 ```{r}
 summary(titanic_datos)
 ```
-Segundo, se verifica si existen outliers entre las variables. Es decir, si se presentan valores atípicos que se alejan del resto de los datos.Para esto, es útil construir las cajas de bigotes correspondiente a cada variable númeroca ya que, nos permiten visualizar de manera sencilla si existen estos tipos de datos.
+Segundo, se verifica si existen outliers entre las variables. Es decir, si se presentan valores atípicos que se alejan del resto de los datos.Para esto, es útil construir las cajas de bigotes correspondiente a cada variable númerica ya que, nos permiten visualizar de manera sencilla si existen estos tipos de datos.
 
 ```{r, warning=FALSE}
-titanic_datos_num <- titanic_datos[, c(4,5,6,8)]
+titanic_datos_num <- titanic_datos[, c(4,5,6,7)]
 stacked_titanic <- stack(titanic_datos_num)
 boxplot(stacked_titanic$values ~ stacked_titanic$ind,
         col = rainbow(ncol(titanic_datos_num)), xlab = "Variables", ylab ="y")
 ```
-
 Se puede observar que para la edad hay varios valores atípicos por encima del 
 límite superior(aprox 55) y unos pocos por debajo del límite inferior (aprox 1).
 Sin embargo, no se eliminan de la base de datos, pues, es sabido que las personas
@@ -150,14 +139,13 @@ titanic_datos <- titanic_datos[-(titanic_datos$Fare == max(titanic_datos$Fare)),
 Tercero, se realiza un gráfico de correlaciones para identificar si hay o no
 correlaciones entre las variables númericas. 
 
-
 ```{r, message=FALSE}
 ggpairs(titanic_datos_num,  upper = list(continuous = wrap("cor", size = 2.5)))
 ```
 
 Del gráfico anterior se puede identificar que Age tiene una correlación negativa
 con SibSp y Parch, es decir, que conforme una variable aumenta la otra 
-disminuye. Y tiene una relación positiva con Fare, lo que significa que cuando
+disminuye. Y tiene una relación positiva con Fare, lo que significa que
 ambas se comportan de manera proporcional. 
 
 Además, SibSp tiene una relación positiva con Parch y Fare. Entonces, si incrementa
@@ -174,29 +162,110 @@ de las variables para predecir si el pasajero del Titanic sobrevivió o no.
 Para ese objetivo, se presentan los siguientes gráficos:
 
 ```{r}
-titanic_datos_num <- cbind(titanic_datos$Survived, titanic_datos_num)
-colnames(titanic_datos_num)[1] <- "Survived"
-lista_poder_pred <- list()
-for (i in 2:ncol(titanic_datos_num)) {
-  variable  <- names(titanic_datos_num)[i]
-  lista_poder_pred[[i-1]] <- numerical.predictive.power(titanic_datos_num, "Survived", variable)
+titanic_datos_num_pred <- titanic_datos[, c(1,4,5,6,7)]
+titanic_datos_cat_pred <- titanic_datos[, c(1,2,3,8)]
+
+colnames(titanic_datos_num_pred)[1] <- "Survived"
+colnames(titanic_datos_cat_pred)[1] <- "Survived"
+
+lista_num_poder_pred <- list()
+for (i in 2:ncol(titanic_datos_num_pred)) {
+  variable  <- names(titanic_datos_num_pred)[i]
+  lista_num_poder_pred[[i-1]] <- numerical.predictive.power(titanic_datos_num_pred, "Survived", variable)
 }
-# Caso de prueba
-#variable  <- names(titanic_datos)[3]
-#numerical.predictive.power(titanic_datos, "Survived", "SibSp")
+
+lista_cat_poder_pred <- list()
+for (i in 2:ncol(titanic_datos_cat_pred)) {
+  variable  <- names(titanic_datos_cat_pred)[i]
+  lista_cat_poder_pred[[i-1]] <- categorical.predictive.power(titanic_datos_cat_pred, "Survived", variable)
+}
+
+ colSums(is.na(titanic_datos_num_pred))
+ colSums(is.na(titanic_datos_cat_pred))
 ```
 
 ```{r}
-lista_poder_pred
+lista_num_poder_pred
 ```
+
+En todos los gráficos se tiene una grande sobreposición de las densidades. Lo cual,
+significa que el poder predictivo de las variables númericas es poco. Por esa razón,  
+no se considerarán esas variables en la predicción. 
+
+
+```{r}
+lista_cat_poder_pred
+```
+En cuanto a las variables categóricas, se puede determinar que todas tienen
+poder de predicción, pues, la proporción de las barras son distintas en cada
+categoría. Entonces, todas esas variables se tomarán en cuenta para la predicción. 
 
 
 **3. ¿Es este problema equilibrado o desequilibrado? Justifique su respuesta**
 
-```{r}
+El siguiente gráfico permite identificar si el problema está o no equilibrado.
 
+```{r}
 prediction.variable.balance(titanic_datos, "Survived")
 ```
+Es evidente que las barras son de distintos tamaños, la cantidad de sobrevivientes
+es menor a la de no sobrevivientes. Entonces se está ante un problema desequilibrado. 
+
+**4. Use el método de K vecinos más cercanos en el paquete traineR, con los parámetros que logren el mejor resultado, para generar un modelo predictivo con la tabla titanicV2024.csv usando el 80% de los datos para la tabla aprendizaje y un 20% para la tabla testing, luego calcule para los datos de testing la matriz de confusión, la precisión global y la precisión para cada una de las dos categorías. ¿Son buenos los resultados? Explique.**
+
+Primeramente, se crea una muestra para generar las particiones tabla 
+aprendizaje-testing. Dado que el problema es desequilibrado, se genera la muestra 
+de la siguiente manera:
+```{r}
+muestra_titanic <- createDataPartition(y = titanic_datos$Survived, p = 0.80, list = F)
+```
+
+Con esa muestra se obtienen las particiones en tabla de aprendizaje y testing.
+
+```{r}
+taprendizaje_titanic <- titanic_datos[muestra_titanic, ]
+ttesting_titanic     <- titanic_datos[-muestra_titanic, ]
+```
+
+Seguido, se realiza el modelo predictivo mediante el método de k vecinos más cercanos con las variables predictoras que tuvieron mejor poder de predicción indicadas en la parte 2.
+
+```{r}
+modelo_titanic <- train.knn(Survived ~ Pclass + Sex + Embarked, data = taprendizaje_titanic, kmax = floor(sqrt(nrow(taprendizaje_titanic))))
+modelo_titanic
+```
+El resultado del modelo indica que el número óptimo de vecinos es 11.
+
+Luego, se obtienen las predicciones del modelo:
+```{r}
+prediccion_titanic <- predict(modelo_titanic, ttesting_titanic, type = "class")
+prediccion_titanic$prediction
+```
+Se calcula la matriz de confusión que permite identificar la información
+de las predicciones dada por el modelo y comparar con los datos reales. 
+
+```{r}
+MC_titanic <- confusion.matrix(ttesting_titanic, prediccion_titanic)
+general.indexes(mc = MC_titanic)
+```
+Se puede observar que el modelo predice bien que 156 pasajeros del Titanic no 
+sobrevivieron pero falla en la predicción de 37 casos. Además, predice 
+correctamente que 61 pasajeros sobrevivieron al incidente pero falló en la predicción
+de 6. En general, el número de aciertos del modelo para ambas categorías es mayor que la 
+cantidad de fallos, lo cual, parece indicar que el modelo es bueno.
+
+Se deben analizar otras medidas para determinar qué tan buenos son los resultados del modelo.
+La función muestra algunos índices de calidad,interpretando se tiene que la 
+Precisión Global (Overaal Accuracy), es decir, el porcentaje de predicciones correctas con respecto al total de predicciones,  es de 0.83 lo que es bastante bueno.
+
+Además, la Precisión Positiva, que corresponde al porcentaje de sobrevivientes predichos correctamente, es de 0.622449 lo cual, también es bueno.
+
+Finalmente, se tiene que la Precisión Negativa, que corresponde al porcentaje de no sobrevivientes predichos correctamente, es de 0.962963. Entonces, la predicción de no sobrevivientes
+es mejor que la de sobrevivientes.
+
+En general, los tres índices de calidad analizados indicaron una buena calidad
+del modelo para predecir a los pasajeros que sobrevivieron o no. 
+
+
 
 
 
