@@ -1,0 +1,197 @@
+---
+title: "Ejercicio 4"
+output: html_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Se cargan las liberías necesarias
+```{r, warning=FALSE, message=FALSE}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(GGally)
+library(traineR)
+library(caret)
+
+```
+
+**1. Cargue la tabla de datos titanicV2024.csv, asegúrese de re-codificar las variables cualitativas y de ignorar variables que no se deben usar**
+
+Se carga la base de datos.
+```{r, message=FALSE}
+titanic_datos <- read_csv("titanicV2024.csv")
+head(titanic_datos)
+```
+Se eliminan las variables Passengerid y Name, pues no son necesarias en el 
+análisis
+
+```{r}
+titanic_datos <- titanic_datos[, -c(1,4)]
+```
+
+
+Se re-codifican las variables cualitativas para que sean de tipo factor.
+```{r}
+titanic_datos <- titanic_datos %>%
+   mutate( Survived =  as.factor(Survived),
+          Pclass =  as.factor(Pclass),
+         Sex =  as.factor(Sex),
+          Ticket =  as.factor(Ticket),
+          Cabin =  as.factor(Cabin),
+          Embarked =  as.factor(Embarked))
+str(titanic_datos)  
+```
+Se identican la cantidad de NA's presentes en cada variable.
+```{r}
+na_variables <- colSums(is.na(titanic_datos))
+print(na_variables)
+```
+
+De acuerdo con los mostrado, la columna Cabin contiene muchas observaciones faltantes.Por ende,
+se ignora de la base de datos.
+```{r}
+titanic_datos <- titanic_datos[,-9]
+
+```
+
+Además, la variable Age cuenta con datos faltantes. Por tal motivo, se procede
+a rellenarlos con el promedio de las edades según el sexo.
+
+```{r}
+
+# Se filtran las edades
+mujeres_edades <- na.omit(titanic_datos$Age[titanic_datos$Sex == "female"])
+hombres_edades <- na.omit(titanic_datos$Age[titanic_datos$Sex == "male"])
+
+# Se calculan los promedios de las edades
+edad_promedio_mujeres <- round(mean(mujeres_edades))
+edad_promedio_hombres <- round(mean(hombres_edades))
+
+# Se rellenan los datos faltantes
+titanic_datos$Age[titanic_datos$Sex == "female" & is.na(titanic_datos$Age)] <- edad_promedio_mujeres
+titanic_datos$Age[titanic_datos$Sex == "male" & is.na(titanic_datos$Age)] <- edad_promedio_hombres
+```
+
+También, la variable Embarked presenta dos variables faltantes. Se rellenan con la moda de las cateogrías. 
+
+```{r}
+# Se obtiene la moda para la variable Embarked
+tabla_frec <- table(titanic_datos$Embarked)  # Se calcula la tabla de frecuencias
+moda  <- names(tabla_frec)[which.max(tabla_frec)]  # Encontrar el valor con la frecuencia más alta
+
+# Se rellena el dato faltante
+titanic_datos$Embarked[is.na(titanic_datos$Embarked)] <- moda
+```
+
+Finalmente, el dato faltante en Fare se rellena con el promedio de las tarifas
+según el tipo de clase en que viajaba.
+```{r}
+# Se identifica la clase en que viajaba
+clase <- titanic_datos$Pclass[is.na(titanic_datos$Fare)]
+
+# Se filtran las tarifas según el tipo de clase de viaje
+tarifas <- na.omit(titanic_datos$Fare[titanic_datos$Pclass == clase])
+
+# Se obtiene el promedio de las tarifas
+tarifa_promedio <- mean(tarifas)
+
+# Se rellena el dato faltante
+titanic_datos$Fare[is.na(titanic_datos$Fare)] <- tarifa_promedio
+
+```
+
+**2. Realice un análisis exploratorio (estadísticas básicas) que incluya: el resumen numérico (media, desviación estándar, etc.), los valores atípicos, la correlación entre las variables, el poder predictivo de las variables predictoras. Interprete los resultados**
+
+Seguidamente, se realiza un análisis exploratorio de los datos para conocer ciertas características y comportamientos de la información con la que contamos.
+
+Primeramente, se presenta un resumen númerico de las variables de la base de datos que brinda información como la media, máximo, mínimo entre otros.
+
+```{r}
+summary(titanic_datos)
+```
+Segundo, se verifica si existen outliers entre las variables. Es decir, si se presentan valores atípicos que se alejan del resto de los datos.Para esto, es útil construir las cajas de bigotes correspondiente a cada variable númeroca ya que, nos permiten visualizar de manera sencilla si existen estos tipos de datos.
+
+```{r, warning=FALSE}
+titanic_datos_num <- titanic_datos[, c(4,5,6,8)]
+stacked_titanic <- stack(titanic_datos_num)
+boxplot(stacked_titanic$values ~ stacked_titanic$ind,
+        col = rainbow(ncol(titanic_datos_num)), xlab = "Variables", ylab ="y")
+```
+
+Se puede observar que para la edad hay varios valores atípicos por encima del 
+límite superior(aprox 55) y unos pocos por debajo del límite inferior (aprox 1).
+Sin embargo, no se eliminan de la base de datos, pues, es sabido que las personas
+que viajaron en el Titanic eran de diversas edades, no solo rondaban entre los 1
+y 55 años.
+
+Para el caso de la cantidad de hermanos o cónyugues a bordo, la media 
+es de 0 aproximadamente y lo máximo de 8 que se aleja mucho de la media, por ese
+motivo se identifican dos valores atípicos. No obstante, no se eliminan, pues, 
+no se encuentran muy alejados del límite superior y algunas familias solían ser 
+numerosas. Similarmente pasa con la cantidad de padres o hijos a bordo del 
+Titanic. Por tanto, tampoco se eliminan los outliers de esta variable. 
+
+En cuanto a las tarifas, se muestran varios valores atípicos por encima
+del límite superior. Esto se debe a que la mayoría de los pasajeros viajaron 
+en tercera clase y por ende sus tarifas eran más bajas, entonces los valores 
+atípicos corresponden a las tarifas de personas que viajaron en una clase superior. 
+Se procede a eliminar solo el valor atípico que se encuentra muy lejos en 
+comparación con el resto de los datos, es decir, el máximo de 512.39 según lo 
+mostrado en el resumen númerico. 
+
+```{r}
+titanic_datos <- titanic_datos[-(titanic_datos$Fare == max(titanic_datos$Fare)),]
+```
+
+Tercero, se realiza un gráfico de correlaciones para identificar si hay o no
+correlaciones entre las variables númericas. 
+
+
+```{r, message=FALSE}
+ggpairs(titanic_datos_num,  upper = list(continuous = wrap("cor", size = 2.5)))
+```
+
+Del gráfico anterior se puede identificar que Age tiene una correlación negativa
+con SibSp y Parch, es decir, que conforme una variable aumenta la otra 
+disminuye. Y tiene una relación positiva con Fare, lo que significa que cuando
+ambas se comportan de manera proporcional. 
+
+Además, SibSp tiene una relación positiva con Parch y Fare. Entonces, si incrementa
+la cantidad de hermanos o cónyuges también aumenta la cantidad de hijos o padres
+y la tarifa. 
+
+Por último, Parch tiene una correlación positiva con Fare, por ende, si aumenta
+la cantidad de hijos o padres también sube la tarifa.
+
+
+Finalmente, se analiza el poder predictor de las variables. Es decir, la capacidad
+de las variables para predecir si el pasajero del Titanic sobrevivió o no.
+
+Para ese objetivo, se presentan los siguientes gráficos:
+
+```{r}
+lista_poder_pred <- list()
+for (i in 1:ncol(titanic_datos)) {
+  variable  <- colnames(titanic_datos[,i])
+  lista_poder_pred[[i]] <- numerical.predictive.power(titanic_datos, "Survived", variable)
+}
+# Caso de prueba
+variable  <- colnames(titanic_datos[,3])
+numerical.predictive.power(titanic_datos, "Survived", "Age")
+```
+
+
+
+**3. ¿Es este problema equilibrado o desequilibrado? Justifique su respuesta**
+
+```{r}
+
+prediction.variable.balance(titanic_datos, "Survived")
+```
+
+
+
