@@ -2,6 +2,8 @@
 library(traineR)
 library(caret)
 
+set.seed(15)
+
 # Cargamos la base de datos 
 datos_tumores <- read.csv("tumores.csv", header = TRUE, sep = ",", dec = ".")
 datos_tumores$tipo <- as.factor(datos_tumores$tipo)
@@ -154,8 +156,10 @@ indices <- c(rectangular = indices_rectangular$category.accuracy[2],
                 inv = indices_inv$category.accuracy[2],
                 gaussian = indices_gaussian$category.accuracy[2],
                 optimal = indices_optimal$category.accuracy[2])
-
+indices
 max(indices)
 
 # El kernel que produce los mejores resultados en el sentido de que predice
-# mejor los tumores es el biweight con un 98.86878% de casos acertados. 
+# mejor los tumores es el optimal con un 99.43439% de casos acertados, lo cual 
+# es de esperarse puesto que es el óptimo. Sin embargo, si se ignora el kernel 
+# optimal el segundo es el kernel triweight con 98.86878%. 
