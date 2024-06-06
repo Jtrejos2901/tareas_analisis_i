@@ -23,7 +23,7 @@ library(caret)
 
 Se carga la base de datos.
 ```{r, message=FALSE}
-titanic_datos <- read_csv("titanicV2024.csv")
+titanic_datos <- read.csv("titanicV2024.csv", header = TRUE, sep = ",", dec = ".")
 head(titanic_datos)
 ```
 Se eliminan las variables Passengerid y Name, pues no son necesarias en el 
@@ -174,16 +174,21 @@ de las variables para predecir si el pasajero del Titanic sobrevivió o no.
 Para ese objetivo, se presentan los siguientes gráficos:
 
 ```{r}
+titanic_datos_num <- cbind(titanic_datos$Survived, titanic_datos_num)
+colnames(titanic_datos_num)[1] <- "Survived"
 lista_poder_pred <- list()
-for (i in 1:ncol(titanic_datos)) {
-  variable  <- colnames(titanic_datos[,i])
-  lista_poder_pred[[i]] <- numerical.predictive.power(titanic_datos, "Survived", variable)
+for (i in 2:ncol(titanic_datos_num)) {
+  variable  <- names(titanic_datos_num)[i]
+  lista_poder_pred[[i-1]] <- numerical.predictive.power(titanic_datos_num, "Survived", variable)
 }
 # Caso de prueba
-variable  <- colnames(titanic_datos[,3])
-numerical.predictive.power(titanic_datos, "Survived", "Age")
+#variable  <- names(titanic_datos)[3]
+#numerical.predictive.power(titanic_datos, "Survived", "SibSp")
 ```
 
+```{r}
+lista_poder_pred
+```
 
 
 **3. ¿Es este problema equilibrado o desequilibrado? Justifique su respuesta**
