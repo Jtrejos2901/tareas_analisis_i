@@ -325,35 +325,6 @@ concluir que los mejores resultados se obtienen con el primer modelo.
 El dataframe con la información de los índices de calidad de cada modelo es el 
 siguiente:
 ```{r}
-indices_matriz <- function(matriz_confusion){
-  VN <- matriz_confusion[1,1]
-  FP <- matriz_confusion[1,2]
-  FN <- matriz_confusion[2,1]
-  VP <- matriz_confusion[2,2]
-  
-  P <- (VN+VP)/sum(matriz_confusion)
-  E <- (FP+FN)/sum(matriz_confusion)
-  PP <- VP/(FN+VP)
-  PN <- VN/(VN+FP)
-  PFP <- FP/(VN+FP)
-  PFN <- FN/(FN+VP)
-  AP <- VP/(FP+VP)
-  AN <- VN/(VN+FN)
-  
-  indices <- list(
-    'Precision Global' = P,
-    'Error Global' = E,
-    'Precisión Positiva' = PP,
-    'Precisión Negativa' = PN,
-    'Proporción de Falsos Positivos' = PFP,
-    'Proporción de Falsos Negativos' = PFN,
-    'Asertividad Positiva' = AP,
-    'Asertividad Negativa' = AN
-  )
-  
-  return(indices)
-}
-
 # Se obtienen los índices de calidad de cada modeo
 ind_modelo1 <- indices_matriz(matriz_confusion_titanic)
 ind_modelo2 <- indices_matriz(matriz_confusion_titanic_2)
