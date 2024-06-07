@@ -1,0 +1,292 @@
+---
+title: Análisis de Datos I <br> Tarea 10
+author:
+  - "Maria Carolina Navarro Monge C05513"
+  - "Tábata Picado Carmona C05961"
+  - "Jose Pablo Trejos Conejo C07862"
+output:
+  rmdformats::robobook:
+        code_folding: show
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Librerías
+
+```{r, warning=FALSE, message=FALSE}
+library(traineR)
+library(caret)
+```
+
+# Ejercicio 2
+
+**Programe en lenguaje R una clase que contenga un método que reciba como entrada la Matriz de Confusión (para el caso 2×2) que calcule y retorne en un diccionario: la Precisión Global, el Error Global, la Precisión Positiva (PP), la Precisión Negativa (PN), la Proporción de Falsos Positivos (PFP), la Proporción de Falsos Negativos (PFN), la Asertividad Positiva (AP) y la Asertividad Negativa (AN). Supongamos que tenemos un modelo predictivo para detectar Fraude en Tarjetas de Crédito, la variable a predecir es Fraude con dos posibles valores Sí (para el caso en que sí fue fraude) y No (para el caso en que no fue fraude). Supongamos que la matriz de confusión es:**
+
+<img src= "matriz_confusion.PNG">
+
+- **Con ayuda de la clase programada anteriormente calcule la Precisión Global, el Error Global, la Precisión Positiva (PP), la Precisión Negativa (PN), la Proporción de Falsos Positivos (PFP), la Proporción de Falsos Negativos (PFN), la Asertividad Positiva (AP) y la Asertividad Negativa (AN).**
+
+```{r}
+indices_matriz <- function(matriz_confusion){
+  VN <- matriz_confusion[1,1]
+  FP <- matriz_confusion[1,2]
+  FN <- matriz_confusion[2,1]
+  VP <- matriz_confusion[2,2]
+  
+  P <- (VN+VP)/sum(matriz_confusion)
+  E <- (FP+FN)/sum(matriz_confusion)
+  PP <- VP/(FN+VP)
+  PN <- VN/(VN+FP)
+  PFP <- FP/(VN+FP)
+  PFN <- FN/(FN+VP)
+  AP <- VP/(FP+VP)
+  AN <- VN/(VN+FN)
+  
+  indices <- list(
+    'Precision Global' = P,
+    'Error Global' = E,
+    'Precisión Positiva' = PP,
+    'Precisión Negativa' = PN,
+    'Proporción de Falsos Positivos' = PFP,
+    'Proporción de Falsos Negativos' = PFN,
+    'Asertividad Positiva' = AP,
+    'Asertividad Negativa' = AN
+  )
+  
+  return(indices)
+}
+```
+
+```{r}
+matriz_confusion <- matrix(c(782243, 238, 8553, 245), nrow = 2, ncol = 2, 
+                           byrow = TRUE)
+rownames(matriz_confusion) <- c("No", "Sí")
+colnames(matriz_confusion) <- c("No", "Sí")
+
+indices_matriz(matriz_confusion)
+```
+
+- **¿Es bueno o malo el modelo predictivo? Justifique su respuesta.**
+
+Después de obtener los indicadores anteriores se puede ver que realmente no es un buen modelo predictivo debido a que la precisión positiva que es la proporción de casos positivos que fueron identificados correctamente es de un 2.78% lo cual es muy bajo y esta es la categoría que nos interesa predecir correctamente con el modelo. Además, la Proporción de falsos negativos que es la proporción de casos positivos que fueron clasificados incorrectamente es de un 97.22%, es decir, prácticamente todos los casos que sí eran fraudes el modelo los predijo como que no eran fraudes.Por último, la asertividad postiva que indica la proporción de buena predicción para los positivos es de un 50.72% que no es tan buena como la asertividad negativa. 
+
+# Ejercicio 3
+
+Primero sembramos una semilla para poder realizar el análisis sin estar cambiando los resultados. 
+
+```{r}
+set.seed(15)
+```
+
+**Esta pregunta utiliza los datos (tumores.csv). Se trata de un conjunto de datos de características del tumor cerebral que incluye cinco variables de primer orden y ocho de textura y cuatro parámetros de evaluación de la calidad con el nivel objetivo. Las variables son: Media, Varianza, Desviación estándar, Asimetría, Kurtosis, Contraste, Energía, ASM (segundo momento angular), Entropía, Homogeneidad, Disimilitud, Correlación, Grosor, PSNR (Pico de la relación señal-ruido), SSIM (Índice de Similitud Estructurada), MSE (Mean Square Error), DC (Coeficiente de Dados) y la variable a predecir tipo (1 = Tumor, 0 = No-Tumor). Realice lo siguiente:**
+
+## 1. ¿Es un problema equilibrado? 
+
+```{r}
+# Cargamos la base de datos 
+datos_tumores <- read.csv("tumores.csv", header = TRUE, sep = ",", dec = ".")
+datos_tumores$tipo <- as.factor(datos_tumores$tipo)
+```
+
+```{r}
+prediction.variable.balance(datos_tumores,"tipo")
+```
+
+Es un problema desbalanceado debido a que hay muchas más observaciones que poseen un tumor que las que no poseen un tumor. 
+
+## 2. Use el método de K vecinos más cercanos en el paquete traineR para generar un modelo predictivo para la tabla tumores.csv usando el 75 % de los datos para la tabla aprendizaje y un 25 % para la tabla testing. No olvide recodificar, desde R, la variable a predecir como categórica.
+
+Se generar al azar una tabla de testing de con el 25% de los datos y una tabla de aprendizaje del 75%.
+
+```{r}
+muestra <- createDataPartition(y = datos_tumores$tipo, p = 0.75, list = F)
+tabla_testing <- datos_tumores[muestra,]
+tabla_aprendizaje <- datos_tumores[-muestra,]
+tabla_testing <- tabla_testing[,-1]
+tabla_aprendizaje <- tabla_aprendizaje[,-1]
+```
+
+Se aplica el método de K vecinos más cercanos. 
+```{r}
+modelo <- train.knn(tipo~., data = tabla_aprendizaje, 
+                    kmax = floor(sqrt(nrow(tabla_aprendizaje))))
+modelo
+```
+
+Se realiza la predicción.
+```{r}
+prediccion   <- predict(modelo, tabla_testing, type = "class")
+head(prediccion$prediction)
+```
+
+Se realiza la matriz de confusión.
+```{r}
+matriz_confusion <- confusion.matrix(tabla_testing, prediccion)
+```
+
+Se calculan los índices de calidad de la predicción.
+```{r}
+general.indexes(mc = matriz_confusion)
+```
+
+## 3. Genere un Modelo Predictivo usando K vecinos más cercanos para cada uno de los siguientes núcleos: rectangular, triangular, epanechnikov, biweight, triweight, cos, inv, gaussian y optimal ¿Cuál produce los mejores resultados en el sentido de que predice mejor los tumores, es decir, Tumor = 1?
+
+### Rectangular
+```{r}
+modelo_rectangular <- train.knn(tipo~., data = tabla_aprendizaje, 
+                    kmax = floor(sqrt(nrow(tabla_aprendizaje))), 
+                    kernel = "rectangular")
+prediccion_rectangular <- predict(modelo_rectangular, tabla_testing, 
+                                    type = "class")
+matriz_confusion_rectangular <- confusion.matrix(tabla_testing, 
+                                                 prediccion_rectangular)
+
+indices_rectangular <- general.indexes(mc = matriz_confusion_rectangular)
+
+indices_rectangular
+```
+
+### Triangular
+```{r}
+modelo_triangular <- train.knn(tipo~., data = tabla_aprendizaje, 
+                                kmax = floor(sqrt(nrow(tabla_aprendizaje))), 
+                                kernel = "triangular")
+prediccion_triangular <- predict(modelo_triangular, tabla_testing, 
+                                    type = "class")
+matriz_confusion_triangular <- confusion.matrix(tabla_testing, 
+                                                 prediccion_triangular)
+
+indices_triangular <- general.indexes(mc = matriz_confusion_triangular)
+
+indices_triangular
+```
+
+### Epanechnikov
+```{r}
+modelo_epanechnikov <- train.knn(tipo~., data = tabla_aprendizaje, 
+                               kmax = floor(sqrt(nrow(tabla_aprendizaje))), 
+                               kernel = "epanechnikov")
+prediccion_epanechnikov <- predict(modelo_epanechnikov, tabla_testing, 
+                                   type = "class")
+matriz_confusion_epanechnikov <- confusion.matrix(tabla_testing, 
+                                                prediccion_epanechnikov)
+
+indices_epanechnikov <- general.indexes(mc = matriz_confusion_epanechnikov)
+
+indices_epanechnikov
+```
+
+### Biweight
+```{r}
+modelo_biweight <- train.knn(tipo~., data = tabla_aprendizaje, 
+                                 kmax = floor(sqrt(nrow(tabla_aprendizaje))), 
+                                 kernel = "biweight")
+prediccion_biweight <- predict(modelo_biweight, tabla_testing, 
+                                     type = "class")
+matriz_confusion_biweight <- confusion.matrix(tabla_testing, 
+                                                  prediccion_biweight)
+
+indices_biweight <- general.indexes(mc = matriz_confusion_biweight)
+
+indices_biweight
+```
+
+### Triweight
+```{r}
+modelo_triweight <- train.knn(tipo~., data = tabla_aprendizaje, 
+                             kmax = floor(sqrt(nrow(tabla_aprendizaje))), 
+                             kernel = "triweight")
+prediccion_triweight <- predict(modelo_triweight, tabla_testing, 
+                                 type = "class")
+matriz_confusion_triweight <- confusion.matrix(tabla_testing, 
+                                              prediccion_triweight)
+
+indices_triweight <- general.indexes(mc = matriz_confusion_triweight)
+
+indices_triweight
+```
+
+### Cos
+```{r}
+modelo_cos <- train.knn(tipo~., data = tabla_aprendizaje, 
+                              kmax = floor(sqrt(nrow(tabla_aprendizaje))), 
+                              kernel = "cos")
+prediccion_cos <- predict(modelo_cos, tabla_testing, 
+                                  type = "class")
+matriz_confusion_cos <- confusion.matrix(tabla_testing, 
+                                               prediccion_cos)
+
+indices_cos <- general.indexes(mc = matriz_confusion_cos)
+
+indices_cos
+```
+
+### Inv
+```{r}
+modelo_inv <- train.knn(tipo~., data = tabla_aprendizaje, 
+                        kmax = floor(sqrt(nrow(tabla_aprendizaje))), 
+                        kernel = "inv")
+prediccion_inv <- predict(modelo_inv, tabla_testing, 
+                            type = "class")
+matriz_confusion_inv <- confusion.matrix(tabla_testing, 
+                                         prediccion_inv)
+
+indices_inv <- general.indexes(mc = matriz_confusion_inv)
+
+indices_inv
+```
+
+### Gaussian
+```{r}
+modelo_gaussian <- train.knn(tipo~., data = tabla_aprendizaje, 
+                        kmax = floor(sqrt(nrow(tabla_aprendizaje))), 
+                        kernel = "gaussian")
+prediccion_gaussian <- predict(modelo_gaussian, tabla_testing, 
+                            type = "class")
+matriz_confusion_gaussian <- confusion.matrix(tabla_testing, 
+                                         prediccion_gaussian)
+
+indices_gaussian <- general.indexes(mc = matriz_confusion_gaussian)
+
+indices_gaussian
+```
+
+### Optimal
+```{r}
+modelo_optimal <- train.knn(tipo~., data = tabla_aprendizaje, 
+                             kmax = floor(sqrt(nrow(tabla_aprendizaje))), 
+                             kernel = "optimal")
+prediccion_optimal <- predict(modelo_optimal, tabla_testing, 
+                                 type = "class")
+matriz_confusion_optimal <- confusion.matrix(tabla_testing, 
+                                              prediccion_optimal)
+
+indices_optimal <- general.indexes(mc = matriz_confusion_optimal)
+
+indices_optimal
+```
+
+Se crea una lista con la exactitud del modelo según el kernel seleccionado para el caso de importancia, el cual es cuando el individuo sí posee un tumor.
+```{r}
+indices <- c(rectangular = indices_rectangular$category.accuracy[2],
+                triangular = indices_triangular$category.accuracy[2],
+                epanechnikov = indices_epanechnikov$category.accuracy[2],
+                biweight = indices_biweight$category.accuracy[2],
+                triweight = indices_triweight$category.accuracy[2],
+                cos = indices_cos$category.accuracy[2],
+                inv = indices_inv$category.accuracy[2],
+                gaussian = indices_gaussian$category.accuracy[2],
+                optimal = indices_optimal$category.accuracy[2])
+indices
+```
+Se obtiene el máximo. 
+```{r}
+max(indices)
+```
+
+El kernel que produce los mejores resultados en el sentido de que predice mejor los tumores es el rectangular con un 99.43% de casos acertados, lo cual es bastante bueno debido a la importancia de la predicción en este tema específico. Note que, el kernel que trae la función por defecto es el optimal que tiene un poder predictivo de casos positivos menor. 
