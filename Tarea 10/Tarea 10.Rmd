@@ -653,14 +653,16 @@ que es bastante bueno pero es menor que la dada en el modelo anterior.
 Además, la Precisión Positiva es de 0.836735 lo cual, también es bueno y es mejor
 que la obtenida con el modelo anterior.
 
-Finalmente, se tiene que la Precisión Negativa es de  0.901235 siendo más que pequeña que
-la indicada en el otro modelo pero sigue siendo mayor que la predicción de
-sobrevivientes
+Finalmente, se tiene que la Precisión Negativa es de  0.901235 lo que sigue siendo
+alto pero es más pequeña que la indicada en el otro modelo.
 
 En general, los tres índices de calidad analizados indicaron una buena calidad
-del modelo para predecir a los pasajeros que sobrevivieron o no. Sin embargo,
-solo la Precisión Positiva es mejor que la del modelo anterior. Se puede 
-concluir que los mejores resultados se obtienen con el primer modelo.
+del modelo para predecir a los pasajeros que sobrevivieron o no. 
+
+Comparando el primer modelo con este, el modelo 1 es mejor si se quiere predecir
+si no sobrevivieron y el modelo 2 es mejor prediciendo a los sobrevivientes.
+Si se basa en la cantidad de índices que presentan mejor resultado, en ese caso
+el modelo 1 es mejor.
 
 **6.Usando la función programada en el ejercicio 2, los datos titanicV2024.csv y los modelos generados arriba construya un DataFrame de manera que en cada una de las filas aparezca un modelo predictivo y en las columnas aparezcan los índices Precisión Global, Error Global Precisión Positiva (PP), Precisión Negativa (PN), Falsos Positivos (FP), los Falsos Negativos (FN), la Asertividad Positiva (AP) y la Asertividad Negativa (AN). ¿Cuál de los modelos es mejor para estos datos?**
 
