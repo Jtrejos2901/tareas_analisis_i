@@ -1617,6 +1617,17 @@ margin-left: 0 !important;
           </ul></li>
           <li><a href="#ejercicio-4" id="toc-ejercicio-4">Ejercicio
           4</a></li>
+          <li><a href="#ejercicio-5" id="toc-ejercicio-5">Ejercicio
+          5</a>
+          <ul>
+          <li><a href="#carga-de-datos" id="toc-carga-de-datos">Carga de
+          datos</a></li>
+          <li><a href="#inciso-1" id="toc-inciso-1">Inciso 1</a></li>
+          <li><a href="#inciso-2" id="toc-inciso-2">Inciso 2</a></li>
+          <li><a href="#inciso-3" id="toc-inciso-3">Inciso 3</a></li>
+          <li><a href="#inciso-4" id="toc-inciso-4">Inciso 4</a></li>
+          <li><a href="#inciso-5" id="toc-inciso-5">Inciso 5</a></li>
+          </ul></li>
           </ul>
         </nav>
         <ul class="authors">
@@ -2531,14 +2542,16 @@ Precisión Global (Overaal Accuracy) es de 0.8769 lo que es bastante
 bueno pero es menor que la dada en el modelo anterior.</p>
 <p>Además, la Precisión Positiva es de 0.836735 lo cual, también es
 bueno y es mejor que la obtenida con el modelo anterior.</p>
-<p>Finalmente, se tiene que la Precisión Negativa es de 0.901235 siendo
-más que pequeña que la indicada en el otro modelo pero sigue siendo
-mayor que la predicción de sobrevivientes</p>
+<p>Finalmente, se tiene que la Precisión Negativa es de 0.901235 lo que
+sigue siendo alto pero es más pequeña que la indicada en el otro
+modelo.</p>
 <p>En general, los tres índices de calidad analizados indicaron una
 buena calidad del modelo para predecir a los pasajeros que sobrevivieron
-o no. Sin embargo, solo la Precisión Positiva es mejor que la del modelo
-anterior. Se puede concluir que los mejores resultados se obtienen con
-el primer modelo.</p>
+o no.</p>
+<p>Comparando el primer modelo con este, el modelo 1 es mejor si se
+quiere predecir si no sobrevivieron y el modelo 2 es mejor prediciendo a
+los sobrevivientes. Si se basa en la cantidad de índices que presentan
+mejor resultado, en ese caso el modelo 1 es mejor.</p>
 <p><strong>6.Usando la función programada en el ejercicio 2, los datos
 titanicV2024.csv y los modelos generados arriba construya un DataFrame
 de manera que en cada una de las filas aparezca un modelo predictivo y
@@ -2593,6 +2606,2673 @@ Negativa.</p>
 comparación de los modelos, el Modelo 1 es el que brinda mejores
 resultados. No obstante, depende del tipo de análisis que se pretenda
 realiza para determinar cuál modelo es más apto.</p>
+</div>
+<div id="ejercicio-5" class="section level1">
+<h1>Ejercicio 5</h1>
+<p><strong>En este ejercicio vamos a predecir números escritos a mano
+(Hand Written Digit Recognition), la tabla de aprendizaje está en el
+archivo ZipDataTrainCod.csv y la tabla de testing está en el archivo
+ZipDataTestCod.csv.</strong></p>
+<div id="carga-de-datos" class="section level2">
+<h2>Carga de datos</h2>
+<p>Primeramente se procede a cargar tanto los datos de entrenamiento
+como los de prueba.</p>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;ZipDataTrainCod.csv&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>, <span class="at">dec=</span><span class="st">&#39;.&#39;</span>, <span class="at">header =</span> T, <span class="at">stringsAsFactors =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb81-2"><a href="#cb81-2" tabindex="-1"></a></span>
+<span id="cb81-3"><a href="#cb81-3" tabindex="-1"></a>test_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;ZipDataTestCod.csv&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>, <span class="at">dec=</span><span class="st">&#39;.&#39;</span>, <span class="at">header =</span> T, <span class="at">stringsAsFactors =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="inciso-1" class="section level2">
+<h2>Inciso 1</h2>
+<p><strong>Usando K vecinos más cercanos genere un modelo predictivo
+para la tabla de aprendizaje, con los parámetros que usted estime más
+convenientes.</strong></p>
+<p>Se procede a generar el modelo con los datos de entrenamiento. Para
+este modelo se utilizarán los 21 vecinos más cercanos. El número de
+<em>k</em> es de preferencia impar según lo visto en clase. Se
+utilizarán todas las variables, es decir los 256 píxeles y todas las
+observaciones que constituyen un total de 7291.</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">train.knn</span>(Numero<span class="sc">~</span>., <span class="at">data =</span> train_data, <span class="at">kmax =</span> <span class="dv">21</span>)</span></code></pre></div>
+</div>
+<div id="inciso-2" class="section level2">
+<h2>Inciso 2</h2>
+<p><strong>Con la tabla de testing calcule la matriz de confusión, la
+precisión global, el error global y la precisión en cada unos de los
+dígitos. ¿Son buenos los resultados?</strong></p>
+<p>Ahora se procede a generar las predicciones con base en el modelo
+creado. Esto para lograr generar la matriz de confusión y medir los
+resultados obtenidos.</p>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" tabindex="-1"></a>prediction   <span class="ot">&lt;-</span> <span class="fu">predict</span>(model, test_data, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span></code></pre></div>
+<p>Finalmente se procede a generar la matriz de confusión y con ella los
+niveles de precisión del modelo.</p>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" tabindex="-1"></a><span class="co"># Se obtiene la matriz de confusión.</span></span>
+<span id="cb84-2"><a href="#cb84-2" tabindex="-1"></a>CM <span class="ot">&lt;-</span> <span class="fu">confusion.matrix</span>(test_data, prediction)</span>
+<span id="cb84-3"><a href="#cb84-3" tabindex="-1"></a></span>
+<span id="cb84-4"><a href="#cb84-4" tabindex="-1"></a><span class="co"># Se calculan los resultados de la precisión.</span></span>
+<span id="cb84-5"><a href="#cb84-5" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">general.indexes</span>(<span class="at">mc =</span> CM)[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>)]</span>
+<span id="cb84-6"><a href="#cb84-6" tabindex="-1"></a></span>
+<span id="cb84-7"><a href="#cb84-7" tabindex="-1"></a><span class="co"># Se generan df para mostrar los resultados.</span></span>
+<span id="cb84-8"><a href="#cb84-8" tabindex="-1"></a>df_CM <span class="ot">&lt;-</span> <span class="fu">as.data.frame.matrix</span>(CM)</span>
+<span id="cb84-9"><a href="#cb84-9" tabindex="-1"></a>df_results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(results[<span class="dv">1</span>], results[<span class="dv">2</span>])</span>
+<span id="cb84-10"><a href="#cb84-10" tabindex="-1"></a></span>
+<span id="cb84-11"><a href="#cb84-11" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_CM)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">cero</th>
+<th align="right">cinco</th>
+<th align="right">cuatro</th>
+<th align="right">dos</th>
+<th align="right">nueve</th>
+<th align="right">ocho</th>
+<th align="right">seis</th>
+<th align="right">siete</th>
+<th align="right">tres</th>
+<th align="right">uno</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">cero</td>
+<td align="right">353</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">cinco</td>
+<td align="right">4</td>
+<td align="right">139</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">6</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">cuatro</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">177</td>
+<td align="right">4</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">dos</td>
+<td align="right">6</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">176</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">2</td>
+<td align="right">5</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">nueve</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">168</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">ocho</td>
+<td align="right">5</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">147</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">seis</td>
+<td align="right">5</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">159</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">siete</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">139</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">tres</td>
+<td align="right">2</td>
+<td align="right">7</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">150</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">uno</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">255</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_results)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">overall.accuracy</th>
+<th align="right">overall.error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.9282511</td>
+<td align="right">0.0717489</td>
+</tr>
+</tbody>
+</table>
+<p>Como se puede observar, el nivel de error es relativamente bajo y la
+precisión es bastante acertada. Según se indicó en el inciso, el error
+debe ser sumamente bajo para evitar errores en el envío de los paquetes.
+Asumiendo que se contaba con este modelo desde el principio,
+contemplando que existe un total de 9298 observaciones y teniendo en
+cuenta el error aproximado de 0.072, entonces se tiene que al rededor de
+665 números serías clasificados de manera errónea lo que implicaría que,
+como máximo, cerca 665 paquetes paquetes serían enviados a la dirección
+incorrecta, lo que para una empresa postal sería fatal pues representa
+un número alto de clientes insatisfechos. Por lo tanto, dados los
+resultados de este modelo, se preferiría la observación humana sobre el
+algoritmo.</p>
+<p>Ahora probemos utilizando la raíz cuadrada de la cantidad de
+observaciones.</p>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" tabindex="-1"></a><span class="co"># Se genera el modelo.</span></span>
+<span id="cb86-2"><a href="#cb86-2" tabindex="-1"></a>model_2 <span class="ot">&lt;-</span> <span class="fu">train.knn</span>(Numero<span class="sc">~</span>., <span class="at">data =</span> train_data, </span>
+<span id="cb86-3"><a href="#cb86-3" tabindex="-1"></a>                     <span class="at">kmax =</span> <span class="fu">floor</span>(<span class="fu">sqrt</span>(<span class="fu">nrow</span>(train_data))), </span>
+<span id="cb86-4"><a href="#cb86-4" tabindex="-1"></a>                     <span class="at">kernel =</span> <span class="st">&quot;optimal&quot;</span>)</span>
+<span id="cb86-5"><a href="#cb86-5" tabindex="-1"></a></span>
+<span id="cb86-6"><a href="#cb86-6" tabindex="-1"></a><span class="co"># Se obtienen las predicciones.</span></span>
+<span id="cb86-7"><a href="#cb86-7" tabindex="-1"></a>prediction_2   <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_2, test_data, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb86-8"><a href="#cb86-8" tabindex="-1"></a></span>
+<span id="cb86-9"><a href="#cb86-9" tabindex="-1"></a><span class="co"># Se obtiene la matriz de confusión.</span></span>
+<span id="cb86-10"><a href="#cb86-10" tabindex="-1"></a>CM_2 <span class="ot">&lt;-</span> <span class="fu">confusion.matrix</span>(test_data, prediction_2)</span>
+<span id="cb86-11"><a href="#cb86-11" tabindex="-1"></a></span>
+<span id="cb86-12"><a href="#cb86-12" tabindex="-1"></a><span class="co"># Se calculan los resultados de la precisión.</span></span>
+<span id="cb86-13"><a href="#cb86-13" tabindex="-1"></a>results_2 <span class="ot">&lt;-</span> <span class="fu">general.indexes</span>(<span class="at">mc =</span> CM_2)[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>)]</span>
+<span id="cb86-14"><a href="#cb86-14" tabindex="-1"></a></span>
+<span id="cb86-15"><a href="#cb86-15" tabindex="-1"></a><span class="co"># Se generan df para mostrar los resultados.</span></span>
+<span id="cb86-16"><a href="#cb86-16" tabindex="-1"></a>df_CM_2 <span class="ot">&lt;-</span> <span class="fu">as.data.frame.matrix</span>(CM_2)</span>
+<span id="cb86-17"><a href="#cb86-17" tabindex="-1"></a>df_results_2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(results_2[<span class="dv">1</span>], results_2[<span class="dv">2</span>])</span>
+<span id="cb86-18"><a href="#cb86-18" tabindex="-1"></a></span>
+<span id="cb86-19"><a href="#cb86-19" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_CM_2)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">cero</th>
+<th align="right">cinco</th>
+<th align="right">cuatro</th>
+<th align="right">dos</th>
+<th align="right">nueve</th>
+<th align="right">ocho</th>
+<th align="right">seis</th>
+<th align="right">siete</th>
+<th align="right">tres</th>
+<th align="right">uno</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">cero</td>
+<td align="right">353</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">cinco</td>
+<td align="right">4</td>
+<td align="right">139</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">6</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">cuatro</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">177</td>
+<td align="right">4</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">dos</td>
+<td align="right">6</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">176</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">2</td>
+<td align="right">5</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">nueve</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">168</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">ocho</td>
+<td align="right">5</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">147</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">seis</td>
+<td align="right">5</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">159</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">siete</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">139</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">tres</td>
+<td align="right">2</td>
+<td align="right">7</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">150</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">uno</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">255</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_results_2)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">overall.accuracy</th>
+<th align="right">overall.error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.9282511</td>
+<td align="right">0.0717489</td>
+</tr>
+</tbody>
+</table>
+<p>Como se evidencia, los resultados son los mismos, por lo tanto, no es
+necesario el uso de un número mayor <span class="math inline">\(k\)</span> para los cálculos. En este caso, la
+conclusión en la misma que la anterior.</p>
+</div>
+<div id="inciso-3" class="section level2">
+<h2>Inciso 3</h2>
+<p><strong>Repita los items 1) y 2) pero usando solamente los 3s, 5s y
+los 8s. ¿Mejora la predicción?</strong></p>
+<p>Se procede a extraer 2 <em>sub-sets</em> de datos en los que solo se
+encuentra infromación respecto a los 3s, 5s y 8s.</p>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" tabindex="-1"></a><span class="co"># Vector con los números a utilizar.</span></span>
+<span id="cb88-2"><a href="#cb88-2" tabindex="-1"></a>nums <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;tres&quot;</span>, <span class="st">&quot;cinco&quot;</span>, <span class="st">&quot;ocho&quot;</span>)</span>
+<span id="cb88-3"><a href="#cb88-3" tabindex="-1"></a></span>
+<span id="cb88-4"><a href="#cb88-4" tabindex="-1"></a><span class="co"># Se filtra el set de datos para entrenamiento.</span></span>
+<span id="cb88-5"><a href="#cb88-5" tabindex="-1"></a>train_data_nums <span class="ot">&lt;-</span> train_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Numero <span class="sc">%in%</span> nums) <span class="sc">%&gt;%</span> <span class="fu">droplevels</span>()</span>
+<span id="cb88-6"><a href="#cb88-6" tabindex="-1"></a></span>
+<span id="cb88-7"><a href="#cb88-7" tabindex="-1"></a><span class="co"># Se filtra el set de datos para pruebas.</span></span>
+<span id="cb88-8"><a href="#cb88-8" tabindex="-1"></a>test_data_nums <span class="ot">&lt;-</span> test_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Numero <span class="sc">%in%</span> nums) <span class="sc">%&gt;%</span> <span class="fu">droplevels</span>()</span></code></pre></div>
+<p>Finalmente se procede a repetir lo realizado en los incisos
+anteriores.</p>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" tabindex="-1"></a><span class="co"># Se genera el modelo.</span></span>
+<span id="cb89-2"><a href="#cb89-2" tabindex="-1"></a>model_nums <span class="ot">&lt;-</span> <span class="fu">train.knn</span>(Numero<span class="sc">~</span>., <span class="at">data =</span> train_data_nums, <span class="at">kmax =</span> <span class="dv">21</span>)</span>
+<span id="cb89-3"><a href="#cb89-3" tabindex="-1"></a></span>
+<span id="cb89-4"><a href="#cb89-4" tabindex="-1"></a><span class="co"># Se obtienen las predicciones.</span></span>
+<span id="cb89-5"><a href="#cb89-5" tabindex="-1"></a>prediction_nums   <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_nums, test_data_nums, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb89-6"><a href="#cb89-6" tabindex="-1"></a></span>
+<span id="cb89-7"><a href="#cb89-7" tabindex="-1"></a><span class="co"># Se obtiene la matriz de confusión.</span></span>
+<span id="cb89-8"><a href="#cb89-8" tabindex="-1"></a>CM_nums <span class="ot">&lt;-</span> <span class="fu">confusion.matrix</span>(test_data_nums, prediction_nums)</span>
+<span id="cb89-9"><a href="#cb89-9" tabindex="-1"></a></span>
+<span id="cb89-10"><a href="#cb89-10" tabindex="-1"></a><span class="co"># Se calculan los resultados de la precisión.</span></span>
+<span id="cb89-11"><a href="#cb89-11" tabindex="-1"></a>results_nums <span class="ot">&lt;-</span> <span class="fu">general.indexes</span>(<span class="at">mc =</span> CM_nums)[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>)]</span>
+<span id="cb89-12"><a href="#cb89-12" tabindex="-1"></a></span>
+<span id="cb89-13"><a href="#cb89-13" tabindex="-1"></a><span class="co"># Se generan df para mostrar los resultados.</span></span>
+<span id="cb89-14"><a href="#cb89-14" tabindex="-1"></a>df_CM_nums <span class="ot">&lt;-</span> <span class="fu">as.data.frame.matrix</span>(CM_nums)</span>
+<span id="cb89-15"><a href="#cb89-15" tabindex="-1"></a>df_results_nums <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(results_nums[<span class="dv">1</span>], results_nums[<span class="dv">2</span>])</span>
+<span id="cb89-16"><a href="#cb89-16" tabindex="-1"></a></span>
+<span id="cb89-17"><a href="#cb89-17" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_CM_nums)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">cinco</th>
+<th align="right">ocho</th>
+<th align="right">tres</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">cinco</td>
+<td align="right">149</td>
+<td align="right">4</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
+<td align="left">ocho</td>
+<td align="right">2</td>
+<td align="right">160</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">tres</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">156</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_results_nums)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">overall.accuracy</th>
+<th align="right">overall.error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.945122</td>
+<td align="right">0.054878</td>
+</tr>
+</tbody>
+</table>
+<p>Tal y como se muestra, para los números 3, 5 y 8, el nivel de
+precisión aumenta. Nuevamente bajo la misma lógica del inciso anterior,
+si se contara con este modelo desde el inicio y contemplando la tasa de
+error de aproximadamente 0.055, de los números predichos, cerca de 123
+serían erróneos, lo cual representa, como máximo, 123 paquetes enviados
+incorrectamente, que aunque es un máximo, resulta inaceptable para una
+compañía postal.</p>
+</div>
+<div id="inciso-4" class="section level2">
+<h2>Inciso 4</h2>
+<p><strong>Repita los items 1) y 2) utilizando
+<code>kmax=floor(sqrt(nrow(Training)))</code> y
+<code>kernel = ‘‘optimal’’</code> (parámetros por defecto) pero
+reemplazando cada bloque <span class="math inline">\(4 \times 4\)</span>
+de píxeles por su promedio. ¿Mejora la predicción? Recuerde que cada
+bloque <span class="math inline">\(16 \times 16\)</span> está
+representado por una fila en las matrices de aprendizaje y testing.
+Despliegue la matriz de confusión resultante.</strong></p>
+<p>Inicialmente se debe recordar que cada observación representa un
+bloque de <span class="math inline">\(16 \times 16\)</span> píxeles. Por
+lo tanto, se procede con la creación de una función que, dado un divisor
+<span class="math inline">\(p\)</span> de <span class="math inline">\(16\)</span>, genere un nuevo bloque <span class="math inline">\(d \times d\)</span> donde <span class="math inline">\(d = \frac{16}{p}\)</span> y cuyo <em>d-ésimo</em>
+pixel representa el promedio del bloque <em>p-ésimo</em> (<span class="math inline">\(p \times p\)</span>) sobre la matriz original.</p>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" tabindex="-1"></a>reducir <span class="ot">&lt;-</span> <span class="cf">function</span>(df, p){</span>
+<span id="cb91-2"><a href="#cb91-2" tabindex="-1"></a>  <span class="co"># Se genera una matriz que contendrá la reducción del dataframe.</span></span>
+<span id="cb91-3"><a href="#cb91-3" tabindex="-1"></a>  reduccion <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(df), (<span class="dv">16</span><span class="sc">/</span>p)<span class="sc">**</span><span class="dv">2</span>)</span>
+<span id="cb91-4"><a href="#cb91-4" tabindex="-1"></a>  </span>
+<span id="cb91-5"><a href="#cb91-5" tabindex="-1"></a>  <span class="co"># Se calcula el d.</span></span>
+<span id="cb91-6"><a href="#cb91-6" tabindex="-1"></a>  d <span class="ot">&lt;-</span> <span class="dv">16</span><span class="sc">/</span>p</span>
+<span id="cb91-7"><a href="#cb91-7" tabindex="-1"></a>  </span>
+<span id="cb91-8"><a href="#cb91-8" tabindex="-1"></a>  <span class="co"># Se calcula la reducción.</span></span>
+<span id="cb91-9"><a href="#cb91-9" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>d<span class="sc">**</span><span class="dv">2</span>){</span>
+<span id="cb91-10"><a href="#cb91-10" tabindex="-1"></a>    vec <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>), <span class="fu">c</span>(p<span class="sc">*</span>((i<span class="dv">-1</span>)<span class="sc">%%</span>d), p, p<span class="sc">*</span>(d<span class="sc">-</span>((i<span class="dv">-1</span>)<span class="sc">%%</span>d)<span class="sc">-</span><span class="dv">1</span>))), p)</span>
+<span id="cb91-11"><a href="#cb91-11" tabindex="-1"></a>    vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>,(<span class="fu">ceiling</span>(i<span class="sc">/</span>d)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">*</span>(p<span class="sc">*</span><span class="dv">16</span>)),vec,<span class="fu">rep</span>(<span class="dv">0</span>,(d<span class="sc">-</span><span class="fu">ceiling</span>(i<span class="sc">/</span>d))<span class="sc">*</span>(p<span class="sc">*</span><span class="dv">16</span>)))</span>
+<span id="cb91-12"><a href="#cb91-12" tabindex="-1"></a>    reduccion[,i] <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(df[<span class="sc">-</span><span class="dv">1</span>])<span class="sc">%*%</span><span class="fu">matrix</span>(vec,<span class="dv">256</span>,<span class="dv">1</span>)<span class="sc">/</span>p<span class="sc">**</span><span class="dv">2</span></span>
+<span id="cb91-13"><a href="#cb91-13" tabindex="-1"></a>  }</span>
+<span id="cb91-14"><a href="#cb91-14" tabindex="-1"></a>  </span>
+<span id="cb91-15"><a href="#cb91-15" tabindex="-1"></a>  <span class="fu">return</span>(reduccion)</span>
+<span id="cb91-16"><a href="#cb91-16" tabindex="-1"></a>}</span></code></pre></div>
+<p>Ahora que se cuenta con la función para reducir mediante promedio el
+<code>dataframe</code> orinal a una matriz, se procede a reducir el set
+de datos de train y test, a convertir las matrices resultantes en nuevos
+<code>dataframes</code> y a agregarles la columna
+<code>Nombre</code>.</p>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" tabindex="-1"></a><span class="co"># Se obtienen los nuevos dataframes reducidos.</span></span>
+<span id="cb92-2"><a href="#cb92-2" tabindex="-1"></a>train_data_4x4 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">reducir</span>(train_data, <span class="dv">4</span>))</span>
+<span id="cb92-3"><a href="#cb92-3" tabindex="-1"></a>test_data_4x4 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">reducir</span>(test_data, <span class="dv">4</span>))</span>
+<span id="cb92-4"><a href="#cb92-4" tabindex="-1"></a></span>
+<span id="cb92-5"><a href="#cb92-5" tabindex="-1"></a><span class="co"># Se les agrega la columna de nombres.</span></span>
+<span id="cb92-6"><a href="#cb92-6" tabindex="-1"></a>train_data_4x4 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(train_data[,<span class="dv">1</span>], train_data_4x4)</span>
+<span id="cb92-7"><a href="#cb92-7" tabindex="-1"></a>test_data_4x4 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(test_data[,<span class="dv">1</span>], test_data_4x4)</span>
+<span id="cb92-8"><a href="#cb92-8" tabindex="-1"></a></span>
+<span id="cb92-9"><a href="#cb92-9" tabindex="-1"></a><span class="co"># Se les agrega los nombres de columna.</span></span>
+<span id="cb92-10"><a href="#cb92-10" tabindex="-1"></a><span class="fu">colnames</span>(train_data_4x4) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(train_data[,<span class="dv">1</span><span class="sc">:</span><span class="dv">17</span>])</span>
+<span id="cb92-11"><a href="#cb92-11" tabindex="-1"></a><span class="fu">colnames</span>(test_data_4x4) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(test_data[,<span class="dv">1</span><span class="sc">:</span><span class="dv">17</span>])</span>
+<span id="cb92-12"><a href="#cb92-12" tabindex="-1"></a></span>
+<span id="cb92-13"><a href="#cb92-13" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(train_data_4x4))</span></code></pre></div>
+<table style="width:100%;">
+<colgroup>
+<col width="3%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Numero</th>
+<th align="right">V2</th>
+<th align="right">V3</th>
+<th align="right">V4</th>
+<th align="right">V5</th>
+<th align="right">V6</th>
+<th align="right">V7</th>
+<th align="right">V8</th>
+<th align="right">V9</th>
+<th align="right">V10</th>
+<th align="right">V11</th>
+<th align="right">V12</th>
+<th align="right">V13</th>
+<th align="right">V14</th>
+<th align="right">V15</th>
+<th align="right">V16</th>
+<th align="right">V17</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">seis</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.4746250</td>
+<td align="right">-0.3759375</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.8215625</td>
+<td align="right">0.1931250</td>
+<td align="right">-0.7178125</td>
+<td align="right">-0.8045625</td>
+<td align="right">-0.0082500</td>
+<td align="right">-0.0095625</td>
+<td align="right">0.0271875</td>
+<td align="right">-0.0510625</td>
+<td align="right">-0.5761250</td>
+<td align="right">0.6920625</td>
+<td align="right">0.6279375</td>
+<td align="right">-0.7858750</td>
+</tr>
+<tr class="even">
+<td align="left">cinco</td>
+<td align="right">-0.8596875</td>
+<td align="right">0.5316875</td>
+<td align="right">0.3105000</td>
+<td align="right">-0.0389375</td>
+<td align="right">-0.8330000</td>
+<td align="right">0.4756875</td>
+<td align="right">0.2146250</td>
+<td align="right">-0.8711875</td>
+<td align="right">-0.0002500</td>
+<td align="right">-0.8957500</td>
+<td align="right">-0.8118125</td>
+<td align="right">0.2447500</td>
+<td align="right">-0.1829375</td>
+<td align="right">0.2285625</td>
+<td align="right">0.3867500</td>
+<td align="right">0.3131875</td>
+</tr>
+<tr class="odd">
+<td align="left">cuatro</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.9875000</td>
+<td align="right">-0.1384375</td>
+<td align="right">-0.9375000</td>
+<td align="right">-0.7336250</td>
+<td align="right">-0.3548750</td>
+<td align="right">0.0475000</td>
+<td align="right">-0.9985625</td>
+<td align="right">-0.6161250</td>
+<td align="right">0.1113750</td>
+<td align="right">0.3323750</td>
+<td align="right">-0.6019375</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.9006875</td>
+<td align="right">0.1700625</td>
+<td align="right">-1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">siete</td>
+<td align="right">-0.8696250</td>
+<td align="right">0.1098125</td>
+<td align="right">0.0743125</td>
+<td align="right">-0.6476875</td>
+<td align="right">-0.6673750</td>
+<td align="right">-0.7015625</td>
+<td align="right">-0.0938750</td>
+<td align="right">-0.8483750</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.9114375</td>
+<td align="right">-0.0753125</td>
+<td align="right">-1.0000000</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.4030625</td>
+<td align="right">-0.5570000</td>
+<td align="right">-1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">tres</td>
+<td align="right">-1.0000000</td>
+<td align="right">0.0250625</td>
+<td align="right">0.0636875</td>
+<td align="right">-1.0000000</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.2380625</td>
+<td align="right">0.3207500</td>
+<td align="right">-0.9848125</td>
+<td align="right">-0.8955625</td>
+<td align="right">-0.8821875</td>
+<td align="right">-0.7356875</td>
+<td align="right">-0.1888125</td>
+<td align="right">-0.2030000</td>
+<td align="right">0.1690000</td>
+<td align="right">0.0373750</td>
+<td align="right">-0.1458125</td>
+</tr>
+<tr class="even">
+<td align="left">seis</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.2243125</td>
+<td align="right">-1.0000000</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.9948125</td>
+<td align="right">-0.2620625</td>
+<td align="right">-0.2460625</td>
+<td align="right">-0.6508750</td>
+<td align="right">-0.7056250</td>
+<td align="right">-0.5476250</td>
+<td align="right">0.0423125</td>
+<td align="right">-0.7441250</td>
+<td align="right">-0.7174375</td>
+<td align="right">-0.1216875</td>
+<td align="right">-0.0185625</td>
+<td align="right">-1.0000000</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(test_data_4x4))</span></code></pre></div>
+<table style="width:100%;">
+<colgroup>
+<col width="3%" />
+<col width="6%" />
+<col width="6%" />
+<col width="5%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Numero</th>
+<th align="right">V2</th>
+<th align="right">V3</th>
+<th align="right">V4</th>
+<th align="right">V5</th>
+<th align="right">V6</th>
+<th align="right">V7</th>
+<th align="right">V8</th>
+<th align="right">V9</th>
+<th align="right">V10</th>
+<th align="right">V11</th>
+<th align="right">V12</th>
+<th align="right">V13</th>
+<th align="right">V14</th>
+<th align="right">V15</th>
+<th align="right">V16</th>
+<th align="right">V17</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">nueve</td>
+<td align="right">-0.8686875</td>
+<td align="right">0.0565000</td>
+<td align="right">-0.001625</td>
+<td align="right">-0.6419375</td>
+<td align="right">-0.1522500</td>
+<td align="right">-0.7873125</td>
+<td align="right">0.1841250</td>
+<td align="right">-0.4517500</td>
+<td align="right">-0.8075000</td>
+<td align="right">-0.1351875</td>
+<td align="right">0.2976250</td>
+<td align="right">-1.0000000</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.9228125</td>
+<td align="right">-0.0595000</td>
+<td align="right">-1.000000</td>
+</tr>
+<tr class="even">
+<td align="left">seis</td>
+<td align="right">-0.9666875</td>
+<td align="right">-0.5697500</td>
+<td align="right">-1.000000</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.1878750</td>
+<td align="right">-0.7635625</td>
+<td align="right">-0.7966875</td>
+<td align="right">-0.1833125</td>
+<td align="right">0.0005000</td>
+<td align="right">-0.7858125</td>
+<td align="right">0.1804375</td>
+<td align="right">0.0316875</td>
+<td align="right">-0.3681250</td>
+<td align="right">-0.0363750</td>
+<td align="right">-0.1706875</td>
+<td align="right">-0.899500</td>
+</tr>
+<tr class="odd">
+<td align="left">tres</td>
+<td align="right">-0.4830625</td>
+<td align="right">0.1981250</td>
+<td align="right">0.123875</td>
+<td align="right">-0.5613125</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.6966875</td>
+<td align="right">0.2698750</td>
+<td align="right">-0.4898750</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.4045000</td>
+<td align="right">-0.1529375</td>
+<td align="right">-0.5398750</td>
+<td align="right">-0.4711875</td>
+<td align="right">0.1354375</td>
+<td align="right">0.2942500</td>
+<td align="right">-0.472500</td>
+</tr>
+<tr class="even">
+<td align="left">seis</td>
+<td align="right">-0.9926875</td>
+<td align="right">-0.5953750</td>
+<td align="right">-1.000000</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.0113125</td>
+<td align="right">-0.6231875</td>
+<td align="right">-0.5055625</td>
+<td align="right">-0.0061250</td>
+<td align="right">0.1729375</td>
+<td align="right">-0.7633125</td>
+<td align="right">0.0458125</td>
+<td align="right">-0.0198750</td>
+<td align="right">-0.6263750</td>
+<td align="right">-0.3204375</td>
+<td align="right">-0.3584375</td>
+<td align="right">-0.920875</td>
+</tr>
+<tr class="odd">
+<td align="left">seis</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.2381875</td>
+<td align="right">-0.378500</td>
+<td align="right">-1.0000000</td>
+<td align="right">-0.2221875</td>
+<td align="right">-0.4061875</td>
+<td align="right">-1.0000000</td>
+<td align="right">-1.0000000</td>
+<td align="right">0.1771250</td>
+<td align="right">-0.7873125</td>
+<td align="right">0.0766250</td>
+<td align="right">0.4284375</td>
+<td align="right">0.2312500</td>
+<td align="right">0.5205625</td>
+<td align="right">0.1120625</td>
+<td align="right">-0.462875</td>
+</tr>
+<tr class="even">
+<td align="left">cero</td>
+<td align="right">-1.0000000</td>
+<td align="right">0.2022500</td>
+<td align="right">-0.124000</td>
+<td align="right">-0.9115000</td>
+<td align="right">-0.5128125</td>
+<td align="right">-0.0355625</td>
+<td align="right">-0.7461875</td>
+<td align="right">0.0295000</td>
+<td align="right">0.1961875</td>
+<td align="right">-0.8970625</td>
+<td align="right">-0.9920000</td>
+<td align="right">0.1491875</td>
+<td align="right">-0.4932500</td>
+<td align="right">0.3061875</td>
+<td align="right">0.4217500</td>
+<td align="right">-0.316375</td>
+</tr>
+</tbody>
+</table>
+<p>Ahora se procede con la generación del nuevo modelo y de la matriz de
+confusión. Esta vez se utiliza
+<code>kmax=floor(sqrt(nrow(Training)))</code> y
+<code>kernel = &quot;optimal&quot;</code></p>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" tabindex="-1"></a><span class="co"># Se genera el modelo.</span></span>
+<span id="cb94-2"><a href="#cb94-2" tabindex="-1"></a>model_4x4 <span class="ot">&lt;-</span> <span class="fu">train.knn</span>(Numero<span class="sc">~</span>., <span class="at">data =</span> train_data_4x4, </span>
+<span id="cb94-3"><a href="#cb94-3" tabindex="-1"></a>                       <span class="at">kmax =</span> <span class="fu">floor</span>(<span class="fu">sqrt</span>(<span class="fu">nrow</span>(train_data_4x4))), </span>
+<span id="cb94-4"><a href="#cb94-4" tabindex="-1"></a>                       <span class="at">kernel =</span> <span class="st">&quot;optimal&quot;</span>)</span>
+<span id="cb94-5"><a href="#cb94-5" tabindex="-1"></a></span>
+<span id="cb94-6"><a href="#cb94-6" tabindex="-1"></a><span class="co"># Se obtienen las predicciones.</span></span>
+<span id="cb94-7"><a href="#cb94-7" tabindex="-1"></a>prediction_4x4   <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_4x4, test_data_4x4, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb94-8"><a href="#cb94-8" tabindex="-1"></a></span>
+<span id="cb94-9"><a href="#cb94-9" tabindex="-1"></a><span class="co"># Se obtiene la matriz de confusión.</span></span>
+<span id="cb94-10"><a href="#cb94-10" tabindex="-1"></a>CM_4x4 <span class="ot">&lt;-</span> <span class="fu">confusion.matrix</span>(test_data_4x4, prediction_4x4)</span>
+<span id="cb94-11"><a href="#cb94-11" tabindex="-1"></a></span>
+<span id="cb94-12"><a href="#cb94-12" tabindex="-1"></a><span class="co"># Se calculan los resultados de la precisión.</span></span>
+<span id="cb94-13"><a href="#cb94-13" tabindex="-1"></a>results_4x4 <span class="ot">&lt;-</span> <span class="fu">general.indexes</span>(<span class="at">mc =</span> CM_4x4)[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>)]</span>
+<span id="cb94-14"><a href="#cb94-14" tabindex="-1"></a></span>
+<span id="cb94-15"><a href="#cb94-15" tabindex="-1"></a><span class="co"># Se generan df para mostrar los resultados.</span></span>
+<span id="cb94-16"><a href="#cb94-16" tabindex="-1"></a>df_CM_4x4 <span class="ot">&lt;-</span> <span class="fu">as.data.frame.matrix</span>(CM_4x4)</span>
+<span id="cb94-17"><a href="#cb94-17" tabindex="-1"></a>df_results_4x4 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(results_4x4[<span class="dv">1</span>], results_4x4[<span class="dv">2</span>])</span>
+<span id="cb94-18"><a href="#cb94-18" tabindex="-1"></a></span>
+<span id="cb94-19"><a href="#cb94-19" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_CM_4x4)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">cero</th>
+<th align="right">cinco</th>
+<th align="right">cuatro</th>
+<th align="right">dos</th>
+<th align="right">nueve</th>
+<th align="right">ocho</th>
+<th align="right">seis</th>
+<th align="right">siete</th>
+<th align="right">tres</th>
+<th align="right">uno</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">cero</td>
+<td align="right">343</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">cinco</td>
+<td align="right">9</td>
+<td align="right">121</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">19</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">cuatro</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">168</td>
+<td align="right">5</td>
+<td align="right">21</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">dos</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">184</td>
+<td align="right">0</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">nueve</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">172</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">ocho</td>
+<td align="right">5</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">129</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">21</td>
+</tr>
+<tr class="odd">
+<td align="left">seis</td>
+<td align="right">7</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">157</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">siete</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">5</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">132</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">tres</td>
+<td align="right">3</td>
+<td align="right">8</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">140</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">uno</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">252</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_results_4x4)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">overall.accuracy</th>
+<th align="right">overall.error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.8958645</td>
+<td align="right">0.1041355</td>
+</tr>
+</tbody>
+</table>
+<p>En este caso, se puede observar que la precisión en vez de mejorar,
+ahora empero pues el nivel de error aumentó de las centésimas a las
+décimas, constatanto un mayor número de paquetes envíados de forma
+erronea.</p>
+</div>
+<div id="inciso-5" class="section level2">
+<h2>Inciso 5</h2>
+<p><strong>Repita los items 1) y 2) pero reemplazando cada bloque p×p de
+píxeles por su promedio. ¿Mejora la predicción? (pruebe con algunos
+valores de p). Despliegue las matrices de confusión
+resultantes.</strong></p>
+<p>Para este apartado se probará con los divisores restantes de 16, es
+decir el 2 y el 8, empezando con el 2.</p>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" tabindex="-1"></a><span class="co"># Se obtienen los nuevos dataframes reducidos.</span></span>
+<span id="cb96-2"><a href="#cb96-2" tabindex="-1"></a>train_data_8x8 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">reducir</span>(train_data, <span class="dv">2</span>))</span>
+<span id="cb96-3"><a href="#cb96-3" tabindex="-1"></a>test_data_8x8 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">reducir</span>(test_data, <span class="dv">2</span>))</span>
+<span id="cb96-4"><a href="#cb96-4" tabindex="-1"></a></span>
+<span id="cb96-5"><a href="#cb96-5" tabindex="-1"></a><span class="co"># Se les agrega la columna de nombres.</span></span>
+<span id="cb96-6"><a href="#cb96-6" tabindex="-1"></a>train_data_8x8 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(train_data[,<span class="dv">1</span>], train_data_8x8)</span>
+<span id="cb96-7"><a href="#cb96-7" tabindex="-1"></a>test_data_8x8 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(test_data[,<span class="dv">1</span>], test_data_8x8)</span>
+<span id="cb96-8"><a href="#cb96-8" tabindex="-1"></a></span>
+<span id="cb96-9"><a href="#cb96-9" tabindex="-1"></a><span class="co"># Se les agrega los nombres de columna.</span></span>
+<span id="cb96-10"><a href="#cb96-10" tabindex="-1"></a><span class="fu">colnames</span>(train_data_8x8) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(train_data[,<span class="dv">1</span><span class="sc">:</span><span class="dv">65</span>])</span>
+<span id="cb96-11"><a href="#cb96-11" tabindex="-1"></a><span class="fu">colnames</span>(test_data_8x8) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(test_data[,<span class="dv">1</span><span class="sc">:</span><span class="dv">65</span>])</span>
+<span id="cb96-12"><a href="#cb96-12" tabindex="-1"></a></span>
+<span id="cb96-13"><a href="#cb96-13" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(train_data_8x8))</span></code></pre></div>
+<table style="width:100%;">
+<colgroup>
+<col width="1%" />
+<col width="0%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="0%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="0%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="0%" />
+<col width="0%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="0%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Numero</th>
+<th align="right">V2</th>
+<th align="right">V3</th>
+<th align="right">V4</th>
+<th align="right">V5</th>
+<th align="right">V6</th>
+<th align="right">V7</th>
+<th align="right">V8</th>
+<th align="right">V9</th>
+<th align="right">V10</th>
+<th align="right">V11</th>
+<th align="right">V12</th>
+<th align="right">V13</th>
+<th align="right">V14</th>
+<th align="right">V15</th>
+<th align="right">V16</th>
+<th align="right">V17</th>
+<th align="right">V18</th>
+<th align="right">V19</th>
+<th align="right">V20</th>
+<th align="right">V21</th>
+<th align="right">V22</th>
+<th align="right">V23</th>
+<th align="right">V24</th>
+<th align="right">V25</th>
+<th align="right">V26</th>
+<th align="right">V27</th>
+<th align="right">V28</th>
+<th align="right">V29</th>
+<th align="right">V30</th>
+<th align="right">V31</th>
+<th align="right">V32</th>
+<th align="right">V33</th>
+<th align="right">V34</th>
+<th align="right">V35</th>
+<th align="right">V36</th>
+<th align="right">V37</th>
+<th align="right">V38</th>
+<th align="right">V39</th>
+<th align="right">V40</th>
+<th align="right">V41</th>
+<th align="right">V42</th>
+<th align="right">V43</th>
+<th align="right">V44</th>
+<th align="right">V45</th>
+<th align="right">V46</th>
+<th align="right">V47</th>
+<th align="right">V48</th>
+<th align="right">V49</th>
+<th align="right">V50</th>
+<th align="right">V51</th>
+<th align="right">V52</th>
+<th align="right">V53</th>
+<th align="right">V54</th>
+<th align="right">V55</th>
+<th align="right">V56</th>
+<th align="right">V57</th>
+<th align="right">V58</th>
+<th align="right">V59</th>
+<th align="right">V60</th>
+<th align="right">V61</th>
+<th align="right">V62</th>
+<th align="right">V63</th>
+<th align="right">V64</th>
+<th align="right">V65</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">seis</td>
+<td align="right">-1</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.58150</td>
+<td align="right">0.50050</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1</td>
+<td align="right">-1.0000</td>
+<td align="right">-0.92075</td>
+<td align="right">0.60375</td>
+<td align="right">-0.00425</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.0000</td>
+<td align="right">-1.0000</td>
+<td align="right">-1</td>
+<td align="right">-1.00000</td>
+<td align="right">0.17550</td>
+<td align="right">0.56525</td>
+<td align="right">-0.92875</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.0000</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">-0.28625</td>
+<td align="right">0.81250</td>
+<td align="right">-0.78075</td>
+<td align="right">-0.88750</td>
+<td align="right">-0.05500</td>
+<td align="right">-0.21825</td>
+<td align="right">-1</td>
+<td align="right">-0.9875</td>
+<td align="right">0.78125</td>
+<td align="right">-0.15500</td>
+<td align="right">-0.6375</td>
+<td align="right">0.69425</td>
+<td align="right">0.42650</td>
+<td align="right">0.99450</td>
+<td align="right">-0.8670</td>
+<td align="right">-0.82675</td>
+<td align="right">1.00000</td>
+<td align="right">0.05925</td>
+<td align="right">0.69500</td>
+<td align="right">-0.62950</td>
+<td align="right">-0.38250</td>
+<td align="right">0.66700</td>
+<td align="right">-0.99875</td>
+<td align="right">-0.97575</td>
+<td align="right">0.54200</td>
+<td align="right">1.00000</td>
+<td align="right">0.88400</td>
+<td align="right">0.74900</td>
+<td align="right">0.95375</td>
+<td align="right">-0.15775</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.87075</td>
+<td align="right">0.10250</td>
+<td align="right">0.78175</td>
+<td align="right">0.87050</td>
+<td align="right">-0.06150</td>
+<td align="right">-0.98575</td>
+<td align="right">-1.00000</td>
+</tr>
+<tr class="even">
+<td align="left">cinco</td>
+<td align="right">-1</td>
+<td align="right">-0.60525</td>
+<td align="right">0.09425</td>
+<td align="right">0.04225</td>
+<td align="right">-0.10875</td>
+<td align="right">-0.07525</td>
+<td align="right">0.46800</td>
+<td align="right">-0.46125</td>
+<td align="right">-1</td>
+<td align="right">-0.8335</td>
+<td align="right">0.99025</td>
+<td align="right">1.00000</td>
+<td align="right">0.78250</td>
+<td align="right">0.64350</td>
+<td align="right">0.3430</td>
+<td align="right">-0.5055</td>
+<td align="right">-1</td>
+<td align="right">-0.48300</td>
+<td align="right">1.00000</td>
+<td align="right">0.86000</td>
+<td align="right">0.29750</td>
+<td align="right">-0.75025</td>
+<td align="right">-1.0000</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">-0.84900</td>
+<td align="right">0.11725</td>
+<td align="right">-0.07450</td>
+<td align="right">0.42650</td>
+<td align="right">0.88475</td>
+<td align="right">-0.48475</td>
+<td align="right">-1</td>
+<td align="right">-0.8680</td>
+<td align="right">-0.55225</td>
+<td align="right">-0.94900</td>
+<td align="right">-1.0000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.24725</td>
+<td align="right">0.90300</td>
+<td align="right">-0.6615</td>
+<td align="right">0.71875</td>
+<td align="right">0.70050</td>
+<td align="right">-0.63400</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">0.41625</td>
+<td align="right">0.32125</td>
+<td align="right">0.03800</td>
+<td align="right">0.99825</td>
+<td align="right">0.61775</td>
+<td align="right">0.30900</td>
+<td align="right">-0.01500</td>
+<td align="right">0.15800</td>
+<td align="right">0.78575</td>
+<td align="right">0.69400</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.76800</td>
+<td align="right">-0.17700</td>
+<td align="right">0.16450</td>
+<td align="right">0.68200</td>
+<td align="right">0.72200</td>
+<td align="right">0.30850</td>
+<td align="right">-0.53550</td>
+</tr>
+<tr class="odd">
+<td align="left">cuatro</td>
+<td align="right">-1</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.96950</td>
+<td align="right">0.63425</td>
+<td align="right">-0.75000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1</td>
+<td align="right">-1.0000</td>
+<td align="right">-0.95000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.81600</td>
+<td align="right">0.59750</td>
+<td align="right">-1.0000</td>
+<td align="right">-1.0000</td>
+<td align="right">-1</td>
+<td align="right">-0.81225</td>
+<td align="right">0.42700</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.75750</td>
+<td align="right">0.78875</td>
+<td align="right">-1.0000</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">-0.12225</td>
+<td align="right">0.15350</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.74025</td>
+<td align="right">0.89900</td>
+<td align="right">-0.99425</td>
+<td align="right">-1</td>
+<td align="right">-1.0000</td>
+<td align="right">0.32875</td>
+<td align="right">0.61725</td>
+<td align="right">-0.9410</td>
+<td align="right">-0.79700</td>
+<td align="right">0.95150</td>
+<td align="right">-0.24075</td>
+<td align="right">-1.0000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.79325</td>
+<td align="right">0.12450</td>
+<td align="right">0.64475</td>
+<td align="right">0.18175</td>
+<td align="right">0.99325</td>
+<td align="right">-0.16700</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.99825</td>
+<td align="right">-0.60450</td>
+<td align="right">-0.16975</td>
+<td align="right">0.81900</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.52125</td>
+<td align="right">0.55225</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+</tr>
+<tr class="even">
+<td align="left">siete</td>
+<td align="right">-1</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.10325</td>
+<td align="right">0.82375</td>
+<td align="right">0.59425</td>
+<td align="right">-0.07875</td>
+<td align="right">-0.84925</td>
+<td align="right">-1.00000</td>
+<td align="right">-1</td>
+<td align="right">-0.4785</td>
+<td align="right">0.65325</td>
+<td align="right">-0.93450</td>
+<td align="right">-0.65400</td>
+<td align="right">0.43575</td>
+<td align="right">0.2585</td>
+<td align="right">-1.0000</td>
+<td align="right">-1</td>
+<td align="right">0.13950</td>
+<td align="right">0.08250</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.98725</td>
+<td align="right">0.47850</td>
+<td align="right">-0.3935</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">-0.80900</td>
+<td align="right">-0.88875</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.37225</td>
+<td align="right">0.50550</td>
+<td align="right">-1.00000</td>
+<td align="right">-1</td>
+<td align="right">-1.0000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.0000</td>
+<td align="right">0.53200</td>
+<td align="right">-0.45200</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.0000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.64575</td>
+<td align="right">0.61850</td>
+<td align="right">-0.99975</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">0.05425</td>
+<td align="right">-0.08100</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">0.33350</td>
+<td align="right">-0.14700</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+</tr>
+<tr class="odd">
+<td align="left">tres</td>
+<td align="right">-1</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.38975</td>
+<td align="right">0.63675</td>
+<td align="right">0.67500</td>
+<td align="right">-0.51375</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1</td>
+<td align="right">-1.0000</td>
+<td align="right">0.26350</td>
+<td align="right">-0.41025</td>
+<td align="right">-0.27150</td>
+<td align="right">0.36500</td>
+<td align="right">-1.0000</td>
+<td align="right">-1.0000</td>
+<td align="right">-1</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.99950</td>
+<td align="right">-0.51125</td>
+<td align="right">0.22350</td>
+<td align="right">-0.02800</td>
+<td align="right">-1.0000</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.44150</td>
+<td align="right">1.00000</td>
+<td align="right">0.64450</td>
+<td align="right">0.44300</td>
+<td align="right">-0.93925</td>
+<td align="right">-1</td>
+<td align="right">-1.0000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.99375</td>
+<td align="right">-0.8640</td>
+<td align="right">-1.00000</td>
+<td align="right">0.01375</td>
+<td align="right">0.19050</td>
+<td align="right">-1.0000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.58225</td>
+<td align="right">-0.67100</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.95650</td>
+<td align="right">0.81725</td>
+<td align="right">-0.76300</td>
+<td align="right">-0.54275</td>
+<td align="right">1.00000</td>
+<td align="right">0.07550</td>
+<td align="right">-0.63775</td>
+<td align="right">-0.86650</td>
+<td align="right">-0.79150</td>
+<td align="right">0.64300</td>
+<td align="right">-0.39075</td>
+<td align="right">-0.98975</td>
+<td align="right">-0.27950</td>
+<td align="right">0.46200</td>
+<td align="right">0.77625</td>
+<td align="right">1.00000</td>
+<td align="right">0.80750</td>
+<td align="right">0.12525</td>
+<td align="right">-0.96075</td>
+</tr>
+<tr class="even">
+<td align="left">seis</td>
+<td align="right">-1</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.42625</td>
+<td align="right">0.05425</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1</td>
+<td align="right">-1.0000</td>
+<td align="right">0.15325</td>
+<td align="right">-0.67850</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.0000</td>
+<td align="right">-1.0000</td>
+<td align="right">-1</td>
+<td align="right">-1.00000</td>
+<td align="right">0.47375</td>
+<td align="right">-0.98775</td>
+<td align="right">-0.99600</td>
+<td align="right">0.36650</td>
+<td align="right">-0.4455</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">-0.97925</td>
+<td align="right">0.46575</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.69975</td>
+<td align="right">0.34500</td>
+<td align="right">-0.15800</td>
+<td align="right">-1</td>
+<td align="right">-1.0000</td>
+<td align="right">-0.58975</td>
+<td align="right">0.15075</td>
+<td align="right">-1.0000</td>
+<td align="right">-0.44500</td>
+<td align="right">0.21725</td>
+<td align="right">-0.28725</td>
+<td align="right">-1.0000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.23275</td>
+<td align="right">-0.34125</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.34800</td>
+<td align="right">0.74500</td>
+<td align="right">-0.68925</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.16850</td>
+<td align="right">-0.42650</td>
+<td align="right">-0.98250</td>
+<td align="right">-0.04100</td>
+<td align="right">0.33875</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.70125</td>
+<td align="right">0.47775</td>
+<td align="right">0.44450</td>
+<td align="right">-0.03075</td>
+<td align="right">-0.34125</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(test_data_8x8))</span></code></pre></div>
+<table style="width:100%;">
+<colgroup>
+<col width="1%" />
+<col width="0%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="0%" />
+<col width="0%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="1%" />
+<col width="0%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Numero</th>
+<th align="right">V2</th>
+<th align="right">V3</th>
+<th align="right">V4</th>
+<th align="right">V5</th>
+<th align="right">V6</th>
+<th align="right">V7</th>
+<th align="right">V8</th>
+<th align="right">V9</th>
+<th align="right">V10</th>
+<th align="right">V11</th>
+<th align="right">V12</th>
+<th align="right">V13</th>
+<th align="right">V14</th>
+<th align="right">V15</th>
+<th align="right">V16</th>
+<th align="right">V17</th>
+<th align="right">V18</th>
+<th align="right">V19</th>
+<th align="right">V20</th>
+<th align="right">V21</th>
+<th align="right">V22</th>
+<th align="right">V23</th>
+<th align="right">V24</th>
+<th align="right">V25</th>
+<th align="right">V26</th>
+<th align="right">V27</th>
+<th align="right">V28</th>
+<th align="right">V29</th>
+<th align="right">V30</th>
+<th align="right">V31</th>
+<th align="right">V32</th>
+<th align="right">V33</th>
+<th align="right">V34</th>
+<th align="right">V35</th>
+<th align="right">V36</th>
+<th align="right">V37</th>
+<th align="right">V38</th>
+<th align="right">V39</th>
+<th align="right">V40</th>
+<th align="right">V41</th>
+<th align="right">V42</th>
+<th align="right">V43</th>
+<th align="right">V44</th>
+<th align="right">V45</th>
+<th align="right">V46</th>
+<th align="right">V47</th>
+<th align="right">V48</th>
+<th align="right">V49</th>
+<th align="right">V50</th>
+<th align="right">V51</th>
+<th align="right">V52</th>
+<th align="right">V53</th>
+<th align="right">V54</th>
+<th align="right">V55</th>
+<th align="right">V56</th>
+<th align="right">V57</th>
+<th align="right">V58</th>
+<th align="right">V59</th>
+<th align="right">V60</th>
+<th align="right">V61</th>
+<th align="right">V62</th>
+<th align="right">V63</th>
+<th align="right">V64</th>
+<th align="right">V65</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">nueve</td>
+<td align="right">-1</td>
+<td align="right">-1.000</td>
+<td align="right">-0.52700</td>
+<td align="right">0.39675</td>
+<td align="right">0.79850</td>
+<td align="right">0.35975</td>
+<td align="right">-0.86900</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">-0.47475</td>
+<td align="right">0.70100</td>
+<td align="right">-0.34475</td>
+<td align="right">-0.86975</td>
+<td align="right">-0.29500</td>
+<td align="right">0.30125</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.99525</td>
+<td align="right">0.66425</td>
+<td align="right">-0.60975</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.94800</td>
+<td align="right">0.47500</td>
+<td align="right">0.80350</td>
+<td align="right">-0.99350</td>
+<td align="right">-0.99825</td>
+<td align="right">0.72025</td>
+<td align="right">-0.94675</td>
+<td align="right">-0.59275</td>
+<td align="right">0.28550</td>
+<td align="right">0.92400</td>
+<td align="right">-0.61700</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.23000</td>
+<td align="right">0.78575</td>
+<td align="right">0.67125</td>
+<td align="right">0.66700</td>
+<td align="right">0.20625</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.99775</td>
+<td align="right">0.7145</td>
+<td align="right">-0.39725</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.85825</td>
+<td align="right">0.94950</td>
+<td align="right">-0.89025</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.0000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.83300</td>
+<td align="right">0.69600</td>
+<td align="right">-0.99325</td>
+<td align="right">-1.00000</td>
+<td align="right">-1</td>
+</tr>
+<tr class="even">
+<td align="left">seis</td>
+<td align="right">-1</td>
+<td align="right">-1.000</td>
+<td align="right">-0.94575</td>
+<td align="right">-0.99325</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">-0.86675</td>
+<td align="right">0.49925</td>
+<td align="right">-0.83925</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">0.19500</td>
+<td align="right">-0.07375</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.46425</td>
+<td align="right">0.51775</td>
+<td align="right">-0.98050</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.95425</td>
+<td align="right">-0.23250</td>
+<td align="right">0.75625</td>
+<td align="right">0.51050</td>
+<td align="right">0.36400</td>
+<td align="right">-0.36075</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.91075</td>
+<td align="right">0.51650</td>
+<td align="right">0.28300</td>
+<td align="right">-0.67800</td>
+<td align="right">0.60700</td>
+<td align="right">0.78925</td>
+<td align="right">-0.79050</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.23250</td>
+<td align="right">0.4710</td>
+<td align="right">-0.54875</td>
+<td align="right">0.60825</td>
+<td align="right">-0.41050</td>
+<td align="right">-0.33425</td>
+<td align="right">0.77750</td>
+<td align="right">0.66200</td>
+<td align="right">0.81900</td>
+<td align="right">0.87950</td>
+<td align="right">0.43775</td>
+<td align="right">-0.59800</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.0000</td>
+<td align="right">-0.91575</td>
+<td align="right">-0.80300</td>
+<td align="right">-0.82350</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1</td>
+</tr>
+<tr class="odd">
+<td align="left">tres</td>
+<td align="right">-1</td>
+<td align="right">-0.287</td>
+<td align="right">0.92500</td>
+<td align="right">1.00000</td>
+<td align="right">0.96325</td>
+<td align="right">0.27775</td>
+<td align="right">-0.76875</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">0.35475</td>
+<td align="right">-0.20625</td>
+<td align="right">-0.92625</td>
+<td align="right">-0.79575</td>
+<td align="right">0.05025</td>
+<td align="right">0.52325</td>
+<td align="right">-0.99975</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.89475</td>
+<td align="right">0.48700</td>
+<td align="right">0.62975</td>
+<td align="right">-0.99975</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.78200</td>
+<td align="right">-0.00475</td>
+<td align="right">0.77250</td>
+<td align="right">0.71475</td>
+<td align="right">-0.58950</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.18875</td>
+<td align="right">0.57075</td>
+<td align="right">0.37375</td>
+<td align="right">0.40825</td>
+<td align="right">-0.77525</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.0000</td>
+<td align="right">-0.39375</td>
+<td align="right">0.61575</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.98575</td>
+<td align="right">-0.05525</td>
+<td align="right">-0.66650</td>
+<td align="right">-0.62475</td>
+<td align="right">-0.15275</td>
+<td align="right">0.59675</td>
+<td align="right">0.81900</td>
+<td align="right">-0.98575</td>
+<td align="right">-1.0000</td>
+<td align="right">0.15625</td>
+<td align="right">0.90375</td>
+<td align="right">0.92925</td>
+<td align="right">0.62375</td>
+<td align="right">0.10925</td>
+<td align="right">-0.72325</td>
+<td align="right">-1</td>
+</tr>
+<tr class="even">
+<td align="left">seis</td>
+<td align="right">-1</td>
+<td align="right">-1.000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">-0.97075</td>
+<td align="right">0.00725</td>
+<td align="right">-0.38875</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.89700</td>
+<td align="right">0.51425</td>
+<td align="right">0.19300</td>
+<td align="right">-0.68575</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.99225</td>
+<td align="right">-0.68300</td>
+<td align="right">-0.80850</td>
+<td align="right">0.38750</td>
+<td align="right">-0.05000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.50400</td>
+<td align="right">0.47400</td>
+<td align="right">0.68300</td>
+<td align="right">0.78400</td>
+<td align="right">0.90925</td>
+<td align="right">-0.95350</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">0.76625</td>
+<td align="right">-0.36100</td>
+<td align="right">-0.61900</td>
+<td align="right">0.51975</td>
+<td align="right">0.73625</td>
+<td align="right">-0.00025</td>
+<td align="right">-0.44575</td>
+<td align="right">-0.60750</td>
+<td align="right">0.0680</td>
+<td align="right">-0.29000</td>
+<td align="right">0.52650</td>
+<td align="right">-0.50675</td>
+<td align="right">-0.69750</td>
+<td align="right">0.19200</td>
+<td align="right">0.32700</td>
+<td align="right">0.39125</td>
+<td align="right">0.44925</td>
+<td align="right">0.11700</td>
+<td align="right">-0.68350</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.0000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1</td>
+</tr>
+<tr class="odd">
+<td align="left">seis</td>
+<td align="right">-1</td>
+<td align="right">-1.000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.52875</td>
+<td align="right">0.62350</td>
+<td align="right">-0.64950</td>
+<td align="right">-1.00000</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.23850</td>
+<td align="right">0.81450</td>
+<td align="right">-0.48800</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.18175</td>
+<td align="right">0.73625</td>
+<td align="right">-0.67650</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.61750</td>
+<td align="right">0.91050</td>
+<td align="right">-0.68450</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">0.36525</td>
+<td align="right">0.04575</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.75625</td>
+<td align="right">0.09500</td>
+<td align="right">0.79975</td>
+<td align="right">0.45150</td>
+<td align="right">0.94250</td>
+<td align="right">-0.64500</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.14925</td>
+<td align="right">0.8975</td>
+<td align="right">0.07025</td>
+<td align="right">-0.14450</td>
+<td align="right">0.60700</td>
+<td align="right">0.89650</td>
+<td align="right">-0.18800</td>
+<td align="right">-0.72625</td>
+<td align="right">0.90750</td>
+<td align="right">-0.26275</td>
+<td align="right">-0.23525</td>
+<td align="right">0.68025</td>
+<td align="right">-0.69100</td>
+<td align="right">-0.3345</td>
+<td align="right">0.55100</td>
+<td align="right">0.95050</td>
+<td align="right">0.95050</td>
+<td align="right">0.79775</td>
+<td align="right">0.14850</td>
+<td align="right">-0.84075</td>
+<td align="right">-1</td>
+</tr>
+<tr class="even">
+<td align="left">cero</td>
+<td align="right">-1</td>
+<td align="right">-1.000</td>
+<td align="right">-0.95025</td>
+<td align="right">0.74625</td>
+<td align="right">-0.09300</td>
+<td align="right">-0.95775</td>
+<td align="right">-1.00000</td>
+<td align="right">-1</td>
+<td align="right">-1</td>
+<td align="right">-1.00000</td>
+<td align="right">0.15775</td>
+<td align="right">0.85525</td>
+<td align="right">-0.15950</td>
+<td align="right">0.71425</td>
+<td align="right">-0.64600</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.52275</td>
+<td align="right">0.97100</td>
+<td align="right">-0.38725</td>
+<td align="right">-0.99675</td>
+<td align="right">-0.07800</td>
+<td align="right">0.65450</td>
+<td align="right">-0.93950</td>
+<td align="right">-1.00000</td>
+<td align="right">0.47150</td>
+<td align="right">0.27400</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-0.91000</td>
+<td align="right">0.88275</td>
+<td align="right">-0.47975</td>
+<td align="right">-0.76375</td>
+<td align="right">0.96025</td>
+<td align="right">-0.65100</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.00000</td>
+<td align="right">0.67250</td>
+<td align="right">-0.41075</td>
+<td align="right">-0.36150</td>
+<td align="right">0.94975</td>
+<td align="right">-0.93725</td>
+<td align="right">-1.00000</td>
+<td align="right">-1.0000</td>
+<td align="right">-0.96800</td>
+<td align="right">0.67725</td>
+<td align="right">-0.34225</td>
+<td align="right">-0.86625</td>
+<td align="right">0.72075</td>
+<td align="right">0.34875</td>
+<td align="right">-0.12800</td>
+<td align="right">-0.03650</td>
+<td align="right">0.55525</td>
+<td align="right">0.94550</td>
+<td align="right">-0.68200</td>
+<td align="right">-1.0000</td>
+<td align="right">-0.82750</td>
+<td align="right">0.19800</td>
+<td align="right">0.80600</td>
+<td align="right">0.79375</td>
+<td align="right">0.37450</td>
+<td align="right">-0.52900</td>
+<td align="right">-1</td>
+</tr>
+</tbody>
+</table>
+<p>Ahora se genera el modelo para la tabla <span class="math inline">\(8
+\times 8\)</span> donde cada pixel es un bloque de <span class="math inline">\(2 \times 2 = p \times p\)</span> del
+<code>dataframe</code> original.</p>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" tabindex="-1"></a><span class="co"># Se genera el modelo.</span></span>
+<span id="cb98-2"><a href="#cb98-2" tabindex="-1"></a>model_8x8 <span class="ot">&lt;-</span> <span class="fu">train.knn</span>(Numero<span class="sc">~</span>., <span class="at">data =</span> train_data_8x8, </span>
+<span id="cb98-3"><a href="#cb98-3" tabindex="-1"></a>                       <span class="at">kmax =</span> <span class="fu">floor</span>(<span class="fu">sqrt</span>(<span class="fu">nrow</span>(train_data_8x8))), </span>
+<span id="cb98-4"><a href="#cb98-4" tabindex="-1"></a>                       <span class="at">kernel =</span> <span class="st">&quot;optimal&quot;</span>)</span>
+<span id="cb98-5"><a href="#cb98-5" tabindex="-1"></a></span>
+<span id="cb98-6"><a href="#cb98-6" tabindex="-1"></a><span class="co"># Se obtienen las predicciones.</span></span>
+<span id="cb98-7"><a href="#cb98-7" tabindex="-1"></a>prediction_8x8   <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_8x8, test_data_8x8, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb98-8"><a href="#cb98-8" tabindex="-1"></a></span>
+<span id="cb98-9"><a href="#cb98-9" tabindex="-1"></a><span class="co"># Se obtiene la matriz de confusión.</span></span>
+<span id="cb98-10"><a href="#cb98-10" tabindex="-1"></a>CM_8x8 <span class="ot">&lt;-</span> <span class="fu">confusion.matrix</span>(test_data_8x8, prediction_8x8)</span>
+<span id="cb98-11"><a href="#cb98-11" tabindex="-1"></a></span>
+<span id="cb98-12"><a href="#cb98-12" tabindex="-1"></a><span class="co"># Se calculan los resultados de la precisión.</span></span>
+<span id="cb98-13"><a href="#cb98-13" tabindex="-1"></a>results_8x8 <span class="ot">&lt;-</span> <span class="fu">general.indexes</span>(<span class="at">mc =</span> CM_8x8)[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>)]</span>
+<span id="cb98-14"><a href="#cb98-14" tabindex="-1"></a></span>
+<span id="cb98-15"><a href="#cb98-15" tabindex="-1"></a><span class="co"># Se generan df para mostrar los resultados.</span></span>
+<span id="cb98-16"><a href="#cb98-16" tabindex="-1"></a>df_CM_8x8 <span class="ot">&lt;-</span> <span class="fu">as.data.frame.matrix</span>(CM_8x8)</span>
+<span id="cb98-17"><a href="#cb98-17" tabindex="-1"></a>df_results_8x8 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(results_8x8[<span class="dv">1</span>], results_8x8[<span class="dv">2</span>])</span>
+<span id="cb98-18"><a href="#cb98-18" tabindex="-1"></a></span>
+<span id="cb98-19"><a href="#cb98-19" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_CM_8x8)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">cero</th>
+<th align="right">cinco</th>
+<th align="right">cuatro</th>
+<th align="right">dos</th>
+<th align="right">nueve</th>
+<th align="right">ocho</th>
+<th align="right">seis</th>
+<th align="right">siete</th>
+<th align="right">tres</th>
+<th align="right">uno</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">cero</td>
+<td align="right">354</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">cinco</td>
+<td align="right">5</td>
+<td align="right">140</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">cuatro</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">184</td>
+<td align="right">2</td>
+<td align="right">7</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">dos</td>
+<td align="right">7</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">177</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">nueve</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">170</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">ocho</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">150</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">seis</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">159</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">siete</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">138</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">tres</td>
+<td align="right">2</td>
+<td align="right">7</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">150</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">uno</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">256</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_results_8x8)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">overall.accuracy</th>
+<th align="right">overall.error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.935725</td>
+<td align="right">0.064275</td>
+</tr>
+</tbody>
+</table>
+<p>En este caso se muestra que el nivel de precisión mejoró
+considerablemente respecto a la reducción <span class="math inline">\(4
+\times 4\)</span>.</p>
+<p>Finalmente se procede a realizar todo lo anteriormente visto para
+<span class="math inline">\(p = 8\)</span>. Reducción del
+<code>dataframe</code></p>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" tabindex="-1"></a><span class="co"># Se obtienen los nuevos dataframes reducidos.</span></span>
+<span id="cb100-2"><a href="#cb100-2" tabindex="-1"></a>train_data_2x2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">reducir</span>(train_data, <span class="dv">8</span>))</span>
+<span id="cb100-3"><a href="#cb100-3" tabindex="-1"></a>test_data_2x2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">reducir</span>(test_data, <span class="dv">8</span>))</span>
+<span id="cb100-4"><a href="#cb100-4" tabindex="-1"></a></span>
+<span id="cb100-5"><a href="#cb100-5" tabindex="-1"></a><span class="co"># Se les agrega la columna de nombres.</span></span>
+<span id="cb100-6"><a href="#cb100-6" tabindex="-1"></a>train_data_2x2 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(train_data[,<span class="dv">1</span>], train_data_2x2)</span>
+<span id="cb100-7"><a href="#cb100-7" tabindex="-1"></a>test_data_2x2 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(test_data[,<span class="dv">1</span>], test_data_2x2)</span>
+<span id="cb100-8"><a href="#cb100-8" tabindex="-1"></a></span>
+<span id="cb100-9"><a href="#cb100-9" tabindex="-1"></a><span class="co"># Se les agrega los nombres de columna.</span></span>
+<span id="cb100-10"><a href="#cb100-10" tabindex="-1"></a><span class="fu">colnames</span>(train_data_2x2) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(train_data[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span>
+<span id="cb100-11"><a href="#cb100-11" tabindex="-1"></a><span class="fu">colnames</span>(test_data_2x2) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(test_data[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span>
+<span id="cb100-12"><a href="#cb100-12" tabindex="-1"></a></span>
+<span id="cb100-13"><a href="#cb100-13" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(train_data_2x2))</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Numero</th>
+<th align="right">V2</th>
+<th align="right">V3</th>
+<th align="right">V4</th>
+<th align="right">V5</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">seis</td>
+<td align="right">-0.5257656</td>
+<td align="right">-0.7245781</td>
+<td align="right">0.0245313</td>
+<td align="right">-0.0454531</td>
+</tr>
+<tr class="even">
+<td align="left">cinco</td>
+<td align="right">-0.1713281</td>
+<td align="right">-0.0962500</td>
+<td align="right">-0.2125937</td>
+<td align="right">0.0332188</td>
+</tr>
+<tr class="odd">
+<td align="left">cuatro</td>
+<td align="right">-0.7690000</td>
+<td align="right">-0.5067500</td>
+<td align="right">-0.6013594</td>
+<td align="right">-0.2748750</td>
+</tr>
+<tr class="even">
+<td align="left">siete</td>
+<td align="right">-0.5321875</td>
+<td align="right">-0.3789062</td>
+<td align="right">-0.8286250</td>
+<td align="right">-0.6580781</td>
+</tr>
+<tr class="odd">
+<td align="left">tres</td>
+<td align="right">-0.5532500</td>
+<td align="right">-0.4000938</td>
+<td align="right">-0.4529375</td>
+<td align="right">-0.2582344</td>
+</tr>
+<tr class="even">
+<td align="left">seis</td>
+<td align="right">-0.6202969</td>
+<td align="right">-0.7242344</td>
+<td align="right">-0.5230938</td>
+<td align="right">-0.4300937</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(test_data_2x2))</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Numero</th>
+<th align="right">V2</th>
+<th align="right">V3</th>
+<th align="right">V4</th>
+<th align="right">V5</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">nueve</td>
+<td align="right">-0.4379375</td>
+<td align="right">-0.2277969</td>
+<td align="right">-0.7163750</td>
+<td align="right">-0.4404688</td>
+</tr>
+<tr class="even">
+<td align="left">seis</td>
+<td align="right">-0.6219687</td>
+<td align="right">-0.7450000</td>
+<td align="right">-0.2974531</td>
+<td align="right">-0.2145156</td>
+</tr>
+<tr class="odd">
+<td align="left">tres</td>
+<td align="right">-0.4954062</td>
+<td align="right">-0.1643594</td>
+<td align="right">-0.4350625</td>
+<td align="right">-0.2177656</td>
+</tr>
+<tr class="even">
+<td align="left">seis</td>
+<td align="right">-0.5556406</td>
+<td align="right">-0.6279219</td>
+<td align="right">-0.3842969</td>
+<td align="right">-0.3133438</td>
+</tr>
+<tr class="odd">
+<td align="left">seis</td>
+<td align="right">-0.4666406</td>
+<td align="right">-0.8446250</td>
+<td align="right">0.0354063</td>
+<td align="right">0.0385625</td>
+</tr>
+<tr class="even">
+<td align="left">cero</td>
+<td align="right">-0.3365312</td>
+<td align="right">-0.4380469</td>
+<td align="right">-0.2219844</td>
+<td align="right">-0.1843594</td>
+</tr>
+</tbody>
+</table>
+<p>Generación del modelo.</p>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" tabindex="-1"></a><span class="co"># Se genera el modelo.</span></span>
+<span id="cb102-2"><a href="#cb102-2" tabindex="-1"></a>model_2x2 <span class="ot">&lt;-</span> <span class="fu">train.knn</span>(Numero<span class="sc">~</span>., <span class="at">data =</span> train_data_2x2, </span>
+<span id="cb102-3"><a href="#cb102-3" tabindex="-1"></a>                       <span class="at">kmax =</span> <span class="fu">floor</span>(<span class="fu">sqrt</span>(<span class="fu">nrow</span>(train_data_2x2))), </span>
+<span id="cb102-4"><a href="#cb102-4" tabindex="-1"></a>                       <span class="at">kernel =</span> <span class="st">&quot;optimal&quot;</span>)</span>
+<span id="cb102-5"><a href="#cb102-5" tabindex="-1"></a></span>
+<span id="cb102-6"><a href="#cb102-6" tabindex="-1"></a><span class="co"># Se obtienen las predicciones.</span></span>
+<span id="cb102-7"><a href="#cb102-7" tabindex="-1"></a>prediction_2x2   <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_2x2, test_data_2x2, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb102-8"><a href="#cb102-8" tabindex="-1"></a></span>
+<span id="cb102-9"><a href="#cb102-9" tabindex="-1"></a><span class="co"># Se obtiene la matriz de confusión.</span></span>
+<span id="cb102-10"><a href="#cb102-10" tabindex="-1"></a>CM_2x2 <span class="ot">&lt;-</span> <span class="fu">confusion.matrix</span>(test_data_2x2, prediction_2x2)</span>
+<span id="cb102-11"><a href="#cb102-11" tabindex="-1"></a></span>
+<span id="cb102-12"><a href="#cb102-12" tabindex="-1"></a><span class="co"># Se calculan los resultados de la precisión.</span></span>
+<span id="cb102-13"><a href="#cb102-13" tabindex="-1"></a>results_2x2 <span class="ot">&lt;-</span> <span class="fu">general.indexes</span>(<span class="at">mc =</span> CM_2x2)[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>)]</span>
+<span id="cb102-14"><a href="#cb102-14" tabindex="-1"></a></span>
+<span id="cb102-15"><a href="#cb102-15" tabindex="-1"></a><span class="co"># Se generan df para mostrar los resultados.</span></span>
+<span id="cb102-16"><a href="#cb102-16" tabindex="-1"></a>df_CM_2x2 <span class="ot">&lt;-</span> <span class="fu">as.data.frame.matrix</span>(CM_2x2)</span>
+<span id="cb102-17"><a href="#cb102-17" tabindex="-1"></a>df_results_2x2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(results_2x2[<span class="dv">1</span>], results_2x2[<span class="dv">2</span>])</span>
+<span id="cb102-18"><a href="#cb102-18" tabindex="-1"></a></span>
+<span id="cb102-19"><a href="#cb102-19" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_CM_2x2)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">cero</th>
+<th align="right">cinco</th>
+<th align="right">cuatro</th>
+<th align="right">dos</th>
+<th align="right">nueve</th>
+<th align="right">ocho</th>
+<th align="right">seis</th>
+<th align="right">siete</th>
+<th align="right">tres</th>
+<th align="right">uno</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">cero</td>
+<td align="right">317</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">0</td>
+<td align="right">16</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">11</td>
+</tr>
+<tr class="even">
+<td align="left">cinco</td>
+<td align="right">23</td>
+<td align="right">82</td>
+<td align="right">12</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">28</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">cuatro</td>
+<td align="right">9</td>
+<td align="right">25</td>
+<td align="right">51</td>
+<td align="right">17</td>
+<td align="right">29</td>
+<td align="right">15</td>
+<td align="right">2</td>
+<td align="right">11</td>
+<td align="right">26</td>
+<td align="right">15</td>
+</tr>
+<tr class="even">
+<td align="left">dos</td>
+<td align="right">22</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">135</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">15</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">7</td>
+</tr>
+<tr class="odd">
+<td align="left">nueve</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">136</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">15</td>
+<td align="right">13</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">ocho</td>
+<td align="right">41</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">4</td>
+<td align="right">74</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">12</td>
+<td align="right">25</td>
+</tr>
+<tr class="odd">
+<td align="left">seis</td>
+<td align="right">5</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">14</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">149</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">siete</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">26</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">109</td>
+<td align="right">3</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">tres</td>
+<td align="right">16</td>
+<td align="right">13</td>
+<td align="right">10</td>
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">105</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">uno</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">6</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">231</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_results_2x2)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">overall.accuracy</th>
+<th align="right">overall.error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.6920777</td>
+<td align="right">0.3079223</td>
+</tr>
+</tbody>
+</table>
+<p>Finalmente se puede ver que de todas las reducciones, esta fue la
+peor y la que menos se recomendaría por el alto nivel de error.</p>
+</div>
 </div>
 
    

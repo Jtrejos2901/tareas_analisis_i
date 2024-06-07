@@ -707,3 +707,277 @@ Si se considera la cantidad de mejores índices obtenidos de la comparación de
 los modelos, el Modelo 1 es el que brinda mejores resultados. 
 No obstante, depende del tipo de análisis que se pretenda realiza para determinar
 cuál modelo es más apto.
+
+# Ejercicio 5
+**En este ejercicio vamos a predecir números escritos a mano (Hand Written Digit Recognition), la tabla de aprendizaje está en el archivo ZipDataTrainCod.csv y la tabla de testing está en el archivo ZipDataTestCod.csv.**
+
+## Carga de datos
+
+Primeramente se procede a cargar tanto los datos de entrenamiento como los de prueba.
+```{r}
+train_data <- read.csv("ZipDataTrainCod.csv", sep = ";", dec='.', header = T, stringsAsFactors = TRUE)
+
+test_data <- read.csv("ZipDataTestCod.csv", sep = ";", dec='.', header = T, stringsAsFactors = TRUE)
+```
+
+## Inciso 1
+
+**Usando K vecinos más cercanos genere un modelo predictivo para la tabla de aprendizaje, con los parámetros que usted estime más convenientes.**
+
+Se procede a generar el modelo con los datos de entrenamiento. Para este modelo se utilizarán los 21 vecinos más cercanos. El número de *k* es de preferencia impar según lo visto en clase. Se utilizarán todas las variables, es decir los 256 píxeles y todas las observaciones que constituyen un total de 7291.
+```{r}
+model <- train.knn(Numero~., data = train_data, kmax = 21)
+```
+
+## Inciso 2
+
+**Con la tabla de testing calcule la matriz de confusión, la precisión global, el error global y la precisión en cada unos de los dígitos. ¿Son buenos los resultados?**
+
+Ahora se procede a generar las predicciones con base en el modelo creado. Esto para lograr generar la matriz de confusión y medir los resultados obtenidos.
+```{r}
+prediction   <- predict(model, test_data, type = "class")
+```
+
+Finalmente se procede a generar la matriz de confusión y con ella los niveles de precisión del modelo.
+```{r}
+# Se obtiene la matriz de confusión.
+CM <- confusion.matrix(test_data, prediction)
+
+# Se calculan los resultados de la precisión.
+results <- general.indexes(mc = CM)[c(2,3)]
+
+# Se generan df para mostrar los resultados.
+df_CM <- as.data.frame.matrix(CM)
+df_results <- data.frame(results[1], results[2])
+
+knitr::kable(df_CM)
+knitr::kable(df_results)
+```
+
+Como se puede observar, el nivel de error es relativamente bajo y la precisión es bastante acertada. Según se indicó en el inciso, el error debe ser sumamente bajo para evitar errores en el envío de los paquetes. Asumiendo que se contaba con este modelo desde el principio, contemplando que existe un total de 9298 observaciones y  teniendo en cuenta el error aproximado de 0.072, entonces se tiene que al rededor de 665 números serías clasificados de manera errónea lo que implicaría que, como máximo, cerca 665 paquetes paquetes serían enviados a la dirección incorrecta, lo que para una empresa postal sería fatal pues representa un número alto de clientes insatisfechos. Por lo tanto, dados los resultados de este modelo, se preferiría la observación humana sobre el algoritmo.
+
+Ahora probemos utilizando la raíz cuadrada de la cantidad de observaciones.
+```{r}
+# Se genera el modelo.
+model_2 <- train.knn(Numero~., data = train_data, 
+                     kmax = floor(sqrt(nrow(train_data))), 
+                     kernel = "optimal")
+
+# Se obtienen las predicciones.
+prediction_2   <- predict(model_2, test_data, type = "class")
+
+# Se obtiene la matriz de confusión.
+CM_2 <- confusion.matrix(test_data, prediction_2)
+
+# Se calculan los resultados de la precisión.
+results_2 <- general.indexes(mc = CM_2)[c(2,3)]
+
+# Se generan df para mostrar los resultados.
+df_CM_2 <- as.data.frame.matrix(CM_2)
+df_results_2 <- data.frame(results_2[1], results_2[2])
+
+knitr::kable(df_CM_2)
+knitr::kable(df_results_2)
+```
+
+Como se evidencia, los resultados son los mismos, por lo tanto, no es necesario el uso de un número mayor $k$ para los cálculos. En este caso, la conclusión en la misma que la anterior.
+
+## Inciso 3
+
+**Repita los items 1) y 2) pero usando solamente los 3s, 5s y los 8s. ¿Mejora la predicción?**
+
+Se procede a extraer 2 *sub-sets* de datos en los que solo se encuentra infromación respecto a los 3s, 5s y 8s.
+```{r}
+# Vector con los números a utilizar.
+nums <- c("tres", "cinco", "ocho")
+
+# Se filtra el set de datos para entrenamiento.
+train_data_nums <- train_data %>% filter(Numero %in% nums) %>% droplevels()
+
+# Se filtra el set de datos para pruebas.
+test_data_nums <- test_data %>% filter(Numero %in% nums) %>% droplevels()
+```
+
+Finalmente se procede a repetir lo realizado en los incisos anteriores.
+```{r}
+# Se genera el modelo.
+model_nums <- train.knn(Numero~., data = train_data_nums, kmax = 21)
+
+# Se obtienen las predicciones.
+prediction_nums   <- predict(model_nums, test_data_nums, type = "class")
+
+# Se obtiene la matriz de confusión.
+CM_nums <- confusion.matrix(test_data_nums, prediction_nums)
+
+# Se calculan los resultados de la precisión.
+results_nums <- general.indexes(mc = CM_nums)[c(2,3)]
+
+# Se generan df para mostrar los resultados.
+df_CM_nums <- as.data.frame.matrix(CM_nums)
+df_results_nums <- data.frame(results_nums[1], results_nums[2])
+
+knitr::kable(df_CM_nums)
+knitr::kable(df_results_nums)
+```
+Tal y como se muestra, para los números 3, 5 y 8, el nivel de precisión aumenta. Nuevamente bajo la misma lógica del inciso anterior, si se contara con este modelo desde el inicio y contemplando la tasa de error de aproximadamente 0.055, de los números predichos, cerca de 123 serían erróneos, lo cual representa, como máximo, 123 paquetes enviados incorrectamente, que aunque es un máximo, resulta inaceptable para una compañía postal.
+
+## Inciso 4
+
+**Repita los items 1) y 2) utilizando `kmax=floor(sqrt(nrow(Training)))` y `kernel = ‘‘optimal’’` (parámetros por defecto) pero reemplazando cada bloque $4 \times 4$ de píxeles por su promedio. ¿Mejora la predicción? Recuerde que cada bloque $16 \times 16$ está representado por una fila en las matrices de aprendizaje y testing. Despliegue la matriz de confusión resultante.**
+
+Inicialmente se debe recordar que cada observación representa un bloque de $16 \times 16$ píxeles. Por lo tanto, se procede con la creación de una función que, dado un divisor $p$ de $16$, genere un nuevo bloque $d \times d$ donde $d = \frac{16}{p}$ y cuyo *d-ésimo* pixel representa el promedio del bloque *p-ésimo* ($p \times p$) sobre la matriz original. 
+```{r}
+reducir <- function(df, p){
+  # Se genera una matriz que contendrá la reducción del dataframe.
+  reduccion <- matrix(0, nrow(df), (16/p)**2)
+  
+  # Se calcula el d.
+  d <- 16/p
+  
+  # Se calcula la reducción.
+  for(i in 1:d**2){
+    vec <- rep(rep(c(0,1,0), c(p*((i-1)%%d), p, p*(d-((i-1)%%d)-1))), p)
+    vec <- c(rep(0,(ceiling(i/d)-1)*(p*16)),vec,rep(0,(d-ceiling(i/d))*(p*16)))
+    reduccion[,i] <- as.matrix(df[-1])%*%matrix(vec,256,1)/p**2
+  }
+  
+  return(reduccion)
+}
+```
+
+Ahora que se cuenta con la función para reducir mediante promedio el `dataframe` orinal a una matriz, se procede a reducir el set de datos de train y test, a convertir las matrices resultantes en nuevos `dataframes` y a agregarles la columna `Nombre`.
+```{r}
+# Se obtienen los nuevos dataframes reducidos.
+train_data_4x4 <- data.frame(reducir(train_data, 4))
+test_data_4x4 <- data.frame(reducir(test_data, 4))
+
+# Se les agrega la columna de nombres.
+train_data_4x4 <- cbind(train_data[,1], train_data_4x4)
+test_data_4x4 <- cbind(test_data[,1], test_data_4x4)
+
+# Se les agrega los nombres de columna.
+colnames(train_data_4x4) <- colnames(train_data[,1:17])
+colnames(test_data_4x4) <- colnames(test_data[,1:17])
+
+knitr::kable(head(train_data_4x4))
+knitr::kable(head(test_data_4x4))
+```
+
+Ahora se procede con la generación del nuevo modelo y de la matriz de confusión. Esta vez se utiliza `kmax=floor(sqrt(nrow(Training)))` y `kernel = "optimal"`
+```{r}
+# Se genera el modelo.
+model_4x4 <- train.knn(Numero~., data = train_data_4x4, 
+                       kmax = floor(sqrt(nrow(train_data_4x4))), 
+                       kernel = "optimal")
+
+# Se obtienen las predicciones.
+prediction_4x4   <- predict(model_4x4, test_data_4x4, type = "class")
+
+# Se obtiene la matriz de confusión.
+CM_4x4 <- confusion.matrix(test_data_4x4, prediction_4x4)
+
+# Se calculan los resultados de la precisión.
+results_4x4 <- general.indexes(mc = CM_4x4)[c(2,3)]
+
+# Se generan df para mostrar los resultados.
+df_CM_4x4 <- as.data.frame.matrix(CM_4x4)
+df_results_4x4 <- data.frame(results_4x4[1], results_4x4[2])
+
+knitr::kable(df_CM_4x4)
+knitr::kable(df_results_4x4)
+```
+
+En este caso, se puede observar que la precisión en vez de mejorar, ahora empero pues el nivel de error aumentó de las centésimas a las décimas, constatanto un mayor número de paquetes envíados de forma erronea.
+
+## Inciso 5
+
+**Repita los items 1) y 2) pero reemplazando cada bloque p×p de píxeles por su promedio. ¿Mejora la predicción? (pruebe con algunos valores de p). Despliegue las matrices de confusión resultantes.**
+
+Para este apartado se probará con los divisores restantes de 16, es decir el 2 y el 8, empezando con el 2.
+```{r}
+# Se obtienen los nuevos dataframes reducidos.
+train_data_8x8 <- data.frame(reducir(train_data, 2))
+test_data_8x8 <- data.frame(reducir(test_data, 2))
+
+# Se les agrega la columna de nombres.
+train_data_8x8 <- cbind(train_data[,1], train_data_8x8)
+test_data_8x8 <- cbind(test_data[,1], test_data_8x8)
+
+# Se les agrega los nombres de columna.
+colnames(train_data_8x8) <- colnames(train_data[,1:65])
+colnames(test_data_8x8) <- colnames(test_data[,1:65])
+
+knitr::kable(head(train_data_8x8))
+knitr::kable(head(test_data_8x8))
+```
+
+Ahora se genera el modelo para la tabla $8 \times 8$ donde cada pixel es un bloque de $2 \times 2 = p \times p$ del `dataframe` original.
+```{r}
+# Se genera el modelo.
+model_8x8 <- train.knn(Numero~., data = train_data_8x8, 
+                       kmax = floor(sqrt(nrow(train_data_8x8))), 
+                       kernel = "optimal")
+
+# Se obtienen las predicciones.
+prediction_8x8   <- predict(model_8x8, test_data_8x8, type = "class")
+
+# Se obtiene la matriz de confusión.
+CM_8x8 <- confusion.matrix(test_data_8x8, prediction_8x8)
+
+# Se calculan los resultados de la precisión.
+results_8x8 <- general.indexes(mc = CM_8x8)[c(2,3)]
+
+# Se generan df para mostrar los resultados.
+df_CM_8x8 <- as.data.frame.matrix(CM_8x8)
+df_results_8x8 <- data.frame(results_8x8[1], results_8x8[2])
+
+knitr::kable(df_CM_8x8)
+knitr::kable(df_results_8x8)
+```
+
+En este caso se muestra que el nivel de precisión mejoró considerablemente respecto a la reducción $4 \times 4$.
+
+Finalmente se procede a realizar todo lo anteriormente visto para $p = 8$.
+Reducción del `dataframe`
+```{r}
+# Se obtienen los nuevos dataframes reducidos.
+train_data_2x2 <- data.frame(reducir(train_data, 8))
+test_data_2x2 <- data.frame(reducir(test_data, 8))
+
+# Se les agrega la columna de nombres.
+train_data_2x2 <- cbind(train_data[,1], train_data_2x2)
+test_data_2x2 <- cbind(test_data[,1], test_data_2x2)
+
+# Se les agrega los nombres de columna.
+colnames(train_data_2x2) <- colnames(train_data[,1:5])
+colnames(test_data_2x2) <- colnames(test_data[,1:5])
+
+knitr::kable(head(train_data_2x2))
+knitr::kable(head(test_data_2x2))
+```
+
+Generación del modelo.
+```{r}
+# Se genera el modelo.
+model_2x2 <- train.knn(Numero~., data = train_data_2x2, 
+                       kmax = floor(sqrt(nrow(train_data_2x2))), 
+                       kernel = "optimal")
+
+# Se obtienen las predicciones.
+prediction_2x2   <- predict(model_2x2, test_data_2x2, type = "class")
+
+# Se obtiene la matriz de confusión.
+CM_2x2 <- confusion.matrix(test_data_2x2, prediction_2x2)
+
+# Se calculan los resultados de la precisión.
+results_2x2 <- general.indexes(mc = CM_2x2)[c(2,3)]
+
+# Se generan df para mostrar los resultados.
+df_CM_2x2 <- as.data.frame.matrix(CM_2x2)
+df_results_2x2 <- data.frame(results_2x2[1], results_2x2[2])
+
+knitr::kable(df_CM_2x2)
+knitr::kable(df_results_2x2)
+```
+
+Finalmente se puede ver que de todas las reducciones, esta fue la peor y la que menos se recomendaría por el alto nivel de error.
