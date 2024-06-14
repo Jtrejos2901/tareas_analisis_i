@@ -47,12 +47,11 @@ library(dplyr)
 **1. V = VB + VW**
 <img src= "1.jpg">
 
-**2. $\sum_{s=1}^rq_sg_s = 0$. Es decir, rang($C_g$) $<r-1$**
+**2. $\sum_{s=1}^rq_sg_s = 0$. Es decir, $rang(C_g) \leq r-1$**
 <img src= "2.jpg">
+
+**3. $rang(C_g) = rang(V_B)$**
 <img src= "3.jpg">
-
-**3. rang(C_g) = rang(V_B)**
-
 
 **Además, para la tabla de datos Ejemplo AD.csv calcule: gA, gB, gC, V, VB, VW y verifique que V = VB + VW**
 
