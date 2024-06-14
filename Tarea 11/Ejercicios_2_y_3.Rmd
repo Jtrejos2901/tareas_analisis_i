@@ -1,0 +1,178 @@
+---
+title: Análisis de Datos I <br> Tarea 10
+author:
+  - "Maria Carolina Navarro Monge C05513"
+  - "Tábata Picado Carmona C05961"
+  - "Jose Pablo Trejos Conejo C07862"
+output:
+  rmdformats::robobook:
+        code_folding: show
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+---
+
+# Librerias
+
+A continuación se muestran la librerías con las que se estará trabajando.
+```{r, warning=FALSE, message=FALSE}
+library(traineR)
+library(caret)
+library(dplyr)
+library(MASS)
+```
+
+# Ejercicio 2
+
+# Ejercicio 3
+
+## Carga de datos
+
+Inicialmente se procede cargando los datos que se utilizarán en el *Análisis Discriminante Lineal*.
+```{r}
+Ejemplo_AD <- read.csv("Ejemplo_AD.csv", sep = ";", dec='.', header=T, 
+                       row.names = 1, stringsAsFactors = T)
+
+Tumores <- read.csv("tumores.csv", sep = ",", dec='.', header=T, 
+                       row.names = 1, stringsAsFactors = T)
+```
+
+## Partición de los datos
+
+A continuación se procede con la partición de los datos en 2 sets, uno de entrenamiento con el 70% de los datos, y otro con un 30% para las pruebas.
+```{r}
+# Se fija la semilla para reproducibilidad.
+set.seed(2901)
+
+# Se obtiene los indices para el primer set de train.
+indices <- createDataPartition(Ejemplo_AD[,6], p = .70,list = F)
+
+# Se obtiene la muestra para aprendizaje y prueba.
+Ejemplo_AD_train <- Ejemplo_AD[indices,]
+Ejemplo_AD_test <- Ejemplo_AD[-indices,]
+```
+
+Ahora se repite el proceso para el segundo set de datos.
+```{r}
+# Se fija la semilla para reproducibilidad.
+set.seed(2901)
+
+# Se obtiene los indices para el primer set de train.
+indices <- createDataPartition(Tumores[,17], p = .70,list = F)
+
+# Se obtiene la muestra para aprendizaje y prueba.
+Tumores_train <- Tumores[indices,]
+Tumores_test <- Tumores[-indices,]
+```
+
+
+## Creación del algoritmo con base en el *pseudo codigo*.
+
+Ahora se procede con la creación de una función llamada `ADL` la cual recibe un dataframe (`datos`) con la información de entrenamiento.
+```{r}
+ADL <- function(datos){
+  # Se convierte la información recibida en un matriz para mejorar la forma en 
+  # que se trabaja con los datos.
+  X <- data.matrix(datos)
+  
+  # Se obtiene el indice la la variable categórica que está al final.
+  indice <- ncol(datos)
+  
+  # Se divide la información.
+  X1 <- X[,-indice]
+  
+  # Se obtiene las modalidades de la variable categórica.
+  modalidades <- as.vector(unique(datos[,indice]))
+  
+  # Se obtiene el numero de modalidades que será útil.
+  n_mod <- length(modalidades)
+  
+  # Se inicializa la matriz que contendrá los códigos disyuntivos.
+  X2 <- matrix(, nrow = nrow(X), ncol = 0)
+  
+  # Se recorre cada modalidad y se crean los códigos disyuntivos respectivos.
+  for(i in 1:n_mod){
+    X2 <- cbind(X2, as.numeric(datos[indice] == modalidades[i]))
+  }
+
+  # Se crea la matriz diagonal D_g.
+  D_g <- table(datos[,indice], datos[,indice])
+  
+  # Se obtiene la matriz inversa.
+  Inv_D_g <- solve(D_g)
+  
+  # Se obtiene la matriz G con los centros de gravedad.
+  G <- Inv_D_g %*% t(X2) %*% X1
+  
+  # Se crea la matriz de la cual se obtendrán los factores discriminantes.
+  FD_matriz <- solve(t(X1) %*% X1) %*% t(G) %*% D_g %*% G
+  
+  
+  # Se obtiene los valores y vectores propios de la matriz anterior.
+  eigen <- eigen(FD_matriz)
+  
+  # Se crea una lista que contendrá toda la información del modelo para la 
+  # clásificación de nuevos individuos.
+  resultado <- list(Re(eigen[[1]][1:(n_mod-1)]), Re(eigen[[2]][,1:(n_mod-1)]),G)
+  names(resultado) <- c("Valores propios", "Factores dicriminantes", 
+                        "Matriz de CGs")
+  
+  return(resultado)
+}
+```
+
+## Pruebas con la base *Ejemplo_AD*
+
+```{r}
+resultado <- ADL(Ejemplo_AD_train)
+resultado
+```
+Ahora se procede a obtener las coordenadas y a graficar.
+```{r}
+z1 <- data.matrix(Ejemplo_AD_train[,-6]) %*% resultado[[2]][,1]
+z2 <- data.matrix(Ejemplo_AD_train[,-6]) %*% resultado[[2]][,2]
+coordenadas <- data.frame(z1, z2)
+head(coordenadas)
+
+plot(coordenadas, col = as.numeric(Ejemplo_AD_train[,6]))
+```
+
+```{r}
+model <- lda(Ejemplo_AD_train[,1:5], Ejemplo_AD_train[,6])
+model
+
+plot(model, col = as.numeric(Ejemplo_AD_train[,6]))
+```
+
+
+
+## Pruebas con la base *Tumores*
+
+```{r}
+# Se genera el modelo.
+modelo <- train.lda(VC~., data = Ejemplo_AD_train)
+modelo
+```
+
+```{r}
+resultado <- ADL(Tumores_train)
+resultado
+```
+
+
+Ahora se procede a obtener las coordenadas y a graficar.
+```{r}
+z1 <- data.matrix(Tumores_train[,-17]) %*% resultado[[2]]
+coordenadas <- data.frame(z1)
+head(coordenadas)
+```
+
+
+```{r}
+modelo <- train.lda(tipo~., data = Tumores_train)
+modelo
+```
+
+## Conclusiones
+
+Finalmente pese a que se fijo la semilla y se corrieron las mismas bases de datos, se puede notar que los resultados obtenidos variaron en gran medida, aunque en el gráfico del ejemplo con la base de datos *Ejemplo_AD* se nota que el procedimiento fue exitoso al separar a los individuos de test. Se puede teorizar que la diferencia en los resultados radica en el tratamiento de los datos que se da en la librería, pero según lo visto en la tería suministrada por el profesor, la metodología empleada en el algoritmo manual es también correcta.
