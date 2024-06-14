@@ -97,7 +97,7 @@ kable_styling(kable(V))
 
 ```
 
-La matriz de covarianzas inter-clase es:
+La matriz de covarianzas inter-clase $V_B$ es:
 ```{r}
 # Matriz diagonal de pesos de las 3 clases
 pesos_clases <- D_G*peso
@@ -106,7 +106,7 @@ VB <- t(G)%*%pesos_clases%*%G
 kable_styling(kable(VB))
 ```
 
-La matriz de covarianzas intra-clase es:
+La matriz de covarianzas intra-clase $V_W$ es:
 ```{r}
 clases <- unique(Ejemplo_AD$VC)
 
