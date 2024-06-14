@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Liberías
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
 library(readr)
 library(kableExtra)
 library(dplyr)
@@ -36,6 +36,55 @@ library(dplyr)
 
 ## Teorema 4
 <img src= "Teoremas_4.jpg">
+
+# Pregunta 2
+**Diseñe un algoritmo en pseudocódigo para el Método del Análisis Discriminante Lineal según la teoría vista en clase.**
+
+    // Entrada:
+    // - X: Matriz de datos de tamaño n por m
+
+    // Salida:
+    // - G: matriz de centros de gravedad de cada clase
+    // - u: Los factores discriminates
+    // - lambda : valores propios
+
+    //Funcion ADL(X)
+    
+    // Paso 1: Separar los datos en dos bases
+    X1 = datos con m_1 variables númericas
+    X2 = código disyuntivo completo de las modalidades de la variable catégorica
+    
+    // Paso 2: Calcular la matriz diagonal de cantidad de individuos en cada clase
+    D_G <- diag(n_g)
+    
+    // Paso 3: Calcular la matriz de centros de gravedades
+    G = (D_G)^-1*(X2)^t*X1
+    
+    // Paso 4: Calcular la matriz de la cual se obtienen los factores discriminantes
+    // y valores propios asociados
+    FD_matriz <- (X1^t*X1)^-1*G^t*D_G*G
+    
+    // Paso 5: Obtener los vectores y valores propios de FD_matriz
+    u <- eigen(FD_matriz)$vectors
+    lambda <- eigen(FD_matriz)$values
+    
+    // Devolver matriz de centros de gravedad de cada clase,los factores discriminates
+    // y valores propios
+    devolver G, u, lambda
+    
+    //Fin Funcion
+
+    // Uso del modelo para clasificación:
+    
+    //  Funcion ADL(X)
+    // Proyectar los nuevos datos
+    proyeccion = w^T * X_nuevo
+    
+    // Determinar la clase basada en la cercanía a las medias proyectadas
+    Si abs(proyeccion - m0) < abs(proyeccion - m1) entonces
+        devolver 0
+    Sino
+        devolver 1
 
 
 # Pregunta 4
