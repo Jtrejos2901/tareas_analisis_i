@@ -1,0 +1,29 @@
+---
+title: Análisis de Datos I <br> Tarea 11
+author:
+  - "Maria Carolina Navarro Monge C05513"
+  - "Tábata Picado Carmona C05961"
+  - "Jose Pablo Trejos Conejo C07862"
+output:
+  rmdformats::robobook:
+        code_folding: show
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Pregunta 1
+
+**Complete las demostraciones de los Teoremas 2 y 4 de la presentación de la clase.**
+
+## Teorema 2
+<img src= "Teoremas_1.jpg">
+<img src= "Teoremas_2.jpg">
+<img src= "Teoremas_3.jpg">
+
+## Teorema 4
+<img src= "Teoremas_4.jpg">
