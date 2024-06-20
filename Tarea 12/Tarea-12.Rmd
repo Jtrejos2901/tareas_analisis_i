@@ -1,0 +1,130 @@
+---
+title: Análisis de Datos I <br> Tarea 12
+author:
+  - "Maria Carolina Navarro Monge C05513"
+  - "Tábata Picado Carmona C05961"
+  - "Jose Pablo Trejos Conejo C07862"
+output:
+  rmdformats::robobook:
+        code_folding: show
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{multirow}
+  - \usepackage{multicol}
+  - \usepackage{xcolor}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Librerías
+
+```{r}
+library(traineR)
+library(caret)
+```
+
+# Pregunta 3
+
+En esta pregunta utiliza los datos (tumores.csv). Se trata de un conjunto de datos de características del tumor cerebral que incluye cinco variables de primer orden y ocho de textura y cuatro parámetros de evaluación de la calidad con el nivel objetivo. La variables son: Media, Varianza, Desviación estándar, Asimetría, Kurtosis, Contraste, Energía, ASM (segundo momento angular), Entropía, Homogeneidad, Disimilitud, Correlación, Grosor, PSNR (Pico de la relaci´on señal-ruido), SSIM (Índice de Similitud Estructurada), MSE (Mean Square Error), DC (Coeficiente de Dados) y la variable a predecir tipo (1 = Tumor, 0 = No-Tumor). Realice lo siguiente:
+
+## 1. Cargue la tabla de datos tumores.csv en R y genere en R usando la función createDataPartition(...) del paquete caret la tabla de testing con una 25 % de los datos y con el resto de los datos genere una tabla de aprendizaje.
+
+```{r}
+set.seed(12)
+```
+
+```{r}
+datos_tumores <- read.csv("tumores.csv", header = TRUE, sep = ",", dec = ".")
+datos_tumores$tipo <- as.factor(datos_tumores$tipo)
+
+muestra <- createDataPartition(y = datos_tumores$tipo, p = 0.75, list = F)
+tabla_testing <- datos_tumores[-muestra,]
+tabla_aprendizaje <- datos_tumores[muestra,]
+tabla_testing <- tabla_testing[,-1]
+tabla_aprendizaje <- tabla_aprendizaje[,-1]
+```
+
+## 2. Usando Naive Bayes, LDA y QDA genere modelos predictivos para la tabla de aprendizaje, puede ser que LDA y QDA generen errores.
+
+### Naive Bayes 
+```{r}
+modelo_bayes <- train.bayes(tipo~., data = tabla_aprendizaje)
+prediccion_bayes <- predict(modelo_bayes, tabla_testing, type = "class")
+```
+
+### LDA
+```{r}
+modelo_LDA <- train.lda(tipo~., data=tabla_aprendizaje)
+prediccion_LDA <- predict(modelo_LDA, tabla_testing)
+```
+
+### QDA
+
+Como QDA genera errores se va a incluir un ruido en los valores de la tabla de aprendizaje.
+
+```{r}
+valores <- matrix(runif(n = nrow(tabla_aprendizaje[,-17]) * ncol(tabla_aprendizaje[,-17]), 
+                        min = 0, max = 0.01), 
+                  nrow = nrow(tabla_aprendizaje[,-17]), ncol = ncol(tabla_aprendizaje[,-17]))
+tabla_aprendizaje_valores <- tabla_aprendizaje[,-17] + valores
+tabla_aprendizaje_valores <- cbind(tabla_aprendizaje_valores, tipo = tabla_aprendizaje[,17])
+```
+
+Se genera el modelo con la nueva tabla de aprendizaje.
+
+```{r}
+modelo_QDA <- train.qda(tipo~., data=tabla_aprendizaje_valores)
+prediccion_QDA <- predict(modelo_QDA, tabla_testing)
+```
+
+## 3. Para la tabla de testing calcule la matriz de confusión, la precisión global, el error global y la precisión en cada de las clases. Construya una tabla para los índices anteriores que permita comparar los resultados de Naive Bayes, LDA y QDA con respecto a los métodos generados en las tareas anteriores. ¿Cuál método es mejor?
+
+### Naive Bayes
+```{r}
+matriz_confusion_bayes <- confusion.matrix(tabla_testing, prediccion_bayes)
+general.indexes(mc = matriz_confusion_bayes)
+```
+
+### LDA 
+```{r}
+matriz_confusion_LDA <- confusion.matrix(tabla_testing, prediccion_LDA)
+general.indexes(mc = matriz_confusion_LDA)
+```
+
+### QDA 
+```{r}
+matriz_confusion_QDA <- confusion.matrix(tabla_testing, prediccion_QDA)
+general.indexes(mc = matriz_confusion_QDA)
+```
+
+### KNN
+De los métodos de las tareas anteriores se tiene el metodo de K vecinos más cercanos (KNN).
+```{r}
+modelo_KNN <- train.knn(tipo~., data = tabla_aprendizaje, 
+                        kmax = floor(sqrt(nrow(tabla_aprendizaje))))
+prediccion_KNN <- predict(modelo_KNN, tabla_testing, type = "class")
+matriz_confusion_KNN <- confusion.matrix(tabla_testing, prediccion_KNN)
+general.indexes(mc = matriz_confusion_KNN)
+```
+
+### Tabla de índices 
+<style>
+table th {
+  background-color: #d8bfd8; /* Color lila */
+  color: white; /* Texto blanco para mejor contraste */
+}
+</style>
+
+| Método       | P. Global | Error global | P. Tipo 0 |P. Tipo 1 |
+|--------------|--------|--------|--------|--------------|
+| Naive Bayes  | 0.8931 | 0.1069 | 0.5833 | 0.9184       |
+| LDA          | 0.9465 | 0.0535 | 0.8750 | 0.9524       |
+| QDA          | 0.9528 | 0.0472 | 0.5833 | 0.9830       |
+| KNN          | 0.9686 | 0.0314 | 0.6667 | 0.9932       |
+
+El mejor método depende de los resultados que se están deseando, sin embargo, al guiarse con estos índices se puede ver que el que tiene mayor precisión global, mayor precisión para detectar los casos en los que la persona sí tiene tumor y a su vez un menor error global es el método de K vecinos más cercanos. 
