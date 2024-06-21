@@ -17,6 +17,17 @@ header-includes:
   - \usepackage{xcolor}
 ---
 
+<style>
+    .box {
+        background: #F5F5F5;
+        border-left: 0.4rem solid #FFFF00;
+    }
+    
+    .box p {
+      padding: 0 1em 0 1em;
+    }
+</style>
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -138,6 +149,58 @@ table th {
 El mejor método depende de los resultados que se están deseando, sin embargo, al guiarse con estos índices se puede ver que el que tiene mayor precisión global, mayor precisión para detectar los casos en los que la persona sí tiene tumor y a su vez un menor error global es el método de K vecinos más cercanos. 
 
 # Ejercicio 4
+
+<div class="box">
+  **Teorema (Regla de Asignación)** <br>
+  *El Análisis Discriminante asigna $X = x$ a la clase con mayor $\delta_{k}(x)$ donde:* 
+  
+  $$\delta_{k}(x) = x \cdot \dfrac{\mu_{k}}{\sigma^{2}} - \dfrac{\mu_{k}^{2}}{2 \sigma^{2}} + \log(\pi_{k})$$
+</div>
+
+**Prueba:**
+
+Note que de fondo, $\delta_{k}(x)$ se trata de una densidad posterior, y por lo tanto se procede de la siguiente forma:
+
+$$p_{k}(x) \propto \pi_{k} \dfrac{1}{\sqrt{2 \pi} \sigma} e^{\left(-\frac{1}{2 \sigma^{2}}(x- \mu_{k})^{2}\right)}$$
+
+De acá se obtetiene que:
+
+\begin{align*}
+   \delta_{k}(x) &\propto  \ln(p_{k}(x))\\\\
+   &\propto \ln\left(\pi_{k} \dfrac{1}{\sqrt{2 \pi} \sigma} e^{\left(-\frac{1}{2 \sigma^{2}}(x- \mu_{k})^{2} \right)}\right)\\\\
+   &\propto \ln(\pi_{k}) + \ln\left(\dfrac{1}{\sqrt{2 \pi} \sigma}\right) + \ln\left(e^{\left(-\frac{1}{2 \sigma^{2}}(x- \mu_{k})^{2} \right)}\right)\\\\
+   &\propto \ln(\pi_{k}) - \dfrac{1}{2} \ln(2 \pi \sigma^{2}) - \frac{1}{2 \sigma^{2}}(x- \mu_{k})^{2}\\\\
+   &\propto \ln(\pi_{k}) - \dfrac{1}{2} \ln(2 \pi \sigma^{2}) - \frac{1}{2 \sigma^{2}}(x^{2}- 2x \mu_{k} + \mu_{k}^{2})\\\\
+   &\propto \ln(\pi_{k}) - \dfrac{1}{2} \ln(2 \pi \sigma^{2}) - \frac{x^{2}}{2 \sigma^{2}} + \frac{2x \mu_{k}}{2 \sigma^{2}} - \frac{\mu_{k}^{2}}{2 \sigma^{2}}
+\end{align*}
+
+Ahora, es importante notar que acá la variable no es $x$, sino $k$, pues se está buscando, dado $X = x$ a cual $k$ clase pertenece $x$. Por lo tanto, en la ecuación anterior, tanto $\frac{1}{2} \ln(2 \pi \sigma^{2})$ como $\frac{x^{2}}{2 \sigma^{2}}$ se agregan a la constante de proporcionalidad, por lo que al final se obtiene la formula deseada:
+
+$$\delta_{k}(x) = x \cdot \frac{\mu_{k}}{\sigma^{2}} - \frac{\mu_{k}^{2}}{2 \sigma^{2}} + \ln(\pi_{k})$$
+
+<div class="box">
+  **Ejemplo 1** <br>
+  *Si $k=2$ y $\pi_{1} = \pi_{2}$ entonces el Análisis Discriminante asigna la observación (individuo) $X=x$ a la clase 1 si:* 
+  
+  $$2x(\mu_{1} -\mu_{2}) > \mu_{1}^{2} - \mu_{2}^{2}$$
+  
+  *y la clase 2 en otro caso.*
+</div>
+
+**Prueba:**
+
+Observe que del teorema anterior se puede concluir que si se asigna $x$ a la clase 1, entonces $delta_{1}(x) > delta_{2}(x)$ lo cual implica que, dado $\pi_{1} = \pi_{2}$, se tiene que cumplir que:
+
+\begin{align*}
+\delta_{1}(x) > \delta_{2}(x) &\Leftrightarrow x \cdot \frac{\mu_{1}}{\sigma^{2}} - \frac{\mu_{1}^{2}}{2 \sigma^{2}} + \ln(\pi_{1}) > x \cdot \frac{\mu_{2}}{\sigma^{2}} - \frac{\mu_{2}^{2}}{2 \sigma^{2}} + \ln(\pi_{2})\\\\
+&\Leftrightarrow x \cdot \frac{\mu_{1}}{\sigma^{2}} - \frac{\mu_{1}^{2}}{2 \sigma^{2}} + \ln(\pi_{1}) > x \cdot \frac{\mu_{2}}{\sigma^{2}} - \frac{\mu_{2}^{2}}{2 \sigma^{2}} + \ln(\pi_{1})\\\\
+&\Leftrightarrow x \cdot \mu_{1} - x \cdot \mu_{2} > \frac{\mu_{1}^{2}}{2} - \frac{\mu_{2}^{2}}{2}\\\\
+&\Leftrightarrow 2x(\mu_{1} - \mu_{2}) > \mu_{1}^{2} - \mu_{2}^{2}\\\\
+\end{align*}
+
+Por lo tanto se cumple la condición a probar.
+
+
 <img src = "demos_caro1.jpg">
 <img src = "demos_caro2.jpg">
 <img src = "demos_caro3.jpg">
@@ -418,3 +481,179 @@ los modelos, el Modelo LDA es el que brinda mejores resultados.
 No obstante, depende del tipo de análisis que se pretenda realiza para determinar
 cuál modelo es más apto.
 
+# Ejercicio 6
+
+## 1
+*Cargue la tabla de datos ZipData 2024.csv en R.*
+
+```{r}
+BD_numeros <- read.csv("ZipData_2024.csv", sep = ";", dec='.', header = T, 
+                       stringsAsFactors = T)
+```
+
+## 2
+*Usando KNN, Naive Bayes, LDA y QDA genere un modelos predictivos.*
+
+Inicialmente se procede dividiendo la base de datos de forma aleatoria como sigue:
+```{r}
+# Se fija la semilla para reproducibilidad de los resultados.
+set.seed(2901)
+
+# Se separa la base en 2 sets de datos.
+indices <- createDataPartition(BD_numeros$Numero, p = .80, list = F)
+
+BD_numeros_train <- BD_numeros[indices,]
+BD_numeros_test <- BD_numeros[-indices,]
+```
+
+### Generación de modelos
+```{r, warning=FALSE}
+# Modelo KNN.
+knn_model <- train.knn(Numero~., data = BD_numeros_train, 
+                       kmax = floor(sqrt(nrow(BD_numeros_train))), 
+                       kernel = "optimal")
+
+# Modelo Naive Bayes.
+bayes_model <- train.bayes(Numero~., data = BD_numeros_train)
+
+# Modelo LDA.
+lda_model <- train.lda(Numero~., data = BD_numeros_train)
+
+# Dado que la función trin.qda genera errores se va a incluir un ruido en los
+# valores de la tabla de aprendizaje.
+ruido <- matrix(runif(n = nrow(BD_numeros_train) * ncol(BD_numeros_train), 
+                      min = 0, max = 0.01), 
+                nrow = nrow(BD_numeros_train[,-1]), 
+                ncol = ncol(BD_numeros_train[,-1]))
+
+# Se obtiene los nuemeros que serán colocados más adelante.
+numeros <- BD_numeros_train[,1]
+
+# Se agrega el ruido y la columna con los identificadores.
+BD_numeros_train <- BD_numeros_train[,-1] + ruido
+BD_numeros_train <- cbind(BD_numeros_train, Numero = numeros)
+
+# Modelo QDA
+qda_model <- train.qda(Numero~., data = BD_numeros_train)
+```
+
+### Información del modelo KNN.
+
+```{r}
+# Se obtiene la predicción.
+prediction <- predict(knn_model, BD_numeros_test, type = "class")
+
+# Se obtiene la matriz de confusión.
+CM <- confusion.matrix(BD_numeros_test, prediction)
+
+# Se calculan los resultados de la precisión.
+results <- general.indexes(mc = CM)[c(2,3)]
+
+# Se generan df para mostrar los resultados.
+df_CM <- as.data.frame.matrix(CM)
+df_results <- data.frame(results[1], results[2])
+
+# Se calcula la precision por clase.
+df_precision <- c()
+for(i in 1:ncol(df_CM)){
+  df_precision[i] <- df_CM[i,i]/sum(df_CM[,i])
+}
+df_precision <- matrix(df_precision, 1, ncol(df_CM))
+colnames(df_precision) <- colnames(df_CM)
+df_results <- cbind(df_results, df_precision)
+
+knitr::kable(df_CM)
+knitr::kable(df_results)
+```
+
+### Información del modelo Naive Bayes.
+```{r}
+# Se obtiene la predicción.
+prediction <- predict(bayes_model, BD_numeros_test, type = "class")
+
+# Se obtiene la matriz de confusión.
+CM <- confusion.matrix(BD_numeros_test, prediction)
+
+# Se calculan los resultados de la precisión.
+results <- general.indexes(mc = CM)[c(2,3)]
+
+# Se generan df para mostrar los resultados.
+df_CM <- as.data.frame.matrix(CM)
+df_results <- data.frame(results[1], results[2])
+
+# Se calcula la precision por clase.
+df_precision <- c()
+for(i in 1:ncol(df_CM)){
+  df_precision[i] <- df_CM[i,i]/sum(df_CM[,i])
+}
+df_precision <- matrix(df_precision, 1, ncol(df_CM))
+colnames(df_precision) <- colnames(df_CM)
+df_results <- cbind(df_results, df_precision)
+
+knitr::kable(df_CM)
+knitr::kable(df_results)
+```
+
+### Información del modelo LDA.
+```{r}
+# Se obtiene la predicción.
+prediction <- predict(lda_model, BD_numeros_test, type = "class")
+
+# Se obtiene la matriz de confusión.
+CM <- confusion.matrix(BD_numeros_test, prediction)
+
+# Se calculan los resultados de la precisión.
+results <- general.indexes(mc = CM)[c(2,3)]
+
+# Se generan df para mostrar los resultados.
+df_CM <- as.data.frame.matrix(CM)
+df_results <- data.frame(results[1], results[2])
+
+# Se calcula la precision por clase.
+df_precision <- c()
+for(i in 1:ncol(df_CM)){
+  df_precision[i] <- df_CM[i,i]/sum(df_CM[,i])
+}
+df_precision <- matrix(df_precision, 1, ncol(df_CM))
+colnames(df_precision) <- colnames(df_CM)
+df_results <- cbind(df_results, df_precision)
+
+knitr::kable(df_CM)
+knitr::kable(df_results)
+```
+
+### Información del modelo QDA.
+```{r}
+# Se obtiene la predicción.
+prediction <- predict(qda_model, BD_numeros_test, type = "class")
+
+# Se obtiene la matriz de confusión.
+CM <- confusion.matrix(BD_numeros_test, prediction)
+
+# Se calculan los resultados de la precisión.
+results <- general.indexes(mc = CM)[c(2,3)]
+
+# Se generan df para mostrar los resultados.
+df_CM <- as.data.frame.matrix(CM)
+df_results <- data.frame(results[1], results[2])
+
+# Se calcula la precision por clase.
+df_precision <- c()
+for(i in 1:ncol(df_CM)){
+  df_precision[i] <- df_CM[i,i]/sum(df_CM[,i])
+}
+df_precision <- matrix(df_precision, 1, ncol(df_CM))
+colnames(df_precision) <- colnames(df_CM)
+df_results <- cbind(df_results, df_precision)
+
+knitr::kable(df_CM)
+knitr::kable(df_results)
+```
+
+### Resultados
+
+Tal y como se muestra en lso resultados, el modelo que mejor precisión global obtuvo fue le de *KNN*, con una precisión del $0.9552319$. Sin embargo, respecto al número cero, los modelos *LDA* y *Naive Bayes* obtuvieron mayor precisión pese a tener una exactitud menor. Esto es tan solo un ejemplo de varios que se pueden apreciar en los resultado. Sin embargo, en términos generales *KNN* sigue siendo que le obtuvo mejores resultados respecto a los demás modelos.
+
+Se podría pensar en la repetición de la generación de los modelos con el fin teorizar sobre que este comportamiento se mantiene sin importar la partición y que por ende, se podrían unir múltiples modelos en uno solo según sus fuertes para así obtener los mejores resultados posibles. Sin embargo, esto podría ser muy costoso y generar mucho tiempo de computación.
+
+Finalmente, en el contexto en que se está dando este ejemplo, ningún resultado es suficiente, pues es importante recordar que se trata de una compañía de correo la cual basa sus envíos en direcciones postales las cuales contienen múltiples números del 0 al 9 y que por estar errado, al menos uno de ellos, genera un envío errado del paquete. Sabiendo que una empresa de corre maneja miles de paquetes al año, resultaría peligroso la implementación de alguno de estos modelos para leer los códigos postales ingresados a mano.
