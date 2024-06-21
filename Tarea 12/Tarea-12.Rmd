@@ -137,6 +137,10 @@ table th {
 
 El mejor método depende de los resultados que se están deseando, sin embargo, al guiarse con estos índices se puede ver que el que tiene mayor precisión global, mayor precisión para detectar los casos en los que la persona sí tiene tumor y a su vez un menor error global es el método de K vecinos más cercanos. 
 
+# Ejercicio 4
+<img src = "demos_caro1.jpg">
+<img src = "demos_caro2.jpg">
+<img src = "demos_caro3.jpg">
 
 # Ejercicio 5
 
