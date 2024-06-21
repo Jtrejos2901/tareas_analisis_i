@@ -1430,12 +1430,236 @@ src: url(data:font/ttf;base64,AAEAAAARAQAABAAQR0RFRgs+Cz8AAjwQAAAAQEdQT1MXWeoAAA
 
 });
 </script>
+        <script>$(document).ready(function(){
+    if (typeof $('[data-toggle="tooltip"]').tooltip === 'function') {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
+    if ($('[data-toggle="popover"]').popover === 'function') {
+        $('[data-toggle="popover"]').popover();
+    }
+});
+</script>
+        <style type="text/css">
+.lightable-minimal {
+border-collapse: separate;
+border-spacing: 16px 1px;
+width: 100%;
+margin-bottom: 10px;
+}
+.lightable-minimal td {
+margin-left: 5px;
+margin-right: 5px;
+}
+.lightable-minimal th {
+margin-left: 5px;
+margin-right: 5px;
+}
+.lightable-minimal thead tr:last-child th {
+border-bottom: 2px solid #00000050;
+empty-cells: hide;
+}
+.lightable-minimal tbody tr:first-child td {
+padding-top: 0.5em;
+}
+.lightable-minimal.lightable-hover tbody tr:hover {
+background-color: #f5f5f5;
+}
+.lightable-minimal.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-classic {
+border-top: 0.16em solid #111111;
+border-bottom: 0.16em solid #111111;
+width: 100%;
+margin-bottom: 10px;
+margin: 10px 5px;
+}
+.lightable-classic tfoot tr td {
+border: 0;
+}
+.lightable-classic tfoot tr:first-child td {
+border-top: 0.14em solid #111111;
+}
+.lightable-classic caption {
+color: #222222;
+}
+.lightable-classic td {
+padding-left: 5px;
+padding-right: 5px;
+color: #222222;
+}
+.lightable-classic th {
+padding-left: 5px;
+padding-right: 5px;
+font-weight: normal;
+color: #222222;
+}
+.lightable-classic thead tr:last-child th {
+border-bottom: 0.10em solid #111111;
+}
+.lightable-classic.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-classic.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-classic-2 {
+border-top: 3px double #111111;
+border-bottom: 3px double #111111;
+width: 100%;
+margin-bottom: 10px;
+}
+.lightable-classic-2 tfoot tr td {
+border: 0;
+}
+.lightable-classic-2 tfoot tr:first-child td {
+border-top: 3px double #111111;
+}
+.lightable-classic-2 caption {
+color: #222222;
+}
+.lightable-classic-2 td {
+padding-left: 5px;
+padding-right: 5px;
+color: #222222;
+}
+.lightable-classic-2 th {
+padding-left: 5px;
+padding-right: 5px;
+font-weight: normal;
+color: #222222;
+}
+.lightable-classic-2 tbody tr:last-child td {
+border-bottom: 3px double #111111;
+}
+.lightable-classic-2 thead tr:last-child th {
+border-bottom: 1px solid #111111;
+}
+.lightable-classic-2.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-classic-2.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-material {
+min-width: 100%;
+white-space: nowrap;
+table-layout: fixed;
+font-family: Roboto, sans-serif;
+border: 1px solid #EEE;
+border-collapse: collapse;
+margin-bottom: 10px;
+}
+.lightable-material tfoot tr td {
+border: 0;
+}
+.lightable-material tfoot tr:first-child td {
+border-top: 1px solid #EEE;
+}
+.lightable-material th {
+height: 56px;
+padding-left: 16px;
+padding-right: 16px;
+}
+.lightable-material td {
+height: 52px;
+padding-left: 16px;
+padding-right: 16px;
+border-top: 1px solid #eeeeee;
+}
+.lightable-material.lightable-hover tbody tr:hover {
+background-color: #f5f5f5;
+}
+.lightable-material.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-material.lightable-striped tbody td {
+border: 0;
+}
+.lightable-material.lightable-striped thead tr:last-child th {
+border-bottom: 1px solid #ddd;
+}
+.lightable-material-dark {
+min-width: 100%;
+white-space: nowrap;
+table-layout: fixed;
+font-family: Roboto, sans-serif;
+border: 1px solid #FFFFFF12;
+border-collapse: collapse;
+margin-bottom: 10px;
+background-color: #363640;
+}
+.lightable-material-dark tfoot tr td {
+border: 0;
+}
+.lightable-material-dark tfoot tr:first-child td {
+border-top: 1px solid #FFFFFF12;
+}
+.lightable-material-dark th {
+height: 56px;
+padding-left: 16px;
+padding-right: 16px;
+color: #FFFFFF60;
+}
+.lightable-material-dark td {
+height: 52px;
+padding-left: 16px;
+padding-right: 16px;
+color: #FFFFFF;
+border-top: 1px solid #FFFFFF12;
+}
+.lightable-material-dark.lightable-hover tbody tr:hover {
+background-color: #FFFFFF12;
+}
+.lightable-material-dark.lightable-striped tbody tr:nth-child(even) {
+background-color: #FFFFFF12;
+}
+.lightable-material-dark.lightable-striped tbody td {
+border: 0;
+}
+.lightable-material-dark.lightable-striped thead tr:last-child th {
+border-bottom: 1px solid #FFFFFF12;
+}
+.lightable-paper {
+width: 100%;
+margin-bottom: 10px;
+color: #444;
+}
+.lightable-paper tfoot tr td {
+border: 0;
+}
+.lightable-paper tfoot tr:first-child td {
+border-top: 1px solid #00000020;
+}
+.lightable-paper thead tr:last-child th {
+color: #666;
+vertical-align: bottom;
+border-bottom: 1px solid #00000020;
+line-height: 1.15em;
+padding: 10px 5px;
+}
+.lightable-paper td {
+vertical-align: middle;
+border-bottom: 1px solid #00000010;
+line-height: 1.15em;
+padding: 7px 5px;
+}
+.lightable-paper.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-paper.lightable-striped tbody tr:nth-child(even) {
+background-color: #00000008;
+}
+.lightable-paper.lightable-striped tbody td {
+border: 0;
+}
+</style>
     
     
         <style type="text/css">code{white-space: pre;}</style>
     <style type="text/css">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -1616,6 +1840,8 @@ margin-left: 0 !important;
           con respecto a los métodos generados en las tareas anteriores.
           ¿Cuál método es mejor?</a></li>
           </ul></li>
+          <li><a href="#ejercicio-5" id="toc-ejercicio-5">Ejercicio
+          5</a></li>
           </ul>
         </nav>
         <ul class="authors">
@@ -1655,8 +1881,11 @@ Pablo Trejos Conejo C07862</span></li>
 <!-- Don't indent these lines or it will mess pre blocks indentation --> 
 <div id="librerías" class="section level1">
 <h1>Librerías</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(traineR)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(caret)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(traineR)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span></code></pre></div>
 </div>
 <div id="pregunta-1" class="section level1">
 <h1>Pregunta 1</h1>
@@ -1863,6 +2092,1392 @@ que la persona sí tiene tumor y a su vez un menor error global es el
 método de K vecinos más cercanos.</p>
 </div>
 </div>
+</div>
+<div id="ejercicio-5" class="section level1">
+<h1>Ejercicio 5</h1>
+<p><strong>1. Cargue la tabla de datos titanicV2024.csv, asegúrese de
+re-codificar las variables cualitativas y de ignorar variables que no se
+deben usar</strong></p>
+<p>Se carga la base de datos.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>titanic_datos <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;titanicV2024.csv&quot;</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>, <span class="at">dec =</span> <span class="st">&quot;.&quot;</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">kable_styling</span>(<span class="fu">kable</span>(<span class="fu">head</span>(titanic_datos)))</span></code></pre></div>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+PassengerId
+</th>
+<th style="text-align:right;">
+Survived
+</th>
+<th style="text-align:right;">
+Pclass
+</th>
+<th style="text-align:left;">
+Name
+</th>
+<th style="text-align:left;">
+Sex
+</th>
+<th style="text-align:right;">
+Age
+</th>
+<th style="text-align:right;">
+SibSp
+</th>
+<th style="text-align:right;">
+Parch
+</th>
+<th style="text-align:left;">
+Ticket
+</th>
+<th style="text-align:right;">
+Fare
+</th>
+<th style="text-align:left;">
+Cabin
+</th>
+<th style="text-align:left;">
+Embarked
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+Braund, Mr. Owen Harris
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+22
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+A/5 21171
+</td>
+<td style="text-align:right;">
+7.2500
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+Cumings, Mrs. John Bradley (Florence Briggs Thayer)
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+38
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+PC 17599
+</td>
+<td style="text-align:right;">
+71.2833
+</td>
+<td style="text-align:left;">
+C85
+</td>
+<td style="text-align:left;">
+C
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+Heikkinen, Miss. Laina
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+STON/O2. 3101282
+</td>
+<td style="text-align:right;">
+7.9250
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+Futrelle, Mrs. Jacques Heath (Lily May Peel)
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+113803
+</td>
+<td style="text-align:right;">
+53.1000
+</td>
+<td style="text-align:left;">
+C123
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+Allen, Mr. William Henry
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+373450
+</td>
+<td style="text-align:right;">
+8.0500
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+Moran, Mr. James
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+330877
+</td>
+<td style="text-align:right;">
+8.4583
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+Q
+</td>
+</tr>
+</tbody>
+</table>
+<p>Se eliminan las variables Passengerid, Name, Ticket y Cabin, pues,
+son valores únicos implicando que la cantidad de cantegorías por
+variables sean demasiadas, lo cual, resta precisión.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>titanic_datos <span class="ot">&lt;-</span> titanic_datos[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">4</span>,<span class="dv">9</span>,<span class="dv">11</span>)]</span></code></pre></div>
+<p>Se re-codifican las variables cualitativas para que sean de tipo
+factor.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>titanic_datos <span class="ot">&lt;-</span> titanic_datos <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">Survived =</span>  <span class="fu">as.factor</span>(Survived),</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>          <span class="at">Pclass =</span>  <span class="fu">as.factor</span>(Pclass),</span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>          <span class="at">Sex =</span>  <span class="fu">as.factor</span>(Sex),</span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>          <span class="at">Embarked =</span>  <span class="fu">as.factor</span>(Embarked))</span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="fu">str</span>(titanic_datos)  </span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    1309 obs. of  8 variables:
+##  $ Survived: Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 2 2 2 1 1 1 1 2 2 ...
+##  $ Pclass  : Factor w/ 3 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;: 3 1 3 1 3 3 1 3 3 2 ...
+##  $ Sex     : Factor w/ 2 levels &quot;female&quot;,&quot;male&quot;: 2 1 1 1 2 2 2 2 1 1 ...
+##  $ Age     : num  22 38 26 35 35 NA 54 2 27 14 ...
+##  $ SibSp   : int  1 1 0 1 0 0 0 3 0 1 ...
+##  $ Parch   : int  0 0 0 0 0 0 0 1 2 0 ...
+##  $ Fare    : num  7.25 71.28 7.92 53.1 8.05 ...
+##  $ Embarked: Factor w/ 3 levels &quot;C&quot;,&quot;Q&quot;,&quot;S&quot;: 3 1 3 3 3 2 3 3 3 1 ...</code></pre>
+<p>Se identican la cantidad de NA’s presentes en cada variable.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>na_variables <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">is.na</span>(titanic_datos))</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">print</span>(na_variables)</span></code></pre></div>
+<pre><code>## Survived   Pclass      Sex      Age    SibSp    Parch     Fare Embarked 
+##        0        0        0      263        0        0        1        2</code></pre>
+<p>De acuerdo con los mostrado, la variable Age cuenta con datos
+faltantes. Por tal motivo, se procede a rellenarlos con el promedio de
+las edades según el sexo.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co"># Se filtran las edades</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>mujeres_edades <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(titanic_datos<span class="sc">$</span>Age[titanic_datos<span class="sc">$</span>Sex <span class="sc">==</span> <span class="st">&quot;female&quot;</span>])</span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>hombres_edades <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(titanic_datos<span class="sc">$</span>Age[titanic_datos<span class="sc">$</span>Sex <span class="sc">==</span> <span class="st">&quot;male&quot;</span>])</span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a><span class="co"># Se calculan los promedios de las edades</span></span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a>edad_promedio_mujeres <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">mean</span>(mujeres_edades))</span>
+<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a>edad_promedio_hombres <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">mean</span>(hombres_edades))</span>
+<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a><span class="co"># Se rellenan los datos faltantes</span></span>
+<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a>titanic_datos<span class="sc">$</span>Age[titanic_datos<span class="sc">$</span>Sex <span class="sc">==</span> <span class="st">&quot;female&quot;</span> <span class="sc">&amp;</span> <span class="fu">is.na</span>(titanic_datos<span class="sc">$</span>Age)] <span class="ot">&lt;-</span> edad_promedio_mujeres</span>
+<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a>titanic_datos<span class="sc">$</span>Age[titanic_datos<span class="sc">$</span>Sex <span class="sc">==</span> <span class="st">&quot;male&quot;</span> <span class="sc">&amp;</span> <span class="fu">is.na</span>(titanic_datos<span class="sc">$</span>Age)] <span class="ot">&lt;-</span> edad_promedio_hombres</span></code></pre></div>
+<p>También, la variable Embarked presenta dos variables faltantes. Se
+rellenan con la moda de las cateogrías.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co"># Se obtiene la moda para la variable Embarked</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>tabla_frec <span class="ot">&lt;-</span> <span class="fu">table</span>(titanic_datos<span class="sc">$</span>Embarked)  <span class="co"># Se calcula la tabla de frecuencias</span></span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>moda  <span class="ot">&lt;-</span> <span class="fu">names</span>(tabla_frec)[<span class="fu">which.max</span>(tabla_frec)]  <span class="co"># Encontrar el valor con la frecuencia más alta</span></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a><span class="co"># Se rellena el dato faltante</span></span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>titanic_datos<span class="sc">$</span>Embarked[<span class="fu">is.na</span>(titanic_datos<span class="sc">$</span>Embarked)] <span class="ot">&lt;-</span> moda</span></code></pre></div>
+<p>Finalmente, el dato faltante en Fare se rellena con el promedio de
+las tarifas según el tipo de clase en que viajaba.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="co"># Se identifica la clase en que viajaba</span></span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>clase <span class="ot">&lt;-</span> titanic_datos<span class="sc">$</span>Pclass[<span class="fu">is.na</span>(titanic_datos<span class="sc">$</span>Fare)]</span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a><span class="co"># Se filtran las tarifas según el tipo de clase de viaje</span></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a>tarifas <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(titanic_datos<span class="sc">$</span>Fare[titanic_datos<span class="sc">$</span>Pclass <span class="sc">==</span> clase])</span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a><span class="co"># Se obtiene el promedio de las tarifas</span></span>
+<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a>tarifa_promedio <span class="ot">&lt;-</span> <span class="fu">mean</span>(tarifas)</span>
+<span id="cb24-9"><a href="#cb24-9" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" tabindex="-1"></a><span class="co"># Se rellena el dato faltante</span></span>
+<span id="cb24-11"><a href="#cb24-11" tabindex="-1"></a>titanic_datos<span class="sc">$</span>Fare[<span class="fu">is.na</span>(titanic_datos<span class="sc">$</span>Fare)] <span class="ot">&lt;-</span> tarifa_promedio</span></code></pre></div>
+<p><strong>2. Usando el comando sample de R genere al azar una tabla
+aprendizaje con un 80% de los datos y con el resto de los datos genere
+una tabla de aprendizaje.</strong></p>
+<p>Primeramente, se crea una muestra para generar las particiones tabla
+aprendizaje-testing, con un 80% y 20% de los datos respectivamente.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2529</span>) <span class="co"># se siembra una semilla para la reproducibilidad</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(titanic_datos)</span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>muestra_titanic <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="fu">floor</span>(n<span class="sc">*</span><span class="fl">0.20</span>))</span></code></pre></div>
+<p>Con esa muestra se obtienen las particiones en tabla de aprendizaje y
+testing.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>taprendizaje_titanic <span class="ot">&lt;-</span> titanic_datos[muestra_titanic, ]</span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>ttesting_titanic     <span class="ot">&lt;-</span> titanic_datos[<span class="sc">-</span>muestra_titanic, ]</span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a><span class="fu">kable_styling</span>(<span class="fu">kable</span>(<span class="fu">head</span>(taprendizaje_titanic)))</span></code></pre></div>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+Survived
+</th>
+<th style="text-align:left;">
+Pclass
+</th>
+<th style="text-align:left;">
+Sex
+</th>
+<th style="text-align:right;">
+Age
+</th>
+<th style="text-align:right;">
+SibSp
+</th>
+<th style="text-align:right;">
+Parch
+</th>
+<th style="text-align:right;">
+Fare
+</th>
+<th style="text-align:left;">
+Embarked
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+329
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+31.0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+20.5250
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1138
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+22.0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+21.0000
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+638
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+31.0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+26.2500
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+450
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+52.0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+30.5000
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1120
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+40.5
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+15.1000
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+137
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+19.0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+26.2833
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">kable_styling</span>(<span class="fu">kable</span>(<span class="fu">head</span>(ttesting_titanic)))</span></code></pre></div>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+Survived
+</th>
+<th style="text-align:left;">
+Pclass
+</th>
+<th style="text-align:left;">
+Sex
+</th>
+<th style="text-align:right;">
+Age
+</th>
+<th style="text-align:right;">
+SibSp
+</th>
+<th style="text-align:right;">
+Parch
+</th>
+<th style="text-align:right;">
+Fare
+</th>
+<th style="text-align:left;">
+Embarked
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+38
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+71.2833
+</td>
+<td style="text-align:left;">
+C
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+7.9250
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+4
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+53.1000
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+5
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+8.0500
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+6
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+8.4583
+</td>
+<td style="text-align:left;">
+Q
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+7
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+54
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+51.8625
+</td>
+<td style="text-align:left;">
+S
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>3. Genere un Modelo Predictivo usando Naïve Bayes, con el
+paquete traineR, luego para este modelo calcule la matriz de confusión,
+la precisión, la precisión positiva, la precisión negativa, los falsos
+positivos, los falsos negativos, la acertividad positiva y la
+acertividad negativa.</strong></p>
+<p>Se realiza el modelo predictivo mediante el Naïve Bayes:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>modelo_titanic_bayes <span class="ot">&lt;-</span> <span class="fu">train.bayes</span>(Survived<span class="sc">~</span>., <span class="at">data =</span> taprendizaje_titanic)</span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>modelo_titanic_bayes</span></code></pre></div>
+<pre><code>## 
+## Naive Bayes Classifier for Discrete Predictors
+## 
+## Call:
+## naiveBayes.default(x = X, y = Y, laplace = laplace)
+## 
+## A-priori probabilities:
+## Y
+##         0         1 
+## 0.5747126 0.4252874 
+## 
+## Conditional probabilities:
+##    Pclass
+## Y           1         2         3
+##   0 0.1600000 0.2066667 0.6333333
+##   1 0.3153153 0.2432432 0.4414414
+## 
+##    Sex
+## Y      female      male
+##   0 0.1000000 0.9000000
+##   1 0.8288288 0.1711712
+## 
+##    Age
+## Y       [,1]     [,2]
+##   0 30.14553 12.80277
+##   1 28.98649 12.28940
+## 
+##    SibSp
+## Y        [,1]      [,2]
+##   0 0.5400000 1.1622127
+##   1 0.4504505 0.8172986
+## 
+##    Parch
+## Y        [,1]      [,2]
+##   0 0.2866667 0.6381250
+##   1 0.4594595 0.7358827
+## 
+##    Fare
+## Y       [,1]     [,2]
+##   0 25.93982 39.77736
+##   1 46.10969 62.67029
+## 
+##    Embarked
+## Y           C         Q         S
+##   0 0.2066667 0.0600000 0.7333333
+##   1 0.1981982 0.1441441 0.6576577</code></pre>
+<p>Luego, se obtienen las predicciones del modelo:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>prediccion_titanic <span class="ot">&lt;-</span> <span class="fu">predict</span>(modelo_titanic_bayes, ttesting_titanic, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>prediccion_titanic<span class="sc">$</span>prediction</span></code></pre></div>
+<pre><code>##    [1] 1 1 1 0 0 0 0 1 1 1 1 0 1 1 0 0 1 0 1 0 0 1 0 1 0 0 1 1 0 0 0 0 0 1 1 1 0
+##   [38] 1 0 1 0 0 1 1 0 1 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 1 0 1 0 1 1 0 0 0
+##   [75] 0 0 0 0 0 1 0 0 0 0 1 0 0 1 0 1 0 1 1 0 0 1 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0
+##  [112] 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 1 0 0 0 1 0 0 0 0 0
+##  [149] 0 0 1 0 1 1 0 0 0 0 0 0 1 0 0 1 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1
+##  [186] 0 1 0 0 1 1 0 0 0 0 1 0 0 1 0 0 1 1 1 1 0 0 1 0 0 0 1 1 0 1 0 1 1 1 0 0 0
+##  [223] 0 0 0 0 0 0 1 1 1 0 1 0 0 0 1 0 1 1 0 0 1 0 1 1 1 0 1 1 1 0 0 1 1 0 1 1 0
+##  [260] 0 1 1 1 0 1 1 1 0 1 0 0 0 1 0 0 1 1 0 0 0 0 0 0 1 1 1 1 0 1 0 0 1 1 1 1 0
+##  [297] 0 0 1 1 0 0 1 0 1 0 0 1 1 0 0 1 1 0 1 0 0 1 0 0 0 1 0 0 0 0 0 0 1 0 1 1 0
+##  [334] 1 0 0 0 1 0 1 0 0 0 0 0 1 1 1 1 1 0 0 1 1 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0 0
+##  [371] 0 0 0 1 0 1 1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 1 0 0 1 1 1 0 1 0 0 0
+##  [408] 0 0 0 1 0 0 1 1 0 0 1 0 1 1 0 1 0 0 1 1 0 1 0 1 1 0 0 0 0 1 0 0 0 1 0 0 0
+##  [445] 0 1 1 1 0 0 0 0 1 0 0 0 1 0 0 0 1 1 1 0 1 1 0 0 1 0 0 0 0 1 0 0 0 1 0 0 0
+##  [482] 1 0 0 0 0 0 0 0 1 1 1 0 1 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1 0 0
+##  [519] 1 0 0 0 0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 1 1 1 1 0 0 0 0
+##  [556] 0 0 0 0 1 0 1 0 0 0 0 0 1 0 1 0 1 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0
+##  [593] 0 1 1 0 0 0 1 1 0 0 0 1 0 0 0 0 1 0 0 1 0 0 1 0 0 0 0 1 0 0 0 1 0 1 0 0 1
+##  [630] 1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1 1 0 1 0 1 1 0 0 0 0 1 0 0 0 0 0 0
+##  [667] 0 1 0 0 0 0 0 0 0 1 1 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 1 1 1 1 0 1 0 0 1 0 0
+##  [704] 1 1 0 0 0 1 0 0 1 0 1 0 1 0 1 0 0 0 1 1 0 1 1 0 0 1 0 1 1 0 0 1 1 0 0 1 0
+##  [741] 0 1 0 0 0 0 1 0 1 0 0 0 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 0 1 1 0 0
+##  [778] 1 1 0 0 1 0 1 0 0 0 0 1 1 1 0 1 0 1 0 0 1 0 1 1 0 0 0 1 0 0 0 0 0 0 1 1 1
+##  [815] 1 0 0 1 0 1 1 0 1 0 0 1 0 0 0 0 1 0 0 0 0 1 1 1 0 0 0 0 0 1 0 1 0 0 1 0 1
+##  [852] 0 0 1 0 1 0 0 0 1 1 1 0 1 1 0 0 1 0 1 1 0 0 0 0 0 0 0 0 1 0 1 0 1 0 0 0 1
+##  [889] 0 0 1 0 0 1 1 1 0 0 1 1 0 1 0 1 0 0 0 0 1 1 1 1 1 0 0 0 1 1 1 0 1 0 0 0 0
+##  [926] 0 0 1 1 0 0 0 1 0 0 0 1 0 1 0 0 0 0 1 0 1 1 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0
+##  [963] 0 1 1 1 0 1 0 1 1 0 0 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 0 0 1 1 0 1 0 1 0 1 0
+## [1000] 0 0 1 0 1 0 1 0 1 0 1 0 1 0 0 1 0 0 1 0 0 0 0 0 0 1 1 0 0 0 1 1 0 1 0 1 0
+## [1037] 0 0 0 1 1 1 1 1 0 0 0 0
+## Levels: 0 1</code></pre>
+<p>Se calcula la matriz de confusión que permite identificar la
+información de las predicciones dada por el modelo y comparar con los
+datos reales.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>matriz_confusion_titanic <span class="ot">&lt;-</span> <span class="fu">confusion.matrix</span>(ttesting_titanic, prediccion_titanic)</span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>matriz_confusion_titanic</span></code></pre></div>
+<pre><code>##     prediction
+## real   0   1
+##    0 591  74
+##    1  89 294</code></pre>
+<p>Para obtener los índices de calidad del modelo, se crea una función
+que devuelve una lista con los resultados.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a>indices_matriz <span class="ot">&lt;-</span> <span class="cf">function</span>(matriz_confusion){</span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>  VN <span class="ot">&lt;-</span> matriz_confusion[<span class="dv">1</span>,<span class="dv">1</span>]</span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>  FP <span class="ot">&lt;-</span> matriz_confusion[<span class="dv">1</span>,<span class="dv">2</span>]</span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>  FN <span class="ot">&lt;-</span> matriz_confusion[<span class="dv">2</span>,<span class="dv">1</span>]</span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>  VP <span class="ot">&lt;-</span> matriz_confusion[<span class="dv">2</span>,<span class="dv">2</span>]</span>
+<span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a>  </span>
+<span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a>  P <span class="ot">&lt;-</span> (VN<span class="sc">+</span>VP)<span class="sc">/</span><span class="fu">sum</span>(matriz_confusion)</span>
+<span id="cb34-8"><a href="#cb34-8" tabindex="-1"></a>  E <span class="ot">&lt;-</span> (FP<span class="sc">+</span>FN)<span class="sc">/</span><span class="fu">sum</span>(matriz_confusion)</span>
+<span id="cb34-9"><a href="#cb34-9" tabindex="-1"></a>  PP <span class="ot">&lt;-</span> VP<span class="sc">/</span>(FN<span class="sc">+</span>VP)</span>
+<span id="cb34-10"><a href="#cb34-10" tabindex="-1"></a>  PN <span class="ot">&lt;-</span> VN<span class="sc">/</span>(VN<span class="sc">+</span>FP)</span>
+<span id="cb34-11"><a href="#cb34-11" tabindex="-1"></a>  PFP <span class="ot">&lt;-</span> FP<span class="sc">/</span>(VN<span class="sc">+</span>FP)</span>
+<span id="cb34-12"><a href="#cb34-12" tabindex="-1"></a>  PFN <span class="ot">&lt;-</span> FN<span class="sc">/</span>(FN<span class="sc">+</span>VP)</span>
+<span id="cb34-13"><a href="#cb34-13" tabindex="-1"></a>  AP <span class="ot">&lt;-</span> VP<span class="sc">/</span>(FP<span class="sc">+</span>VP)</span>
+<span id="cb34-14"><a href="#cb34-14" tabindex="-1"></a>  AN <span class="ot">&lt;-</span> VN<span class="sc">/</span>(VN<span class="sc">+</span>FN)</span>
+<span id="cb34-15"><a href="#cb34-15" tabindex="-1"></a>  </span>
+<span id="cb34-16"><a href="#cb34-16" tabindex="-1"></a>  indices <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb34-17"><a href="#cb34-17" tabindex="-1"></a>    <span class="st">&#39;Precision Global&#39;</span> <span class="ot">=</span> P,</span>
+<span id="cb34-18"><a href="#cb34-18" tabindex="-1"></a>    <span class="st">&#39;Error Global&#39;</span> <span class="ot">=</span> E,</span>
+<span id="cb34-19"><a href="#cb34-19" tabindex="-1"></a>    <span class="st">&#39;Precisión Positiva&#39;</span> <span class="ot">=</span> PP,</span>
+<span id="cb34-20"><a href="#cb34-20" tabindex="-1"></a>    <span class="st">&#39;Precisión Negativa&#39;</span> <span class="ot">=</span> PN,</span>
+<span id="cb34-21"><a href="#cb34-21" tabindex="-1"></a>    <span class="st">&#39;Proporción de Falsos Positivos&#39;</span> <span class="ot">=</span> PFP,</span>
+<span id="cb34-22"><a href="#cb34-22" tabindex="-1"></a>    <span class="st">&#39;Proporción de Falsos Negativos&#39;</span> <span class="ot">=</span> PFN,</span>
+<span id="cb34-23"><a href="#cb34-23" tabindex="-1"></a>    <span class="st">&#39;Asertividad Positiva&#39;</span> <span class="ot">=</span> AP,</span>
+<span id="cb34-24"><a href="#cb34-24" tabindex="-1"></a>    <span class="st">&#39;Asertividad Negativa&#39;</span> <span class="ot">=</span> AN</span>
+<span id="cb34-25"><a href="#cb34-25" tabindex="-1"></a>  )</span>
+<span id="cb34-26"><a href="#cb34-26" tabindex="-1"></a>  </span>
+<span id="cb34-27"><a href="#cb34-27" tabindex="-1"></a>  <span class="fu">return</span>(indices)</span>
+<span id="cb34-28"><a href="#cb34-28" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a>ind_modelo_bayes <span class="ot">&lt;-</span> <span class="fu">indices_matriz</span>(matriz_confusion_titanic)</span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a>ind_modelo_bayes</span></code></pre></div>
+<pre><code>## $`Precision Global`
+## [1] 0.8444656
+## 
+## $`Error Global`
+## [1] 0.1555344
+## 
+## $`Precisión Positiva`
+## [1] 0.767624
+## 
+## $`Precisión Negativa`
+## [1] 0.8887218
+## 
+## $`Proporción de Falsos Positivos`
+## [1] 0.1112782
+## 
+## $`Proporción de Falsos Negativos`
+## [1] 0.232376
+## 
+## $`Asertividad Positiva`
+## [1] 0.798913
+## 
+## $`Asertividad Negativa`
+## [1] 0.8691176</code></pre>
+<p><strong>4. Genere Modelos Predictivos usando LDA y QDA, con el
+paquete MASS, luego para este modelo calcule la matriz de confusión, la
+precisión, la precisión positiva, la precisión negativa, los falsos
+positivos, los falsos negativos, la acertividad positiva y la
+acertividad negativa, puede ser que QDA falle.</strong></p>
+<p><strong>LDA</strong></p>
+<p>Se crea el modelo LDA usando la tabla de aprendizaje y testing que se
+crearon anteriormente.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a>modelo_titanic_LDA <span class="ot">&lt;-</span> <span class="fu">lda</span>(Survived<span class="sc">~</span>., <span class="at">data=</span>taprendizaje_titanic)</span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>modelo_titanic_LDA</span></code></pre></div>
+<pre><code>## Call:
+## lda(Survived ~ ., data = taprendizaje_titanic)
+## 
+## Prior probabilities of groups:
+##         0         1 
+## 0.5747126 0.4252874 
+## 
+## Group means:
+##     Pclass2   Pclass3   Sexmale      Age     SibSp     Parch     Fare EmbarkedQ
+## 0 0.2066667 0.6333333 0.9000000 30.14553 0.5400000 0.2866667 25.93982 0.0600000
+## 1 0.2432432 0.4414414 0.1711712 28.98649 0.4504505 0.4594595 46.10969 0.1441441
+##   EmbarkedS
+## 0 0.7333333
+## 1 0.6576577
+## 
+## Coefficients of linear discriminants:
+##                     LD1
+## Pclass2   -0.5764874218
+## Pclass3   -0.8763054079
+## Sexmale   -2.8548616153
+## Age       -0.0135301460
+## SibSp     -0.1155130091
+## Parch     -0.0082135659
+## Fare      -0.0002384389
+## EmbarkedQ  0.5099240200
+## EmbarkedS  0.1864257511</code></pre>
+<p>Luego, se obtienen las predicciones del modelo:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a>prediccion_titanic_LDA <span class="ot">&lt;-</span> <span class="fu">predict</span>(modelo_titanic_LDA, ttesting_titanic, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a>clases_predichas_LDA <span class="ot">&lt;-</span> prediccion_titanic_LDA<span class="sc">$</span>class</span>
+<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a>clases_predichas_LDA</span></code></pre></div>
+<pre><code>##    [1] 1 1 1 0 0 0 0 1 1 1 1 0 0 1 0 0 1 0 1 0 1 1 0 1 0 0 1 1 0 0 0 0 0 1 1 1 0
+##   [38] 1 0 1 0 0 1 1 0 1 0 1 0 1 0 0 1 0 0 0 1 0 0 0 0 0 0 1 0 1 0 1 1 0 1 0 0 0
+##   [75] 0 0 0 0 0 1 0 0 0 0 1 0 0 1 0 1 0 1 1 0 0 0 1 0 0 0 0 0 0 0 0 1 1 0 0 0 0
+##  [112] 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 1 0 0 0 1 0 1 0 0 0
+##  [149] 0 0 1 0 1 1 0 0 0 0 0 0 1 0 0 1 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 1 0 1
+##  [186] 0 1 0 0 1 1 0 0 0 0 1 0 0 1 0 0 1 1 1 1 0 0 1 0 0 0 1 1 0 1 0 1 1 1 0 0 0
+##  [223] 0 0 0 0 0 0 1 1 1 0 1 0 0 0 1 0 1 1 0 0 1 0 0 1 1 0 1 1 1 0 0 1 1 0 1 1 0
+##  [260] 0 1 1 1 0 1 1 1 0 1 0 0 0 1 0 0 1 1 0 0 0 0 0 0 1 1 1 0 0 1 0 0 1 1 1 1 0
+##  [297] 0 0 0 1 0 0 1 0 1 0 0 1 0 0 0 1 1 0 1 0 0 1 0 0 0 1 0 0 0 1 0 0 1 0 1 1 0
+##  [334] 1 0 0 0 1 0 1 0 0 0 0 0 1 1 1 0 1 0 0 1 0 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0 0
+##  [371] 0 0 0 1 0 1 1 0 0 0 1 0 0 0 1 0 1 1 0 0 0 0 0 0 0 0 1 0 0 1 1 1 0 1 0 0 0
+##  [408] 0 0 0 1 0 0 1 1 0 0 1 0 1 0 0 1 0 0 1 1 0 1 0 1 1 1 1 0 0 1 0 0 0 0 0 0 0
+##  [445] 0 1 0 1 0 0 0 0 1 0 0 0 1 0 0 0 1 1 1 0 1 1 0 0 1 0 0 0 0 1 0 0 0 1 0 0 0
+##  [482] 1 0 0 0 0 0 0 0 1 1 1 0 1 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 1 1 0
+##  [519] 1 0 0 0 0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 1 1 0 1 0 0 0 0
+##  [556] 0 0 0 0 1 0 1 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 1
+##  [593] 0 1 1 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 1 0 0 1 0 0 0 0 1 0 0 0 1 0 1 0 0 1
+##  [630] 1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 1 0 1 0 1 0 0 0 0 0 1 0 0 0 0 1 0
+##  [667] 0 1 0 0 0 0 0 0 0 1 1 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 1 1 1 1 0 1 0 0 1 1 0
+##  [704] 1 1 0 0 0 1 0 0 1 0 1 0 1 0 1 0 0 0 1 1 0 1 1 0 0 1 0 1 1 0 0 1 1 0 0 1 0
+##  [741] 0 1 0 0 0 0 1 0 1 0 0 0 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 1 1 0 1 1 0 0
+##  [778] 1 0 0 0 1 0 0 0 0 0 0 1 1 1 0 1 0 1 0 0 1 0 1 1 0 0 0 1 0 0 0 0 0 0 1 1 1
+##  [815] 1 0 0 1 0 1 1 0 1 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 1 0 1 0 0 1 0 1
+##  [852] 0 0 1 0 1 0 0 0 0 1 1 0 1 1 0 0 1 0 1 1 0 1 0 0 0 0 0 0 1 0 1 0 1 0 0 0 1
+##  [889] 0 0 1 1 0 1 0 1 0 0 1 1 0 1 0 1 0 0 0 0 1 1 1 1 0 0 0 0 1 1 1 0 0 0 0 0 0
+##  [926] 0 0 1 1 0 0 0 1 0 0 0 1 0 1 0 0 0 0 1 0 1 1 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0
+##  [963] 0 1 1 0 0 1 0 1 1 0 0 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 0 0 0 1 0 1 0 1 0 1 0
+## [1000] 0 0 1 0 1 0 1 0 1 0 1 0 1 0 0 1 0 0 1 1 0 0 0 0 0 1 1 0 0 0 1 1 0 1 0 1 0
+## [1037] 0 0 0 0 1 1 1 1 0 0 0 0
+## Levels: 0 1</code></pre>
+<p>Seguido, se calcula la matriz de confusión.</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a>matriz_confusion_titanic_LDA <span class="ot">&lt;-</span> <span class="fu">table</span>(ttesting_titanic<span class="sc">$</span>Survived,clases_predichas_LDA)</span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a>matriz_confusion_titanic_LDA</span></code></pre></div>
+<pre><code>##    clases_predichas_LDA
+##       0   1
+##   0 599  66
+##   1  90 293</code></pre>
+<p>Después, se obtienen los índices de calidad del modelo LDA.</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a>ind_modelo_LDA <span class="ot">&lt;-</span> <span class="fu">indices_matriz</span>(matriz_confusion_titanic_LDA)</span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a>ind_modelo_LDA </span></code></pre></div>
+<pre><code>## $`Precision Global`
+## [1] 0.851145
+## 
+## $`Error Global`
+## [1] 0.148855
+## 
+## $`Precisión Positiva`
+## [1] 0.7650131
+## 
+## $`Precisión Negativa`
+## [1] 0.9007519
+## 
+## $`Proporción de Falsos Positivos`
+## [1] 0.09924812
+## 
+## $`Proporción de Falsos Negativos`
+## [1] 0.2349869
+## 
+## $`Asertividad Positiva`
+## [1] 0.816156
+## 
+## $`Asertividad Negativa`
+## [1] 0.8693759</code></pre>
+<p><strong>QDA</strong></p>
+<p>Ahora, se crea el modelo QDA.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a>modelo_titanic_QDA <span class="ot">&lt;-</span> <span class="fu">qda</span>(Survived<span class="sc">~</span>., <span class="at">data=</span>taprendizaje_titanic)</span>
+<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a>modelo_titanic_QDA</span></code></pre></div>
+<pre><code>## Call:
+## qda(Survived ~ ., data = taprendizaje_titanic)
+## 
+## Prior probabilities of groups:
+##         0         1 
+## 0.5747126 0.4252874 
+## 
+## Group means:
+##     Pclass2   Pclass3   Sexmale      Age     SibSp     Parch     Fare EmbarkedQ
+## 0 0.2066667 0.6333333 0.9000000 30.14553 0.5400000 0.2866667 25.93982 0.0600000
+## 1 0.2432432 0.4414414 0.1711712 28.98649 0.4504505 0.4594595 46.10969 0.1441441
+##   EmbarkedS
+## 0 0.7333333
+## 1 0.6576577</code></pre>
+<p>Luego, se obtienen las predicciones del modelo:</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a>prediccion_titanic_QDA <span class="ot">&lt;-</span> <span class="fu">predict</span>(modelo_titanic_QDA, ttesting_titanic, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" tabindex="-1"></a>clases_predichas_QDA <span class="ot">&lt;-</span> prediccion_titanic_QDA<span class="sc">$</span>class</span>
+<span id="cb47-3"><a href="#cb47-3" tabindex="-1"></a>clases_predichas_QDA</span></code></pre></div>
+<pre><code>##    [1] 1 1 1 0 0 0 0 1 1 1 1 0 1 1 0 0 1 0 1 0 0 1 0 1 0 0 1 1 0 0 0 0 0 1 1 1 0
+##   [38] 1 0 1 0 0 1 1 0 1 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 1 1 0 1 0 1 0 1 1 0 0 0
+##   [75] 0 0 0 0 0 1 0 0 0 0 1 0 0 1 0 1 0 1 1 0 0 1 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0
+##  [112] 0 1 1 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 1 0 0 0 1 0 0 0 0 0
+##  [149] 0 0 1 0 1 1 0 0 0 0 0 0 1 0 0 1 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1
+##  [186] 0 1 0 0 1 1 0 0 0 0 1 0 0 1 0 0 1 1 1 1 0 0 1 0 0 0 1 1 0 1 0 1 1 1 0 0 0
+##  [223] 0 0 0 0 0 0 1 1 1 0 1 0 0 0 1 0 1 1 0 0 1 0 0 1 1 0 1 1 1 0 0 1 1 0 1 1 0
+##  [260] 0 1 1 1 0 1 1 1 0 1 0 0 0 1 0 0 1 1 0 0 0 0 0 0 1 1 1 1 0 1 0 0 1 1 1 1 0
+##  [297] 0 0 0 1 0 0 1 0 1 0 0 1 0 0 0 1 1 0 1 0 0 1 0 0 0 1 0 0 0 0 0 0 1 0 1 1 0
+##  [334] 1 0 1 0 1 0 1 0 0 0 0 0 1 1 1 1 1 0 0 1 0 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0 0
+##  [371] 0 0 0 1 0 1 1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 1 0 0 1 1 1 0 1 0 0 0
+##  [408] 1 0 0 1 0 0 1 1 0 0 1 0 1 1 0 1 0 0 1 1 0 1 0 1 1 0 0 0 0 1 0 0 0 0 0 0 0
+##  [445] 0 1 1 1 0 0 0 0 1 0 0 0 1 0 0 0 1 1 1 0 1 1 0 0 1 0 0 0 0 1 0 0 0 1 0 0 0
+##  [482] 1 0 0 0 0 0 0 0 1 1 1 0 1 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 1 1 0
+##  [519] 1 0 0 0 0 0 1 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 1 1 1 1 0 0 0 0
+##  [556] 0 0 0 0 1 0 1 0 0 0 0 0 0 0 1 0 1 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 1
+##  [593] 0 1 1 0 0 0 1 1 0 0 0 1 0 0 0 0 1 0 0 1 0 0 1 0 0 0 0 1 0 0 0 1 0 1 0 0 1
+##  [630] 1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1 1 0 1 0 1 0 0 0 0 0 1 0 0 0 0 0 0
+##  [667] 0 1 0 0 0 0 0 0 0 1 1 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 1 1 1 1 0 1 0 0 1 0 0
+##  [704] 1 1 0 0 0 1 0 0 1 0 1 0 1 0 1 0 0 0 1 1 0 1 1 0 0 1 0 1 1 0 0 1 1 0 0 1 0
+##  [741] 0 1 0 0 0 0 1 0 1 0 0 0 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 0 1 1 0 0
+##  [778] 1 1 0 0 1 0 1 0 0 0 0 1 1 1 0 1 0 1 0 0 1 0 1 1 0 0 0 1 0 1 0 0 0 0 1 1 1
+##  [815] 1 0 0 1 0 1 1 0 1 0 0 1 0 0 0 0 1 0 0 0 0 1 1 1 0 0 0 0 0 1 0 1 0 0 1 0 1
+##  [852] 0 0 1 0 1 0 0 0 1 1 1 0 1 1 0 0 1 0 1 1 0 0 0 0 0 0 0 1 1 0 1 0 1 0 0 0 1
+##  [889] 0 0 1 0 0 1 1 1 0 0 1 1 0 1 0 1 0 0 0 0 1 1 1 1 0 0 0 0 1 1 1 0 0 0 0 0 0
+##  [926] 0 0 1 1 0 0 0 1 0 0 0 1 0 1 0 0 0 0 1 0 1 1 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0
+##  [963] 0 1 1 0 0 1 0 1 1 0 0 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 0 0 1 1 0 1 0 1 0 1 0
+## [1000] 0 0 1 0 1 0 1 0 1 0 1 0 1 0 0 1 0 0 1 1 0 0 0 0 1 1 1 0 0 1 1 1 1 1 0 1 0
+## [1037] 0 0 0 1 1 1 1 1 0 0 0 0
+## Levels: 0 1</code></pre>
+<p>Seguido, se calcula la matriz de confusión.</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a>matriz_confusion_titanic_QDA <span class="ot">&lt;-</span> <span class="fu">table</span>(ttesting_titanic<span class="sc">$</span>Survived,clases_predichas_QDA)</span>
+<span id="cb49-2"><a href="#cb49-2" tabindex="-1"></a>matriz_confusion_titanic_QDA</span></code></pre></div>
+<pre><code>##    clases_predichas_QDA
+##       0   1
+##   0 586  79
+##   1  90 293</code></pre>
+<p>Después, se obtienen los índices de calidad del modelo LDA.</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a>ind_modelo_QDA <span class="ot">&lt;-</span> <span class="fu">indices_matriz</span>(matriz_confusion_titanic_QDA)</span>
+<span id="cb51-2"><a href="#cb51-2" tabindex="-1"></a>ind_modelo_QDA </span></code></pre></div>
+<pre><code>## $`Precision Global`
+## [1] 0.8387405
+## 
+## $`Error Global`
+## [1] 0.1612595
+## 
+## $`Precisión Positiva`
+## [1] 0.7650131
+## 
+## $`Precisión Negativa`
+## [1] 0.881203
+## 
+## $`Proporción de Falsos Positivos`
+## [1] 0.118797
+## 
+## $`Proporción de Falsos Negativos`
+## [1] 0.2349869
+## 
+## $`Asertividad Positiva`
+## [1] 0.7876344
+## 
+## $`Asertividad Negativa`
+## [1] 0.8668639</code></pre>
+<p><strong>5. Construya una tabla para los índices anteriores que
+permita comparar el resultado de los métodos Bayes, LDA y QDA con
+respecto a los métodos de las tareas anteriores ¿Cuál método es
+mejor?</strong></p>
+<p>Primeramente, se realiza el modelo predictivo mediante el método de k
+vecinos más cercanos, el cual fue el aplicado en la tarea 10.</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a>modelo_titanic_knn <span class="ot">&lt;-</span> <span class="fu">train.knn</span>(Survived <span class="sc">~</span> ., <span class="at">data =</span> taprendizaje_titanic, <span class="at">kmax =</span> <span class="fu">floor</span>(<span class="fu">sqrt</span>(<span class="fu">nrow</span>(taprendizaje_titanic))))</span>
+<span id="cb53-2"><a href="#cb53-2" tabindex="-1"></a>modelo_titanic_knn</span></code></pre></div>
+<pre><code>## 
+## Call:
+## kknn::train.kknn(formula = Survived ~ ., data = taprendizaje_titanic,     kmax = floor(sqrt(nrow(taprendizaje_titanic))))
+## 
+## Type of response variable: nominal
+## Minimal misclassification: 0.1455939
+## Best kernel: optimal
+## Best k: 14</code></pre>
+<p>Luego, se obtienen las predicciones del modelo:</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a>prediccion_titanic_knn <span class="ot">&lt;-</span> <span class="fu">predict</span>(modelo_titanic_knn, ttesting_titanic, <span class="at">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb55-2"><a href="#cb55-2" tabindex="-1"></a>prediccion_titanic_knn<span class="sc">$</span>prediction</span></code></pre></div>
+<pre><code>##    [1] 1 1 1 0 0 0 0 1 1 1 1 0 0 1 0 0 1 0 1 0 0 1 0 1 0 0 1 1 0 0 1 0 0 1 1 1 0
+##   [38] 1 0 1 0 0 1 1 0 1 0 1 0 1 1 0 1 0 0 0 0 0 0 0 0 0 1 0 0 1 0 1 0 0 1 0 0 0
+##   [75] 1 0 0 0 0 1 0 0 0 0 1 0 0 1 0 1 0 1 1 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 1 0
+##  [112] 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 1 0 0 1 0 0 0 1 0 0 0 1 0
+##  [149] 0 0 1 0 1 1 0 1 0 0 0 0 1 0 0 1 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1
+##  [186] 0 1 0 0 1 1 0 0 0 0 1 1 0 1 0 0 1 1 1 1 0 1 1 0 0 0 1 1 0 1 0 1 1 0 0 0 0
+##  [223] 0 0 0 0 0 0 1 1 1 0 1 0 0 0 1 0 1 1 0 0 1 0 0 1 1 0 1 1 1 0 0 1 1 0 1 1 0
+##  [260] 0 1 1 1 0 1 1 1 0 1 0 0 0 1 0 0 1 1 0 0 0 0 0 1 1 1 1 0 0 1 0 0 1 1 1 1 0
+##  [297] 0 0 0 1 0 0 1 0 1 0 0 1 0 0 0 1 1 0 0 0 0 1 0 0 0 1 0 1 0 1 0 0 1 0 1 1 0
+##  [334] 1 0 0 0 1 0 1 0 0 0 0 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0 0
+##  [371] 0 0 0 1 0 1 1 0 0 0 1 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 1 0 0 1 1 1 0 1 0 1 0
+##  [408] 0 0 0 1 0 0 1 1 0 0 1 0 1 1 0 1 0 0 1 1 0 1 0 1 1 0 0 0 0 1 0 0 0 0 0 0 0
+##  [445] 0 1 1 1 0 0 0 0 1 0 0 0 1 0 0 0 1 1 1 0 1 1 0 0 1 0 0 0 0 1 0 0 0 1 0 0 0
+##  [482] 1 0 0 0 0 0 0 0 1 1 1 0 1 0 0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1 0 0
+##  [519] 1 0 0 0 0 0 1 0 1 0 0 1 0 1 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 1 1 1 1 0 0 0 0
+##  [556] 0 0 0 0 1 1 1 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 1
+##  [593] 0 1 1 0 0 1 1 1 0 0 1 1 0 0 0 0 1 0 0 1 0 0 1 1 0 0 0 1 0 0 0 1 0 1 0 0 1
+##  [630] 1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 1 0 1 0 0 0 0 0 1 0 0 0 0 0 0
+##  [667] 0 1 0 0 0 0 0 0 0 1 1 1 0 1 0 0 0 0 1 0 0 0 0 1 0 0 1 1 1 1 0 1 0 0 1 0 0
+##  [704] 1 1 0 0 0 1 0 0 1 0 1 0 0 0 1 0 0 0 0 1 0 1 1 0 0 1 0 1 1 0 0 1 0 0 0 1 0
+##  [741] 0 1 0 0 0 0 1 0 1 0 0 0 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 1 1 0 1 1 0 0
+##  [778] 1 1 0 0 1 0 0 0 0 0 0 1 1 1 1 1 0 1 0 0 1 0 1 1 0 0 0 1 1 0 0 0 0 0 1 1 1
+##  [815] 1 0 0 1 0 1 1 0 1 0 0 1 0 0 0 0 1 0 0 0 0 1 0 1 0 0 0 0 0 1 0 1 0 0 1 0 1
+##  [852] 0 0 1 0 1 0 0 0 0 1 1 0 1 1 0 0 1 0 1 1 0 0 0 0 0 0 0 1 1 0 1 0 1 0 0 0 1
+##  [889] 0 0 1 0 0 1 1 1 0 0 1 1 0 1 0 1 0 0 0 0 1 1 1 1 0 0 1 0 1 1 1 0 0 0 0 0 0
+##  [926] 0 0 1 1 0 0 0 1 0 0 0 1 0 1 0 0 0 0 1 0 1 1 0 0 0 0 0 0 1 0 1 0 1 0 0 0 0
+##  [963] 0 1 1 0 1 0 0 1 1 0 0 0 0 0 1 0 0 0 1 0 0 1 0 0 0 0 0 0 0 1 0 1 0 1 0 1 0
+## [1000] 0 0 1 0 1 0 1 0 1 0 1 0 1 0 0 1 0 0 1 1 0 0 0 0 0 1 1 0 0 0 1 1 0 1 0 1 0
+## [1037] 0 0 0 0 1 1 1 1 0 0 0 0
+## Levels: 0 1</code></pre>
+<p>Se calcula la matriz de confusión.</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" tabindex="-1"></a>matriz_confusion_titanic_knn <span class="ot">&lt;-</span> <span class="fu">confusion.matrix</span>(ttesting_titanic, prediccion_titanic_knn)</span>
+<span id="cb57-2"><a href="#cb57-2" tabindex="-1"></a>matriz_confusion_titanic_knn</span></code></pre></div>
+<pre><code>##     prediction
+## real   0   1
+##    0 590  75
+##    1  89 294</code></pre>
+<p>Se obtienen los índices de calidad del modelo.</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a>ind_modelo_knn <span class="ot">&lt;-</span> <span class="fu">indices_matriz</span>(matriz_confusion_titanic_knn)</span>
+<span id="cb59-2"><a href="#cb59-2" tabindex="-1"></a>ind_modelo_knn </span></code></pre></div>
+<pre><code>## $`Precision Global`
+## [1] 0.8435115
+## 
+## $`Error Global`
+## [1] 0.1564885
+## 
+## $`Precisión Positiva`
+## [1] 0.767624
+## 
+## $`Precisión Negativa`
+## [1] 0.887218
+## 
+## $`Proporción de Falsos Positivos`
+## [1] 0.112782
+## 
+## $`Proporción de Falsos Negativos`
+## [1] 0.232376
+## 
+## $`Asertividad Positiva`
+## [1] 0.796748
+## 
+## $`Asertividad Negativa`
+## [1] 0.8689249</code></pre>
+<p>El dataframe con la información de los índices de calidad de cada
+modelo es el siguiente:</p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" tabindex="-1"></a><span class="co"># Se convierte la lista de índices en dataframes</span></span>
+<span id="cb61-2"><a href="#cb61-2" tabindex="-1"></a>ind_modelo_bayes <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(ind_modelo_bayes)</span>
+<span id="cb61-3"><a href="#cb61-3" tabindex="-1"></a>ind_modelo_LDA <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(ind_modelo_LDA)</span>
+<span id="cb61-4"><a href="#cb61-4" tabindex="-1"></a>ind_modelo_QDA <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(ind_modelo_QDA)</span>
+<span id="cb61-5"><a href="#cb61-5" tabindex="-1"></a>ind_modelo_knn <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(ind_modelo_knn )</span>
+<span id="cb61-6"><a href="#cb61-6" tabindex="-1"></a></span>
+<span id="cb61-7"><a href="#cb61-7" tabindex="-1"></a><span class="co"># Se unen los dos dataframes</span></span>
+<span id="cb61-8"><a href="#cb61-8" tabindex="-1"></a>indices_modelos <span class="ot">&lt;-</span> <span class="fu">rbind</span>(ind_modelo_bayes, ind_modelo_LDA,ind_modelo_QDA,ind_modelo_knn)</span>
+<span id="cb61-9"><a href="#cb61-9" tabindex="-1"></a></span>
+<span id="cb61-10"><a href="#cb61-10" tabindex="-1"></a><span class="co"># Se crea un vector con el nombre de los modelos</span></span>
+<span id="cb61-11"><a href="#cb61-11" tabindex="-1"></a>nombre_modelo <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Modelo Bayes&quot;</span>, <span class="st">&quot;Modelo LDA&quot;</span>, <span class="st">&quot;Modelo QDA&quot;</span>, <span class="st">&quot;Modelo KNN&quot;</span>)</span>
+<span id="cb61-12"><a href="#cb61-12" tabindex="-1"></a></span>
+<span id="cb61-13"><a href="#cb61-13" tabindex="-1"></a><span class="co"># Se une con los dataframes para crear un solo dataframe</span></span>
+<span id="cb61-14"><a href="#cb61-14" tabindex="-1"></a>indices_modelos <span class="ot">&lt;-</span> <span class="fu">cbind</span>(nombre_modelo, indices_modelos)</span>
+<span id="cb61-15"><a href="#cb61-15" tabindex="-1"></a><span class="fu">names</span>(indices_modelos) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Modelo&quot;</span>, <span class="st">&quot;Precisión Global&quot;</span>, <span class="st">&quot;Error Global&quot;</span>,</span>
+<span id="cb61-16"><a href="#cb61-16" tabindex="-1"></a>                            <span class="st">&quot;Precisión Positiva&quot;</span>, <span class="st">&quot;Precisión Negativa&quot;</span>,</span>
+<span id="cb61-17"><a href="#cb61-17" tabindex="-1"></a>                            <span class="st">&quot;Proporción de Falsos Positivos&quot;</span>, </span>
+<span id="cb61-18"><a href="#cb61-18" tabindex="-1"></a>                            <span class="st">&quot;Proporción de Falsos Negativos&quot;</span>,</span>
+<span id="cb61-19"><a href="#cb61-19" tabindex="-1"></a>                             <span class="st">&quot;Asertividad Positiva&quot;</span>,<span class="st">&quot;Asertividad Negativa&quot;</span>)</span>
+<span id="cb61-20"><a href="#cb61-20" tabindex="-1"></a></span>
+<span id="cb61-21"><a href="#cb61-21" tabindex="-1"></a></span>
+<span id="cb61-22"><a href="#cb61-22" tabindex="-1"></a><span class="fu">kable</span>(indices_modelos) <span class="sc">%&gt;%</span></span>
+<span id="cb61-23"><a href="#cb61-23" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>,<span class="st">&quot;bordered&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>, <span class="st">&quot;responsive&quot;</span>))</span></code></pre></div>
+<table class="table table-striped table-bordered table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Modelo
+</th>
+<th style="text-align:right;">
+Precisión Global
+</th>
+<th style="text-align:right;">
+Error Global
+</th>
+<th style="text-align:right;">
+Precisión Positiva
+</th>
+<th style="text-align:right;">
+Precisión Negativa
+</th>
+<th style="text-align:right;">
+Proporción de Falsos Positivos
+</th>
+<th style="text-align:right;">
+Proporción de Falsos Negativos
+</th>
+<th style="text-align:right;">
+Asertividad Positiva
+</th>
+<th style="text-align:right;">
+Asertividad Negativa
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Modelo Bayes
+</td>
+<td style="text-align:right;">
+0.8444656
+</td>
+<td style="text-align:right;">
+0.1555344
+</td>
+<td style="text-align:right;">
+0.7676240
+</td>
+<td style="text-align:right;">
+0.8887218
+</td>
+<td style="text-align:right;">
+0.1112782
+</td>
+<td style="text-align:right;">
+0.2323760
+</td>
+<td style="text-align:right;">
+0.7989130
+</td>
+<td style="text-align:right;">
+0.8691176
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Modelo LDA
+</td>
+<td style="text-align:right;">
+0.8511450
+</td>
+<td style="text-align:right;">
+0.1488550
+</td>
+<td style="text-align:right;">
+0.7650131
+</td>
+<td style="text-align:right;">
+0.9007519
+</td>
+<td style="text-align:right;">
+0.0992481
+</td>
+<td style="text-align:right;">
+0.2349869
+</td>
+<td style="text-align:right;">
+0.8161560
+</td>
+<td style="text-align:right;">
+0.8693759
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Modelo QDA
+</td>
+<td style="text-align:right;">
+0.8387405
+</td>
+<td style="text-align:right;">
+0.1612595
+</td>
+<td style="text-align:right;">
+0.7650131
+</td>
+<td style="text-align:right;">
+0.8812030
+</td>
+<td style="text-align:right;">
+0.1187970
+</td>
+<td style="text-align:right;">
+0.2349869
+</td>
+<td style="text-align:right;">
+0.7876344
+</td>
+<td style="text-align:right;">
+0.8668639
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Modelo KNN
+</td>
+<td style="text-align:right;">
+0.8435115
+</td>
+<td style="text-align:right;">
+0.1564885
+</td>
+<td style="text-align:right;">
+0.7676240
+</td>
+<td style="text-align:right;">
+0.8872180
+</td>
+<td style="text-align:right;">
+0.1127820
+</td>
+<td style="text-align:right;">
+0.2323760
+</td>
+<td style="text-align:right;">
+0.7967480
+</td>
+<td style="text-align:right;">
+0.8689249
+</td>
+</tr>
+</tbody>
+</table>
+<p>A partir del dataframe se puede observar que el Modelo LDA da mejores
+resultados para la Precisión Global y Error Global, pues, el índice de
+este último es más pequeño. También, da mejor Precisión Negativa,
+Asertividad Positiva y Asertividad Negativa. Además, El índice de Falsos
+Positivos es mejor, ya que, presenta un valor menor.</p>
+<p>En cuanto al índice de Precisión Positiva y Proporción de Falsos
+Negativos, el Modelo Bayes y KNN dan el mismo resultado, y el Modelo LDA
+y QDA dan el mismo. En general, los cuatro modelos dan un resultado muy
+similar. Pero, el Modelo de Bayes y KNN tienen un mayor índice de
+Precisión Positiva y mejor Proporción de Falsos Negativos porque el
+valor de este es menor.</p>
+<p>Si se considera la cantidad de mejores índices obtenidos de la
+comparación de los modelos, el Modelo LDA es el que brinda mejores
+resultados. No obstante, depende del tipo de análisis que se pretenda
+realiza para determinar cuál modelo es más apto.</p>
 </div>
 
    
